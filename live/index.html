@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marcador en vivo</title>
+<!--
+  Overlay del marcador en vivo de War League Planner para OBS / Streamlabs.
+  Agregarlo como "Fuente de navegador". Parámetros de la URL:
+    t=<id del torneo>      (obligatorio, salvo con demo=1)
+    modo=marcador | barra  (panel vertical o barra inferior que se desplaza)
+    max=8                  (cruces visibles en modo marcador)
+    fondo=1                (fondo oscuro, para probar fuera de OBS)
+    demo=1                 (datos de prueba que cambian solos)
+  Se actualiza solo cada 5 segundos.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600&display=swap">
+<style>
+  :root {
+    --bg: #0E100B;
+    --surface: rgba(24, 27, 18, 0.92);
+    --surface-alt: rgba(32, 36, 26, 0.95);
+    --border: #2E3324;
+    --olive: #556B2F;
+    --olive-light: #7A8F4A;
+    --gold: #C8A84B;
+    --gold-light: #E4C766;
+    --text: #ECEAE0;
+    --text-2: #A7AB98;
+    --muted: #6E7263;
+    --live: #D9443A;
+    --warning: #D9A441;
+    --danger: #B24234;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: transparent; color: var(--text); font-family: Inter, system-ui, sans-serif; overflow: hidden; }
+  body.fondo { background: var(--bg); }
+  .num, .title, .round, .badge { font-family: Oswald, Inter, sans-serif; letter-spacing: 0.02em; }
+
+  /* ---------- Modo marcador ---------- */
+  .panel { width: 460px; margin: 16px; border-radius: 14px; overflow: hidden; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.45); }
+  .head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: linear-gradient(90deg, var(--olive) 0%, #3D4D22 100%); border-bottom: 2px solid var(--gold); }
+  .title { flex: 1; font-size: 20px; font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; background: var(--live); font-size: 13px; font-weight: 600; text-transform: uppercase; }
+  .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: pulse 1.4s infinite; }
+  .badge.off { background: var(--muted); }
+  .badge.off::before { animation: none; }
+  @keyframes pulse { 50% { opacity: 0.25; } }
+
+  .section { padding: 6px 16px 2px; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--gold); letter-spacing: 0.08em; }
+  .row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 9px 16px; border-top: 1px solid var(--border); }
+  .row.done { opacity: 0.7; }
+  .name { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .name.a { text-align: right; }
+  .name.win { color: var(--gold-light); }
+  .name.lose { color: var(--text-2); }
+  .score { display: flex; align-items: center; gap: 6px; }
+  .num { min-width: 30px; text-align: center; font-size: 22px; font-weight: 700; padding: 1px 6px; border-radius: 6px; background: var(--surface-alt); }
+  .num.win { background: var(--gold); color: #1A1A0E; }
+  .sep { color: var(--muted); font-weight: 700; }
+  .meta { grid-column: 1 / -1; display: flex; justify-content: center; gap: 8px; font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; }
+  .tag { padding: 1px 7px; border-radius: 4px; font-weight: 600; }
+  .tag.pending { background: rgba(217,164,65,0.18); color: var(--warning); }
+  .tag.disputed { background: rgba(178,66,52,0.22); color: #E2766A; }
+  .tag.voided { background: rgba(110,114,99,0.25); color: var(--text-2); }
+  .empty { padding: 16px; text-align: center; color: var(--text-2); font-size: 14px; border-top: 1px solid var(--border); }
+  .foot { display: flex; justify-content: space-between; padding: 6px 16px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); }
+  .foot .warn { color: var(--warning); }
+
+  .flash { animation: flash 1.6s ease-out; }
+  @keyframes flash { 0% { background: var(--gold-light); color: #1A1A0E; transform: scale(1.25); } 100% { } }
+  .row.new { animation: slide 0.5s ease-out; }
+  @keyframes slide { from { opacity: 0; transform: translateX(-12px); } }
+
+  /* ---------- Modo barra ---------- */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; height: 56px; display: flex; align-items: stretch; background: var(--surface); border-top: 2px solid var(--gold); }
+  .bar .label { display: flex; align-items: center; gap: 10px; padding: 0 18px; background: linear-gradient(90deg, var(--olive) 0%, #3D4D22 100%); flex-shrink: 0; max-width: 40%; }
+  .bar .label .title { font-size: 18px; }
+  .track { flex: 1; overflow: hidden; position: relative; mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+  .ticker { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; white-space: nowrap; will-change: transform; }
+  .item { display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; border-right: 1px solid var(--border); font-size: 17px; font-weight: 600; }
+  .item .round { font-size: 12px; color: var(--gold); text-transform: uppercase; }
+  .item .num { font-size: 20px; min-width: 26px; }
+  .item.done { opacity: 0.7; }
+
+  @media (prefers-reduced-motion: reduce) { .badge::before, .flash, .row.new { animation: none; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(() => {
+  const SUPABASE_URL = 'https://xkbsmpeqpezpzexiwfud.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_JB3Fy272a8T03Pipj7sExA_ecHOXT44'; // clave pública (la misma que trae la app)
+  const POLL_MS = 5000;
+
+  const params = new URLSearchParams(location.search);
+  const tournamentId = params.get('t');
+  const mode = params.get('modo') === 'barra' ? 'barra' : 'marcador';
+  const maxRows = Math.max(1, parseInt(params.get('max') || '8', 10) || 8);
+  const demo = params.get('demo') === '1';
+  if (params.get('fondo') === '1') document.body.classList.add('fondo');
+
+  const app = document.getElementById('app');
+  let last = null;          // última respuesta buena
+  let lastOkAt = 0;
+  let prevScores = new Map(); // matchId -> "a-b" para resaltar cambios
+  let firstRender = true;
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function roundLabel(round, numRounds) {
+    const fromEnd = numRounds - round;
+    if (fromEnd === 0) return 'Final';
+    if (fromEnd === 1) return 'Semifinal';
+    if (fromEnd === 2) return 'Cuartos';
+    return 'Ronda ' + round;
+  }
+
+  // Mismo orden que la app: en juego primero (rondas más avanzadas arriba), después los finalizados.
+  function sortRows(matches) {
+    return matches
+      .map((m) => ({ ...m, finished: m.status === 'confirmado' || m.status === 'anulado' }))
+      .sort((x, y) => Number(x.finished) - Number(y.finished) || y.round - x.round);
+  }
+
+  function noteFor(m) {
+    if (m.status === 'anulado') return '<span class="tag voided">Anulado</span>';
+    if (m.status === 'en_disputa') return '<span class="tag disputed">En disputa</span>';
+    if (!m.finished && m.pending) return '<span class="tag pending">Por confirmar</span>';
+    return '';
+  }
+
+  function scoreCells(m, changed) {
+    const fa = changed ? ' flash' : '';
+    return `<span class="num${m.winner === 'a' ? ' win' : ''}${fa}">${m.score_a}</span>` +
+           `<span class="sep">-</span>` +
+           `<span class="num${m.winner === 'b' ? ' win' : ''}${fa}">${m.score_b}</span>`;
+  }
+
+  function isLive(data) {
+    return data.tournament.status === 'en_curso' || data.matches.some((m) => m.status !== 'confirmado' && m.status !== 'anulado');
+  }
+
+  function render(data) {
+    const rows = sortRows(data.matches);
+    const numRounds = data.tournament.num_rounds;
+    const changed = new Set();
+    const newRows = new Set();
+    for (const m of rows) {
+      const key = m.score_a + '-' + m.score_b + '-' + m.status;
+      const prev = prevScores.get(m.id);
+      if (!firstRender && prev === undefined) newRows.add(m.id);
+      else if (!firstRender && prev !== key) changed.add(m.id);
+      prevScores.set(m.id, key);
+    }
+    firstRender = false;
+
+    const live = isLive(data);
+    const badge = `<span class="badge${live ? '' : ' off'}">${live ? 'En vivo' : 'Finalizado'}</span>`;
+    const stale = Date.now() - lastOkAt > POLL_MS * 3;
+
+    if (mode === 'barra') {
+      const items = rows.map((m) => `
+        <span class="item${m.finished ? ' done' : ''}">
+          <span class="round">${esc(roundLabel(m.round, numRounds))}</span>
+          <span class="${m.winner === 'a' ? 'name win' : ''}">${esc(m.name_a)}</span>
+          ${scoreCells(m, changed.has(m.id))}
+          <span class="${m.winner === 'b' ? 'name win' : ''}">${esc(m.name_b)}</span>
+          ${noteFor(m)}
+        </span>`).join('') || '<span class="item">Esperando los primeros cruces…</span>';
+      const html = `<div class="bar">
+          <div class="label">${badge}<span class="title">${esc(data.tournament.name)}</span></div>
+          <div class="track"><div class="ticker" id="ticker">${items}${items}</div></div>
+        </div>`;
+      app.innerHTML = html;
+      startTicker();
+      return;
+    }
+
+    const liveRows = rows.filter((m) => !m.finished);
+    const doneRows = rows.filter((m) => m.finished);
+    const shownLive = liveRows.slice(0, maxRows);
+    const shownDone = doneRows.slice(0, Math.max(0, maxRows - shownLive.length));
+
+    const rowHtml = (m) => {
+      const cls = ['row'];
+      if (m.finished) cls.push('done');
+      if (newRows.has(m.id)) cls.push('new');
+      const note = noteFor(m);
+      return `<div class="${cls.join(' ')}">
+        <span class="name a ${m.winner === 'a' ? 'win' : m.winner ? 'lose' : ''}">${esc(m.name_a)}</span>
+        <span class="score">${scoreCells(m, changed.has(m.id))}</span>
+        <span class="name ${m.winner === 'b' ? 'win' : m.winner ? 'lose' : ''}">${esc(m.name_b)}</span>
+        <div class="meta"><span>${esc(roundLabel(m.round, numRounds))}</span>${note}</div>
+      </div>`;
+    };
+
+    let body = '';
+    if (shownLive.length) body += `<div class="section">En juego</div>` + shownLive.map(rowHtml).join('');
+    if (shownDone.length) body += `<div class="section">Finalizados</div>` + shownDone.map(rowHtml).join('');
+    if (!body) body = '<div class="empty">Esperando los primeros cruces…</div>';
+
+    const hidden = rows.length - shownLive.length - shownDone.length;
+    app.innerHTML = `<div class="panel">
+      <div class="head"><span class="title">${esc(data.tournament.name)}</span>${badge}</div>
+      ${body}
+      <div class="foot">
+        <span>War League Planner</span>
+        <span class="${stale ? 'warn' : ''}">${stale ? 'Reconectando…' : hidden > 0 ? '+' + hidden + ' cruces más' : ''}</span>
+      </div>
+    </div>`;
+  }
+
+  // Desplazamiento continuo de la barra (el contenido va duplicado para que no corte).
+  let tickerX = 0, tickerRaf = 0, lastTs = 0;
+  function startTicker() {
+    cancelAnimationFrame(tickerRaf);
+    const el = document.getElementById('ticker');
+    if (!el) return;
+    const speed = 70; // px por segundo
+    const step = (ts) => {
+      const dt = lastTs ? (ts - lastTs) / 1000 : 0;
+      lastTs = ts;
+      const half = el.scrollWidth / 2;
+      if (half > 0) {
+        tickerX = (tickerX + speed * dt) % half;
+        el.style.transform = `translateX(${-tickerX}px)`;
+      }
+      tickerRaf = requestAnimationFrame(step);
+    };
+    tickerRaf = requestAnimationFrame(step);
+  }
+
+  function renderMessage(text) {
+    app.innerHTML = mode === 'barra'
+      ? `<div class="bar"><div class="label"><span class="title">${esc(text)}</span></div></div>`
+      : `<div class="panel"><div class="empty">${esc(text)}</div></div>`;
+  }
+
+  async function fetchScoreboard() {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/stream_scoreboard`, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_tournament_id: tournamentId }),
+      cache: 'no-store',
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
+  // ---------- Datos de prueba ----------
+  const demoData = {
+    tournament: { name: 'Copa de Otoño', status: 'en_curso', num_rounds: 3 },
+    matches: [
+      { id: 'q1', round: 1, status: 'confirmado', name_a: 'Lobos Grises A', name_b: 'Halcones', score_a: 2, score_b: 0, winner: 'a', pending: false },
+      { id: 'q2', round: 1, status: 'confirmado', name_a: 'Tormenta', name_b: 'Acero B', score_a: 1, score_b: 2, winner: 'b', pending: false },
+      { id: 'q3', round: 1, status: 'confirmado', name_a: 'Cuervos', name_b: 'Titanes', score_a: 2, score_b: 1, winner: 'a', pending: false },
+      { id: 'q4', round: 1, status: 'anulado', name_a: 'Vanguardia', name_b: 'Sombras', score_a: 0, score_b: 0, winner: null, pending: false },
+      { id: 's1', round: 2, status: 'pendiente', name_a: 'Lobos Grises A', name_b: 'Acero B', score_a: 1, score_b: 0, winner: null, pending: false },
+      { id: 's2', round: 2, status: 'pendiente', name_a: 'Cuervos', name_b: 'Blitz Kreig', score_a: 0, score_b: 0, winner: null, pending: true },
+    ],
+  };
+  let demoTick = 0;
+  function nextDemo() {
+    demoTick++;
+    const s1 = demoData.matches.find((m) => m.id === 's1');
+    const s2 = demoData.matches.find((m) => m.id === 's2');
+    if (demoTick === 2) { s2.pending = false; s2.score_b = 1; }
+    if (demoTick === 3) { s1.score_b = 1; }
+    if (demoTick === 4) { s2.status = 'en_disputa'; }
+    if (demoTick === 5) { s1.score_a = 2; s1.status = 'confirmado'; s1.winner = 'a'; }
+    if (demoTick === 6) {
+      s2.status = 'confirmado'; s2.score_a = 2; s2.winner = 'a';
+      demoData.matches.push({ id: 'f', round: 3, status: 'pendiente', name_a: 'Lobos Grises A', name_b: 'Cuervos', score_a: 0, score_b: 0, winner: null, pending: false });
+    }
+    return JSON.parse(JSON.stringify(demoData));
+  }
+
+  async function tick() {
+    try {
+      const data = demo ? nextDemo() : await fetchScoreboard();
+      if (!data) { renderMessage('No se encontró el torneo.'); return; }
+      last = data;
+      lastOkAt = Date.now();
+      render(data);
+    } catch (e) {
+      // Sin conexión: se queda lo último que se mostró y se avisa en el pie.
+      if (last) render(last); else renderMessage('Conectando…');
+    }
+  }
+
+  if (!tournamentId && !demo) {
+    renderMessage('Falta el id del torneo en el link (?t=...)');
+  } else {
+    tick();
+    setInterval(tick, POLL_MS);
+  }
+})();
+</script>
+</body>
+</html>
