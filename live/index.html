@@ -8,7 +8,8 @@
   Overlay del marcador en vivo de War League Planner para OBS / Streamlabs.
   Agregarlo como "Fuente de navegador". Parámetros de la URL:
     t=<id del torneo>      (obligatorio, salvo con demo=1)
-    modo=marcador | barra  (panel vertical o barra inferior que se desplaza)
+    modo=marcador | barra | cuadro  (panel vertical, barra inferior que se desplaza,
+                                    o el cuadro completo a pantalla 1920x1080)
     max=8                  (cruces visibles en modo marcador)
     fondo=1                (fondo oscuro, para probar fuera de OBS)
     demo=1                 (datos de prueba que cambian solos)
@@ -94,7 +95,43 @@
   .item .num { font-size: 20px; min-width: 26px; }
   .item.done { opacity: 0.7; }
 
-  @media (prefers-reduced-motion: reduce) { .badge::before, .flash, .row.new { animation: none; } }
+  /* ---------- Modo cuadro (bracket) ----------
+     Se dibuja sobre un lienzo fijo de 1920x1080 que se escala al tamaño de la fuente. */
+  .stage { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  .stage .backdrop { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, rgba(32,36,26,0.92) 0%, rgba(14,16,11,0.94) 70%); }
+  .stage .bhead { position: absolute; left: 0; right: 0; top: 34px; display: flex; justify-content: center; align-items: center; gap: 22px; }
+  .stage .bhead .title { flex: none; max-width: 1300px; font-size: 54px; color: var(--text); }
+  .stage .bhead .badge { font-size: 20px; padding: 5px 14px; }
+  .stage .bline { position: absolute; left: 50%; top: 108px; width: 420px; height: 3px; margin-left: -210px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .stage .rlabel { position: absolute; top: 132px; text-align: center; font-family: Oswald, sans-serif; font-size: 20px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; }
+  .stage svg { position: absolute; inset: 0; overflow: visible; }
+  .stage svg path { fill: none; stroke: #3F4630; stroke-width: 3; }
+  .stage svg path.adv { stroke: var(--gold); }
+  .card { position: absolute; display: flex; flex-direction: column; background: var(--surface-alt); border: 2px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.4); }
+  .card.live { border-color: var(--olive-light); }
+  .card.disputed { border-color: var(--danger); }
+  .card.final { border-color: var(--gold); box-shadow: 0 0 30px rgba(200,168,75,0.25); }
+  .card .side { flex: 1; display: flex; align-items: center; gap: 10px; padding: 0 0 0 14px; min-height: 0; }
+  .card .side + .side { border-top: 1px solid var(--border); }
+  .card .nm { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .nm.tbd { color: var(--muted); font-style: italic; font-weight: 500; }
+  .card .side.win .nm { color: var(--gold-light); }
+  .card .side.lose .nm { color: var(--muted); }
+  .card .sc { align-self: stretch; display: flex; align-items: center; justify-content: center; font-family: Oswald, sans-serif; font-weight: 700; background: rgba(0,0,0,0.25); color: var(--text-2); }
+  .card .side.win .sc { background: var(--gold); color: #1A1A0E; }
+  .card .sc.flash { animation: flash 1.6s ease-out; }
+  .card .flag { position: absolute; right: 6px; top: -1px; font-size: 12px; font-weight: 700; padding: 1px 7px; border-radius: 0 0 6px 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .card .flag.pending { background: var(--warning); color: #1A1A0E; }
+  .card .flag.disputed { background: var(--danger); color: #fff; }
+  .card .flag.voided { background: var(--muted); color: #fff; }
+  .champ { position: absolute; text-align: center; font-family: Oswald, sans-serif; text-transform: uppercase; }
+  .champ .lbl { font-size: 20px; color: var(--gold); letter-spacing: 0.15em; }
+  .champ .who { font-size: 40px; font-weight: 700; color: var(--gold-light); text-shadow: 0 0 24px rgba(228,199,102,0.45); }
+  .stage .bmsg { position: absolute; left: 0; right: 0; top: 500px; text-align: center; font-size: 34px; color: var(--text-2); }
+  .stage .bfoot { position: absolute; left: 40px; right: 40px; bottom: 22px; display: flex; justify-content: space-between; font-size: 18px; color: var(--muted); }
+  .stage .bfoot .warn { color: var(--warning); }
+
+  @media (prefers-reduced-motion: reduce) { .badge::before, .flash, .row.new, .card .sc.flash { animation: none; } }
 </style>
 </head>
 <body>
@@ -107,7 +144,7 @@
 
   const params = new URLSearchParams(location.search);
   const tournamentId = params.get('t');
-  const mode = params.get('modo') === 'barra' ? 'barra' : 'marcador';
+  const mode = ['barra', 'cuadro'].includes(params.get('modo')) ? params.get('modo') : 'marcador';
   const maxRows = Math.max(1, parseInt(params.get('max') || '8', 10) || 8);
   const demo = params.get('demo') === '1';
   if (params.get('fondo') === '1') document.body.classList.add('fondo');
@@ -175,6 +212,11 @@
 
     const badge = badgeFor(data);
     const stale = Date.now() - lastOkAt > POLL_MS * 3;
+
+    if (mode === 'cuadro') {
+      renderBracket(data, badge, changed, stale);
+      return;
+    }
 
     if (mode === 'barra') {
       const items = rows.map((m) => `
@@ -248,7 +290,189 @@
     tickerRaf = requestAnimationFrame(step);
   }
 
+  // ---------- Cuadro (bracket) ----------
+
+  // Misma lógica que buildBracket() de la app (src/lib/bracketTree.ts).
+  function buildBracket(positionToEntry, allMatches, S) {
+    const numRounds = Math.round(Math.log2(S));
+    const pairKey = (a, b) => [a, b].sort().join('|');
+    const matchByPair = new Map();
+    for (const m of allMatches) if (m.team_a && m.team_b) matchByPair.set(pairKey(m.team_a, m.team_b), m);
+    const slotState = (s) => s.status === 'anulado' ? 'empty' : s.winner ? 'won' : (!s.a && !s.b) ? 'empty' : 'pending';
+
+    const rounds = [];
+    const r1 = [];
+    for (let i = 0; i < S / 2; i++) {
+      const a = positionToEntry.get(2 * i + 1) ?? null;
+      const b = positionToEntry.get(2 * i + 2) ?? null;
+      if (a && b) {
+        const m = matchByPair.get(pairKey(a, b));
+        r1.push({ a, b, bye: false, winner: m?.winner_entry ?? null, match: m ?? null, status: m?.status ?? 'pendiente' });
+      } else if (a || b) {
+        r1.push({ a: a ?? b, b: null, bye: true, winner: a ?? b, match: null, status: null });
+      } else {
+        r1.push({ a: null, b: null, bye: false, winner: null, match: null, status: null });
+      }
+    }
+    rounds.push(r1);
+
+    let prevStates = r1.map(slotState);
+    for (let r = 2; r <= numRounds; r++) {
+      const prev = rounds[r - 2];
+      const cur = [];
+      for (let j = 0; j < S / 2 ** r; j++) {
+        const ls = prevStates[2 * j], rs = prevStates[2 * j + 1];
+        const a = prev[2 * j].winner, b = prev[2 * j + 1].winner;
+        if (ls === 'empty' || rs === 'empty') {
+          const solo = ls === 'empty' ? b : a;
+          const soloWon = (ls === 'empty' ? rs : ls) === 'won';
+          cur.push({ a: solo, b: null, bye: soloWon && !!solo, winner: soloWon ? solo : null, match: null, status: null });
+          continue;
+        }
+        const m = a && b ? matchByPair.get(pairKey(a, b)) : undefined;
+        cur.push({ a, b, bye: false, winner: m?.winner_entry ?? null, match: m ?? null, status: m?.status ?? (a && b ? 'pendiente' : null) });
+      }
+      rounds.push(cur);
+      prevStates = cur.map((slot, j) => {
+        const ls = prevStates[2 * j], rs = prevStates[2 * j + 1];
+        if (ls === 'empty' && rs === 'empty') return 'empty';
+        if (ls === 'empty') return rs;
+        if (rs === 'empty') return ls;
+        if (ls !== 'won' || rs !== 'won') return 'pending';
+        return slotState(slot);
+      });
+    }
+    return rounds;
+  }
+
+  // Escala el lienzo de 1920x1080 al tamaño real de la fuente.
+  function fitStage() {
+    const st = document.querySelector('.stage');
+    if (st) st.style.transform = `scale(${Math.min(innerWidth / 1920, innerHeight / 1080)})`;
+  }
+  addEventListener('resize', fitStage);
+
+  function renderBracket(data, badge, changed, stale) {
+    const S = data.tournament.bracket_size;
+    const entries = data.entries || [];
+    const foot = `<div class="bfoot"><span>War League Planner</span><span class="${stale ? 'warn' : ''}">${stale ? 'Reconectando…' : ''}</span></div>`;
+    const head = `<div class="bhead"><span class="title">${esc(data.tournament.name)}</span>${badge}</div><div class="bline"></div>`;
+
+    if (!S || S < 2 || entries.length === 0) {
+      app.innerHTML = `<div class="stage"><div class="backdrop"></div>${head}
+        <div class="bmsg">El cuadro aparece cuando se haga el sorteo.</div>${foot}</div>`;
+      fitStage();
+      return;
+    }
+
+    const nameOf = new Map(entries.map((e) => [e.id, e.name]));
+    const rounds = buildBracket(new Map(entries.map((e) => [e.position, e.id])), data.matches, S);
+    const R = rounds.length;
+
+    // Diseño en espejo: la mitad izquierda y la derecha avanzan hacia la final, en el centro.
+    const cols = 2 * (R - 1) + 1;
+    const padX = 40, top = 180, bottom = 1080 - 70;
+    const colW = (1920 - 2 * padX) / cols;
+    const cardW = Math.min(340, colW - 22);
+    const H = bottom - top;
+    const firstPerSide = Math.max(1, S / 4);
+    const cardH = Math.max(40, Math.min(92, H / firstPerSide - 16));
+    const fs = Math.max(13, Math.min(24, cardH * 0.27));
+    const scW = Math.round(fs * 2.1);
+
+    // Posición de cada llave: [ronda (1..R)][índice] -> { x, y (centro), side }
+    const pos = rounds.map((round, ri) => {
+      const r = ri + 1;
+      if (r === R) return [{ x: padX + (R - 1) * colW + (colW - cardW) / 2, y: top + H / 2, side: 'c' }];
+      const n = round.length, half = n / 2;
+      return round.map((_, i) => {
+        const left = i < half;
+        const k = left ? i : i - half;
+        const col = left ? r - 1 : cols - r;
+        return { x: padX + col * colW + (colW - cardW) / 2, y: top + (k + 0.5) * (H / half), side: left ? 'l' : 'r' };
+      });
+    });
+
+    let svg = '';
+    let cards = '';
+    let labels = '';
+    for (let ri = 0; ri < R; ri++) {
+      const r = ri + 1;
+      const lbl = esc(roundLabel(r, R));
+      if (r === R) {
+        labels += `<div class="rlabel" style="left:${padX + (R - 1) * colW}px;width:${colW}px">${lbl}</div>`;
+      } else {
+        labels += `<div class="rlabel" style="left:${padX + (r - 1) * colW}px;width:${colW}px">${lbl}</div>`;
+        labels += `<div class="rlabel" style="left:${padX + (cols - r) * colW}px;width:${colW}px">${lbl}</div>`;
+      }
+
+      rounds[ri].forEach((s, i) => {
+        const p = pos[ri][i];
+
+        // Línea hacia la llave siguiente (dorada si de aquí ya salió un ganador).
+        if (r < R) {
+          const q = pos[ri + 1][Math.floor(i / 2)];
+          const fromX = p.side === 'l' ? p.x + cardW : p.x;
+          const toX = q.side === 'r' || (q.side === 'c' && p.side === 'r') ? q.x + cardW : q.x;
+          const midX = (fromX + toX) / 2;
+          svg += `<path class="${s.winner ? 'adv' : ''}" d="M${fromX} ${p.y} H${midX} V${q.y} H${toX}"/>`;
+        }
+
+        // Llave vacía de la ronda 1 (posición sin equipo a ambos lados): no se dibuja.
+        if (r === 1 && !s.a && !s.b) return;
+
+        const m = s.match;
+        const flagged = changed.has(m?.id);
+        const sideHtml = (entry, which) => {
+          let nm;
+          if (entry) nm = `<span class="nm">${esc(nameOf.get(entry) ?? '—')}</span>`;
+          else if (s.bye) nm = `<span class="nm tbd">Pasa directo</span>`;
+          else nm = `<span class="nm tbd">Por definir</span>`;
+          const cls = s.winner && entry ? (s.winner === entry ? ' win' : ' lose') : '';
+          let score = '';
+          if (m && entry) {
+            const isA = m.team_a === entry;
+            const v = isA ? m.score_a : m.score_b;
+            score = `<span class="sc${flagged ? ' flash' : ''}" style="width:${scW}px;font-size:${fs * 1.15}px">${v}</span>`;
+          }
+          return `<div class="side${cls}" style="font-size:${fs}px">${nm}${score}</div>`;
+        };
+
+        const cls = ['card'];
+        if (r === R) cls.push('final');
+        else if (m && m.status === 'en_disputa') cls.push('disputed');
+        else if (s.a && s.b && !s.winner && s.status !== 'anulado') cls.push('live');
+
+        let flag = '';
+        if (m?.status === 'en_disputa') flag = '<span class="flag disputed">Disputa</span>';
+        else if (m?.status === 'anulado') flag = '<span class="flag voided">Anulado</span>';
+        else if (m && m.pending && !s.winner) flag = '<span class="flag pending">Por confirmar</span>';
+
+        cards += `<div class="${cls.join(' ')}" style="left:${p.x}px;top:${p.y - cardH / 2}px;width:${cardW}px;height:${cardH}px">
+          ${sideHtml(s.a, 'a')}${sideHtml(s.b, 'b')}${flag}</div>`;
+      });
+    }
+
+    // Campeón bajo la final.
+    const fin = rounds[R - 1][0];
+    let champ = '';
+    if (fin.winner && fin.match?.status === 'confirmado') {
+      const p = pos[R - 1][0];
+      champ = `<div class="champ" style="left:${p.x - 120}px;width:${cardW + 240}px;top:${p.y + cardH / 2 + 24}px">
+        <div class="lbl">Campeón</div><div class="who">${esc(nameOf.get(fin.winner) ?? '—')}</div></div>`;
+    }
+
+    app.innerHTML = `<div class="stage"><div class="backdrop"></div>${head}${labels}
+      <svg width="1920" height="1080" viewBox="0 0 1920 1080">${svg}</svg>${cards}${champ}${foot}</div>`;
+    fitStage();
+  }
+
   function renderMessage(text) {
+    if (mode === 'cuadro') {
+      app.innerHTML = `<div class="stage"><div class="backdrop"></div><div class="bmsg">${esc(text)}</div></div>`;
+      fitStage();
+      return;
+    }
     app.innerHTML = mode === 'barra'
       ? `<div class="bar"><div class="label"><span class="title">${esc(text)}</span></div></div>`
       : `<div class="panel"><div class="empty">${esc(text)}</div></div>`;
@@ -293,9 +517,54 @@
     return JSON.parse(JSON.stringify(demoData));
   }
 
+  // Cuadro de prueba: un torneo que avanza solo (crea cruces, reporta y confirma).
+  // &equipos=8|16|32 cambia el tamaño (por defecto 16, con un lugar libre = pasa directo).
+  const DEMO_NAMES = ['Lobos Grises A', 'Halcones', 'Tormenta', 'Acero B', 'Cuervos', 'Titanes', 'Vanguardia', 'Sombras',
+    'Blitz Kreig', 'Panzer Elite', 'Los Tigres', 'Escuadrón Rojo', 'Cobras', 'Martillo', 'Centinelas', 'Furia Norte',
+    'Dragones', 'Kaiser B', 'Lanceros', 'Trueno', 'Coyotes', 'Bastión', 'Relámpago', 'Hierro Viejo',
+    'Jaguares', 'Escorpiones', 'Legión', 'Avalancha', 'Osos Pardos', 'Fortaleza', 'Águilas', 'Ciclón'];
+  const demoSize = [8, 16, 32].includes(+params.get('equipos')) ? +params.get('equipos') : 16;
+  const demoBracket = {
+    tournament: { name: 'Copa de Otoño', status: 'en_curso', num_rounds: Math.log2(demoSize), bracket_size: demoSize },
+    entries: DEMO_NAMES.slice(0, demoSize - 1).map((name, i) => ({ id: 'e' + i, position: i + 1, name })),
+    matches: [],
+  };
+  let demoSeq = 0;
+  function demoStep() {
+    const d = demoBracket;
+    const rounds = buildBracket(new Map(d.entries.map((e) => [e.position, e.id])), d.matches, demoSize);
+    // 1) Avanzar un cruce que ya está en juego.
+    const live = d.matches.find((m) => m.status !== 'confirmado');
+    if (live) {
+      const aWins = (live.team_a.charCodeAt(1) + live.round) % 3 !== 0;
+      if (!live.pending) { live.pending = true; if (aWins) live.score_a = 1; else live.score_b = 1; }
+      else {
+        live.pending = false; live.status = 'confirmado';
+        if (aWins) { live.score_a = 2; live.winner = 'a'; live.winner_entry = live.team_a; }
+        else { live.score_b = 2; live.winner = 'b'; live.winner_entry = live.team_b; }
+      }
+      return;
+    }
+    // 2) Abrir el siguiente cruce con los dos rivales definidos.
+    for (let ri = 0; ri < rounds.length; ri++) {
+      const s = rounds[ri].find((x) => x.a && x.b && !x.match);
+      if (s) {
+        d.matches.push({ id: 'm' + (++demoSeq), round: ri + 1, status: 'pendiente', team_a: s.a, team_b: s.b,
+          name_a: '', name_b: '', score_a: 0, score_b: 0, winner: null, winner_entry: null, pending: false });
+        return;
+      }
+    }
+    d.tournament.status = 'finalizado';
+  }
+  for (let i = 0; i < 3 * demoSize / 2 + 4; i++) demoStep(); // arranca con media ronda jugada
+  function nextDemoBracket() {
+    demoStep(); demoStep();
+    return JSON.parse(JSON.stringify(demoBracket));
+  }
+
   async function tick() {
     try {
-      const data = demo ? nextDemo() : await fetchScoreboard();
+      const data = demo ? (mode === 'cuadro' ? nextDemoBracket() : nextDemo()) : await fetchScoreboard();
       if (!data) { renderMessage('No se encontró el torneo.'); return; }
       last = data;
       lastOkAt = Date.now();
