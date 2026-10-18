@@ -46,6 +46,8 @@
   .badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: pulse 1.4s infinite; }
   .badge.off { background: var(--muted); }
   .badge.off::before { animation: none; }
+  .badge.soon { background: var(--gold); color: #1A1A0E; }
+  .badge.soon::before { background: #1A1A0E; animation: none; }
   @keyframes pulse { 50% { opacity: 0.25; } }
 
   .section { padding: 6px 16px 2px; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--gold); letter-spacing: 0.08em; }
@@ -139,8 +141,14 @@
            `<span class="num${m.winner === 'b' ? ' win' : ''}${fa}">${m.score_b}</span>`;
   }
 
-  function isLive(data) {
-    return data.tournament.status === 'en_curso' || data.matches.some((m) => m.status !== 'confirmado' && m.status !== 'anulado');
+  // Etiqueta del encabezado: en vivo / próximamente (antes del sorteo) / finalizado.
+  function badgeFor(data) {
+    const st = data.tournament.status;
+    const open = data.matches.some((m) => m.status !== 'confirmado' && m.status !== 'anulado');
+    if (st === 'en_curso' || open) return '<span class="badge">En vivo</span>';
+    if (st === 'finalizado') return '<span class="badge off">Finalizado</span>';
+    if (st === 'cancelado') return '<span class="badge off">Cancelado</span>';
+    return '<span class="badge soon">Próximamente</span>';
   }
 
   function render(data) {
@@ -157,8 +165,7 @@
     }
     firstRender = false;
 
-    const live = isLive(data);
-    const badge = `<span class="badge${live ? '' : ' off'}">${live ? 'En vivo' : 'Finalizado'}</span>`;
+    const badge = badgeFor(data);
     const stale = Date.now() - lastOkAt > POLL_MS * 3;
 
     if (mode === 'barra') {
