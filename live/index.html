@@ -4,10 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Marcador en vivo</title>
+<meta name="robots" content="noindex, nofollow">
 <!--
   Overlay del marcador en vivo de War League Planner para OBS / Streamlabs.
   Agregarlo como "Fuente de navegador". Parámetros de la URL:
     t=<id del torneo>      (obligatorio, salvo con demo=1)
+    clave=<clave privada>  (obligatoria: sin ella Supabase no devuelve datos)
     modo=marcador | barra | cuadro  (panel vertical, barra inferior que se desplaza,
                                     o el cuadro completo a pantalla 1920x1080)
     max=8                  (cruces visibles en modo marcador)
@@ -144,6 +146,7 @@
 
   const params = new URLSearchParams(location.search);
   const tournamentId = params.get('t');
+  const overlayKey = params.get('clave');
   const mode = ['barra', 'cuadro'].includes(params.get('modo')) ? params.get('modo') : 'marcador';
   const maxRows = Math.max(1, parseInt(params.get('max') || '8', 10) || 8);
   const demo = params.get('demo') === '1';
@@ -482,9 +485,10 @@
     const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/stream_scoreboard`, {
       method: 'POST',
       headers: { apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_tournament_id: tournamentId }),
+      body: JSON.stringify({ p_tournament_id: tournamentId, p_key: overlayKey }),
       cache: 'no-store',
     });
+    if (res.status === 401 || res.status === 403) throw Object.assign(new Error('clave'), { badKey: true });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return res.json();
   }
@@ -570,12 +574,16 @@
       lastOkAt = Date.now();
       render(data);
     } catch (e) {
+      // Clave mal o revocada: no se muestra nada del torneo.
+      if (e.badKey) { last = null; renderMessage('Overlay privado: la clave del link no es válida.'); return; }
       // Sin conexión: se queda lo último que se mostró y se avisa en el pie.
       if (last) render(last); else renderMessage('Conectando…');
     }
   }
 
-  if (!tournamentId && !demo) {
+  if (!demo && !overlayKey) {
+    renderMessage('Overlay privado.');
+  } else if (!tournamentId && !demo) {
     renderMessage('Falta el id del torneo en el link (?t=...)');
   } else {
     tick();
