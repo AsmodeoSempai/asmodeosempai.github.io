@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "updated": "2026-10-19",
+  "tutorials": [
+    {
+      "id": "inscripcion",
+      "icon": "add-circle-outline",
+      "title": "Cómo inscribirte en un torneo",
+      "summary": "Elegir torneo, armar la alineación, suplentes y confirmar.",
+      "steps": [
+        {
+          "image": "img/inscripcion/01.jpg",
+          "title": "Busca el torneo en «Próximos»",
+          "body": "En la pestaña Torneos, abre «Próximos»: ahí están los torneos con inscripción abierta. Toca el que te interese."
+        },
+        {
+          "image": "img/inscripcion/02.jpg",
+          "title": "Revisa los datos y toca «Inscribir mi equipo»",
+          "body": "Mira el formato, los mapas, la fecha y hasta cuándo hay inscripción. Después toca el botón dorado «Inscribir mi equipo»."
+        },
+        {
+          "image": "img/inscripcion/03.jpg",
+          "title": "Elige la alineación titular",
+          "body": "Marca los jugadores de tu escuadrón que van a jugar. El contador te muestra cuántos faltan; cuando completas el cupo, el resto queda bloqueado."
+        },
+        {
+          "image": "img/inscripcion/04.jpg",
+          "title": "Suplentes (opcional)",
+          "body": "Puedes anotar hasta 2 jugadores de reserva. Si un titular no puede jugar, se cambia desde «Jugadores inscritos». Una vez que empieza el torneo ya no se pueden agregar."
+        },
+        {
+          "image": "img/inscripcion/05.jpg",
+          "title": "Compañero con iPhone (opcional)",
+          "body": "Si un compañero tiene iPhone y no puede bajar la app, activa «Sumar un jugador sin la app» y completa su nombre, ID, Discord y una captura de su perfil. Un administrador lo revisa antes del sorteo."
+        },
+        {
+          "image": "img/inscripcion/06.jpg",
+          "title": "Toca «Confirmar inscripción»",
+          "body": "El botón se activa cuando eliges todos los titulares (y completas los datos del invitado, si sumaste uno)."
+        },
+        {
+          "image": "img/inscripcion/07.jpg",
+          "title": "¡Escuadrón inscrito!",
+          "body": "Listo. Recuerda: al terminar cada partida tendrás que sacar una FOTO en el momento con la cámara del celular como evidencia del resultado."
+        },
+        {
+          "image": "img/inscripcion/08.jpg",
+          "title": "Retirar o hacer cambios",
+          "body": "Mientras la inscripción esté abierta puedes retirar el escuadrón, cambiar titulares y suplentes en «Suplentes y cambios», o inscribir otro escuadrón si te sobran jugadores."
+        },
+        {
+          "image": "img/inscripcion/09.jpg",
+          "title": "Torneos 1v1",
+          "body": "En los torneos 1v1 te inscribes solo con un toque en «Inscribirme». No hace falta elegir alineación."
+        },
+        {
+          "image": "img/inscripcion/10.jpg",
+          "title": "¿No te aparece el botón?",
+          "body": "Para torneos por equipos necesitas un escuadrón (en «Mi Escuadrón») y solo el capitán puede inscribirlo. Si no eres capitán, pídele a tu capitán que inscriba al equipo."
+        }
+      ]
+    },
+    {
+      "id": "subir-resultado",
+      "icon": "camera",
+      "title": "Cómo subir el resultado de una partida",
+      "summary": "Foto en el momento, elegir ganador y confirmación del rival.",
+      "steps": [
+        {
+          "image": "img/subir-resultado/01.jpg",
+          "title": "Entra a tu torneo y toca «Ver cuadro»",
+          "body": "Cuando el torneo está en curso, en el detalle aparece el botón dorado «Ver cuadro»."
+        },
+        {
+          "image": "img/subir-resultado/02.jpg",
+          "title": "Busca tu cruce y toca «Reportar resultado»",
+          "body": "El botón sale solo en el cruce donde juegas como titular. Ahí también ves el mapa sorteado y quién crea la partida."
+        },
+        {
+          "image": "img/subir-resultado/03.jpg",
+          "title": "Toca «Tomar foto con la cámara»",
+          "body": "La evidencia es una FOTO tomada en el momento con la cámara del celular. No sirven imágenes de la galería ni capturas de pantalla."
+        },
+        {
+          "image": "img/subir-resultado/04.jpg",
+          "title": "Fotografía la pantalla de victoria",
+          "body": "Apunta el celular al monitor con la pantalla de resultado del juego y dispara. Que se lean bien el resultado y los nombres."
+        },
+        {
+          "image": "img/subir-resultado/05.jpg",
+          "title": "Revisa la foto y elige quién ganó",
+          "body": "Si salió borrosa, toca «Tomar otra foto». Si está bien, toca el nombre del equipo ganador."
+        },
+        {
+          "image": "img/subir-resultado/06.jpg",
+          "title": "Confirma",
+          "body": "La app te recuerda que la foto y el resultado deben ser reales. Reportar un resultado falso puede hacer que te baneen."
+        },
+        {
+          "image": "img/subir-resultado/07.jpg",
+          "title": "Confirmación final",
+          "body": "Esta acción no se puede deshacer. Al continuar, confirmas que el resultado es verdadero."
+        },
+        {
+          "image": "img/subir-resultado/08.jpg",
+          "title": "¡Reporte enviado!",
+          "body": "El equipo rival tiene 5 minutos para confirmar o rechazar. Si no responde a tiempo, el resultado se acepta solo."
+        },
+        {
+          "image": "img/subir-resultado/09.jpg",
+          "title": "Lo que ve quien reportó",
+          "body": "En el cuadro aparece «Esperando confirmación del rival» con la cuenta regresiva."
+        },
+        {
+          "image": "img/subir-resultado/10.jpg",
+          "title": "Lo que ve el rival",
+          "body": "El rival elige «Confirmar» o «No acepto». Si no acepta, el cruce queda en disputa y lo resuelve el organizador."
+        },
+        {
+          "image": "img/subir-resultado/11.jpg",
+          "title": "Resultado confirmado: el ganador avanza",
+          "body": "El cruce se marca en verde como «Confirmado», con trofeo y marcador, y el ganador pasa a la siguiente ronda."
+        },
+        {
+          "image": "img/subir-resultado/12.jpg",
+          "title": "Torneos al mejor de 3 o de 5",
+          "body": "En BO3 y BO5 se reporta partida por partida con «Reportar partida». Arriba ves el número de partida y el marcador de la serie. Cada partida lleva su foto y la confirmación del rival."
+        }
+      ]
+    },
+    {
+      "id": "no-show",
+      "icon": "timer-outline",
+      "title": "Si tu rival no se presenta (W.O.)",
+      "summary": "Espera de 15 minutos, «Ya llegué» y decisión del organizador.",
+      "steps": [
+        {
+          "image": "img/no-show/01.jpg",
+          "title": "Toca «Estoy esperando a mi rival»",
+          "body": "Llegó la hora y tu rival no aparece. En tu cruce toca «Estoy esperando a mi rival». Solo se puede si todavía no han reportado nada."
+        },
+        {
+          "image": "img/no-show/02.jpg",
+          "title": "Confirma: empiezan 15 minutos",
+          "body": "Se avisa a tu rival y al organizador. Si tu rival no toca «Ya llegué» antes de que terminen, se le informa a un administrador para que decida."
+        },
+        {
+          "image": "img/no-show/03.jpg",
+          "title": "Avisos al rival y al organizador",
+          "body": "Al rival le llega «Tu rival te está esperando» y al organizador «Un jugador espera a su rival»."
+        },
+        {
+          "image": "img/no-show/04.jpg",
+          "title": "El rival toca «Ya llegué»",
+          "body": "Se apaga la cuenta regresiva y al otro equipo le llega «Tu rival ya llegó. ¡A jugar!». Después juegan y reportan como siempre."
+        },
+        {
+          "image": "img/no-show/05.jpg",
+          "title": "Si se acaba el tiempo",
+          "body": "Si pasan los 15 minutos sin «Ya llegué», al equipo que esperaba le llega «Se acabó el tiempo de espera». No hace falta hacer nada más: decide un administrador o el organizador."
+        },
+        {
+          "image": "img/no-show/06.jpg",
+          "title": "El organizador decide el cruce",
+          "body": "Al organizador y a los admins les llega «Se acabó la espera: decide el cruce». En la tarjeta tocan «Decidir resultado». El organizador también puede iniciar él mismo los 15 minutos con «15 min de espera»."
+        },
+        {
+          "image": "img/no-show/07.jpg",
+          "title": "Opciones en un cruce a 1 partida",
+          "body": "Le da la victoria por W.O. al equipo que sí se presentó, o marca «Nadie se presentó»."
+        },
+        {
+          "image": "img/no-show/08.jpg",
+          "title": "Opciones en BO3 o BO5",
+          "body": "Puede dar solo la partida que se estaba jugando (la serie sigue) o el cruce completo."
+        },
+        {
+          "image": "img/no-show/09.jpg",
+          "title": "Victoria por W.O.",
+          "body": "No hace falta foto. El cruce queda confirmado y el ganador avanza a la siguiente ronda."
+        },
+        {
+          "image": "img/no-show/10.jpg",
+          "title": "Si no se presentó ninguno",
+          "body": "Se pide confirmar. El cruce se anula, quedan fuera los dos y el ganador de la otra llave pasa directo (bye)."
+        },
+        {
+          "image": "img/no-show/11.jpg",
+          "title": "¿Algún problema? Llama al organizador",
+          "body": "Desde tu cruce toca «Llamar al organizador» y elige el motivo: le llega un aviso al instante."
+        }
+      ]
+    }
+  ]
+}
