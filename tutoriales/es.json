@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "tutorials": [
     {
       "id": "inscripcion",
@@ -188,6 +188,170 @@
           "image": "img/no-show/11.jpg",
           "title": "¿Algún problema? Llama al organizador",
           "body": "Desde tu cruce toca «Llamar al organizador» y elige el motivo: le llega un aviso al instante."
+        }
+      ]
+    },
+    {
+      "id": "escalerilla-como-funciona",
+      "icon": "podium-outline",
+      "title": "Escalerilla: cómo funciona",
+      "summary": "Inscribirte, la semana, cómo se ganan puntos, la tabla y los playoffs.",
+      "steps": [
+        {
+          "image": "img/escalerilla-como-funciona/01.jpg",
+          "title": "Entra a War Thunder",
+          "body": "En el inicio toca la tarjeta «War Thunder»."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/02.jpg",
+          "title": "Toca «Escalerilla»",
+          "body": "Es una liga 1v1: cada semana juegas una partida contra un rival de puntaje parecido, y al final los mejores van a playoffs."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/03.jpg",
+          "title": "Elige una y toca «Inscribirme»",
+          "body": "En la pestaña «Inscripción» están las que aceptan jugadores. Puedes entrar en cualquier momento de la temporada: partes con 0 puntos."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/04.jpg",
+          "title": "Así es cada semana",
+          "body": "Lunes y martes registras tu horario y tus vehículos. El martes a las 23:59 sale tu rival y la hora. Hasta el viernes 12:00 puedes pedir otra hora. Del viernes 18:00 al domingo se juega, y tienes hasta el martes 23:59 para reportar y confirmar."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/05.jpg",
+          "title": "Cómo se ganan puntos",
+          "body": "Los dos jugadores suman puntos, pero gana más quien gana más claro. En Bo3: ganar 2-0 da 4 puntos y al perdedor 1; ganar 2-1 da 3 y al perdedor 2. Así, perder peleando también vale."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/06.jpg",
+          "title": "Marcador y puntos no son lo mismo",
+          "body": "«Marcador 2-1» son las rondas que ganó cada uno. «Puntos 3-2» es lo que suma cada uno a la tabla. En este ejemplo ganaste la serie 2-1: sumas 3 y tu rival 2."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/07.jpg",
+          "title": "Castigos y casos especiales",
+          "body": "No registrarte a tiempo o no confirmar un resultado: −3 puntos y no juegas la jornada siguiente. Si nadie reporta la partida, −3 a los dos. Si tu rival no se presenta, ganas por W.O. Si son impares, alguien tiene día libre."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/08.jpg",
+          "title": "Revisa la tabla",
+          "body": "En «Ranking» ves la tabla completa y tu puesto. Se ordena por puntos y, si hay empate, por el enfrentamiento directo, la diferencia de rondas y las rondas ganadas."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/09.jpg",
+          "title": "Playoffs y campeón",
+          "body": "Al terminar las jornadas clasifican los mejores (top 4 o top 8) que jugaron al menos el 60 % de las jornadas. Se juega una fase por semana, y quien gana la final es el campeón."
+        }
+      ]
+    },
+    {
+      "id": "escalerilla-partida",
+      "icon": "calendar-outline",
+      "title": "Escalerilla: tu partida de la semana",
+      "summary": "Registrar horario y vehículos, rival y hora, pedir otra hora, reportar y confirmar.",
+      "steps": [
+        {
+          "image": "img/escalerilla-partida/01.jpg",
+          "title": "Toca «Registrar horario y vehículos»",
+          "body": "Lo haces cada semana el lunes o el martes, hasta las 23:59. Si no te registras, pierdes 3 puntos y no juegas esa jornada."
+        },
+        {
+          "image": "img/escalerilla-partida/02.jpg",
+          "title": "Marca cuándo puedes jugar",
+          "body": "En tu hora. Tienes que marcar al menos 2 días (viernes, sábado o domingo) y, en cada uno, un rango de 3 horas o más. Con eso se busca una hora que les sirva a los dos."
+        },
+        {
+          "image": "img/escalerilla-partida/03.jpg",
+          "title": "Elige tus vehículos y guarda",
+          "body": "En Bo3 eliges 3 (en Bo1, 1; en Bo5, hasta 5). En cada ronda juegas con cualquiera de tu lista. Tu rival no los ve hasta el viernes 12:00."
+        },
+        {
+          "image": "img/escalerilla-partida/04.jpg",
+          "title": "El martes 23:59 llega tu rival",
+          "body": "Te llega un aviso con tu rival y la hora de la partida, en tu hora. Si sus horarios no coincidían, se usa la hora fija de la escalerilla."
+        },
+        {
+          "image": "img/escalerilla-partida/05.jpg",
+          "title": "Mira tu partida",
+          "body": "En «Mi partida» ves el nombre de tu rival en War Thunder y la hora. Búscalo en el juego para invitarlo."
+        },
+        {
+          "image": "img/escalerilla-partida/06.jpg",
+          "title": "Si no puedes, pide otra hora",
+          "body": "Hasta el viernes 12:00. Marca tus horarios (también mínimo 2 días y 3 horas cada día) y toca «Enviar pedido». Si tu rival no responde o rechaza, queda la hora asignada."
+        },
+        {
+          "image": "img/escalerilla-partida/07.jpg",
+          "title": "Si tu rival te pide otra hora, elige una",
+          "body": "Ves sus horarios en tu hora. Elige el día y la hora con − y + y toca «Aceptar esa hora», o toca «Rechazar» para dejar la hora asignada."
+        },
+        {
+          "image": "img/escalerilla-partida/08.jpg",
+          "title": "El viernes 12:00 se revela todo",
+          "body": "Ya puedes ver los vehículos de tu rival, el mapa y quién crea la sala: la crea el que va más arriba en la tabla e invita al otro."
+        },
+        {
+          "image": "img/escalerilla-partida/09.jpg",
+          "title": "A la hora de la partida",
+          "body": "Juega y toca «Reportar ronda». Si tu rival no llega, toca «Estoy esperando a mi rival»: se le avisa a él y al organizador, y empiezan a correr 15 minutos."
+        },
+        {
+          "image": "img/escalerilla-partida/10.jpg",
+          "title": "Reporta cada ronda con una foto",
+          "body": "Elige quién ganó y el vehículo de cada uno, y toca «Tomar foto y enviar». La foto es de la pantalla de resultado del juego, tomada en el momento con la cámara."
+        },
+        {
+          "image": "img/escalerilla-partida/11.jpg",
+          "title": "Confirma lo que reporta tu rival",
+          "body": "Si tu rival reportó una ronda, toca «Confirmar» o «No acepto» (y cuenta qué pasó). Mientras no lo hagas, no puedes reportar otra ronda: así nadie reporta dos veces la misma."
+        },
+        {
+          "image": "img/escalerilla-partida/12.jpg",
+          "title": "Serie terminada",
+          "body": "Cuando todas las rondas están confirmadas, la partida queda «Terminada» con sus puntos. Lo que quede sin confirmar el martes 23:59 vale igual, y quien no confirmó pierde 3 puntos."
+        }
+      ]
+    },
+    {
+      "id": "escalerilla-desafios",
+      "icon": "flash-outline",
+      "title": "Escalerilla: desafíos e inmunidad",
+      "summary": "Desafiar a alguien de más arriba, responder a tiempo, puntos, inmunidad y videos.",
+      "steps": [
+        {
+          "image": "img/escalerilla-desafios/01.jpg",
+          "title": "Desafía a alguien de más arriba",
+          "body": "Desde la jornada 2, de lunes a jueves, puedes desafiar a un jugador hasta unos puestos más arriba en la tabla. Uno por semana. Desafiar es opcional; responder un desafío, no."
+        },
+        {
+          "image": "img/escalerilla-desafios/02.jpg",
+          "title": "Marca tus horarios y envía",
+          "body": "Pon varios rangos: así es más fácil que tu rival encuentre uno que le sirva. Se juega con el formato y las reglas de vehículos de la jornada, hasta el domingo 23:59."
+        },
+        {
+          "image": "img/escalerilla-desafios/03.jpg",
+          "title": "Si te desafían, responde",
+          "body": "Tienes 24 horas. Elige una hora de sus horarios, propón los tuyos si no puedes en ninguno, o rechaza. Si no respondes a tiempo, cuenta como rechazo."
+        },
+        {
+          "image": "img/escalerilla-desafios/04.jpg",
+          "title": "Rechazos gratis y faltas",
+          "body": "Cada 4 semanas tienes 2 rechazos gratis. Sin rechazos gratis, rechazar cuesta −5 puntos y una falta; aceptar y no presentarte también. Si llegas al límite de faltas, quedas suspendido y puedes tocar «Pedir volver»."
+        },
+        {
+          "image": "img/escalerilla-desafios/05.jpg",
+          "title": "Puntos de un desafío",
+          "body": "Si gana quien desafía: +4 para él y +1 para el desafiado. Si gana el desafiado: +3 para él y +1 para quien desafió. Suman a la tabla, pero no cuentan como jornada jugada."
+        },
+        {
+          "image": "img/escalerilla-desafios/06.jpg",
+          "title": "Inmunidad del top",
+          "body": "Si estás en el top 3, 1 semana de cada 4 puedes activar «esta semana no recibo desafíos», de lunes a jueves y si no tienes un desafío recibido."
+        },
+        {
+          "image": "img/escalerilla-desafios/07.jpg",
+          "title": "Premios por ver videos",
+          "body": "20 videos: un rechazo extra. 40 videos: una semana de inmunidad aunque no estés en el top. 1 video: ver el mapa de tu partida antes del viernes. Solo cuentan los videos que ves completos."
         }
       ]
     }
