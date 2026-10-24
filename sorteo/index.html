@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sorteo en vivo</title>
+<meta name="robots" content="noindex, nofollow">
+<!--
+  Overlay del Torneo por Sorteo de War League Planner para OBS / Streamlabs.
+  Agregarlo como "Fuente de navegador" de 1920x1080. Parámetros de la URL:
+    clave=<clave privada>  (obligatoria: la misma del overlay de torneos)
+    t=<id del torneo>      (opcional: sin él muestra solo el torneo por sorteo en curso)
+    transparente=1         (sin fondo, para poner encima del juego)
+    demo=1                 (datos de prueba que avanzan solos; no necesita clave)
+  Se actualiza solo cada 3 segundos. Cuando el organizador sortea, los nombres
+  aparecen de a uno por segundo en Grupo 1 y Grupo 2.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #0E100B;
+    --surface: rgba(24, 27, 18, 0.94);
+    --surface-alt: rgba(32, 36, 26, 0.96);
+    --border: #2E3324;
+    --olive: #556B2F;
+    --olive-light: #7A8F4A;
+    --gold: #C8A84B;
+    --gold-light: #E4C766;
+    --text: #ECEAE0;
+    --text-2: #A7AB98;
+    --muted: #6E7263;
+    --live: #D9443A;
+    --warning: #D9A441;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: transparent; color: var(--text); font-family: Inter, system-ui, sans-serif; overflow: hidden; }
+  .o { font-family: Oswald, Inter, sans-serif; letter-spacing: 0.02em; }
+
+  /* Lienzo fijo de 1920x1080 que se escala al tamaño de la fuente. */
+  .stage { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  .backdrop { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, rgba(32,36,26,0.94) 0%, rgba(14,16,11,0.96) 70%); }
+  .transparente .backdrop { display: none; }
+
+  .head { position: absolute; left: 0; right: 0; top: 40px; display: flex; justify-content: center; align-items: center; gap: 22px; }
+  .head .title { max-width: 1400px; font-size: 56px; font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 3px 12px rgba(0,0,0,0.6); }
+  .badge { display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px; border-radius: 999px; background: var(--live); font-size: 20px; font-weight: 600; text-transform: uppercase; }
+  .badge::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: #fff; animation: pulse 1.4s infinite; }
+  .badge.off { background: var(--muted); }
+  .badge.off::before { animation: none; }
+  .badge.soon { background: var(--gold); color: #1A1A0E; }
+  .badge.soon::before { background: #1A1A0E; animation: none; }
+  @keyframes pulse { 50% { opacity: 0.25; } }
+  .line { position: absolute; left: 50%; top: 118px; width: 460px; height: 3px; margin-left: -230px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .sub { position: absolute; left: 0; right: 0; top: 138px; text-align: center; font-size: 30px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; }
+  .sub.drawing { color: var(--text); animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.55; } }
+
+  /* Grupos */
+  .groups { position: absolute; left: 90px; right: 90px; top: 210px; bottom: 90px; display: flex; gap: 40px; }
+  .group { flex: 1; display: flex; flex-direction: column; background: var(--surface); border: 2px solid var(--border); border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.45); transition: opacity 0.6s, border-color 0.6s; }
+  .group .gh { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 16px; background: linear-gradient(90deg, var(--olive) 0%, #3D4D22 100%); border-bottom: 3px solid var(--gold); font-size: 44px; font-weight: 700; text-transform: uppercase; }
+  .group .gh .cnt { font-size: 24px; color: var(--text-2); font-weight: 500; }
+  .group.won { border-color: var(--gold); box-shadow: 0 0 40px rgba(200,168,75,0.35); }
+  .group.won .gh { background: linear-gradient(90deg, #8A7330 0%, var(--gold) 50%, #8A7330 100%); color: #1A1A0E; }
+  .group.won .gh .cnt { color: #1A1A0E; }
+  .group.lost { opacity: 0.35; }
+  .names { flex: 1; display: grid; align-content: start; gap: 6px 24px; padding: 22px 34px; }
+  .names.two { grid-template-columns: 1fr 1fr; }
+  .nm { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 0; border-bottom: 1px solid rgba(46,51,36,0.6); }
+  .nm.pop { animation: pop 0.7s ease-out; color: var(--gold-light); }
+  @keyframes pop { 0% { opacity: 0; transform: translateY(14px) scale(1.15); } 60% { opacity: 1; } 100% { transform: none; } }
+  .vs { align-self: center; font-size: 90px; font-weight: 700; color: var(--gold); text-shadow: 0 0 30px rgba(200,168,75,0.4); }
+
+  /* Final 1v1 */
+  .final .group { justify-content: center; }
+  .final .who { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 30px; }
+  .final .who .n { font-size: 76px; font-weight: 700; text-align: center; word-break: break-word; }
+  .final .who .sc { font-size: 150px; font-weight: 700; color: var(--gold); line-height: 1; }
+
+  /* Campeón y espera */
+  .center { position: absolute; left: 0; right: 0; top: 260px; display: flex; flex-direction: column; align-items: center; gap: 22px; text-align: center; }
+  .trophy { font-size: 150px; line-height: 1; filter: drop-shadow(0 0 30px rgba(228,199,102,0.5)); }
+  .champ-lbl { font-size: 34px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; }
+  .champ { font-size: 110px; font-weight: 700; color: var(--gold-light); text-shadow: 0 0 34px rgba(228,199,102,0.5); text-transform: uppercase; }
+  .prize { font-size: 32px; color: var(--text); }
+  .runner { font-size: 30px; color: var(--text-2); }
+  .msg { font-size: 44px; color: var(--text-2); }
+  .msg2 { font-size: 30px; color: var(--muted); }
+
+  .foot { position: absolute; left: 50px; right: 50px; bottom: 28px; display: flex; justify-content: space-between; font-size: 20px; color: var(--muted); }
+  .foot .warn { color: var(--warning); }
+
+  @media (prefers-reduced-motion: reduce) { .badge::before, .nm.pop, .sub.drawing { animation: none; } }
+</style>
+</head>
+<body>
+<div class="stage" id="stage"><div class="backdrop"></div><div id="app"></div></div>
+<script>
+(() => {
+  const SUPABASE_URL = 'https://xkbsmpeqpezpzexiwfud.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_JB3Fy272a8T03Pipj7sExA_ecHOXT44'; // clave pública (la misma que trae la app)
+  const POLL_MS = 3000;
+  const STEP_MS = 1000;      // un nombre por segundo, como en el sitio original
+  const FRESH_MS = 90000;    // al abrir la página, se anima un sorteo de hace menos de 90 s
+
+  const params = new URLSearchParams(location.search);
+  const eventId = params.get('t');
+  const overlayKey = params.get('clave');
+  const demo = params.get('demo') === '1';
+  if (params.get('transparente') === '1') document.body.classList.add('transparente');
+
+  const stage = document.getElementById('stage');
+  const app = document.getElementById('app');
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function fit() {
+    const k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    stage.style.transform = `scale(${k})`;
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  let data = null;
+  let lastOkAt = 0;
+  let error = null;
+  // Animación del sorteo en curso.
+  let animRound = null;   // id de la ronda que se está animando o ya se vio
+  let animStart = 0;      // ms (reloj local) en que empezó a aparecer el primer nombre
+  let animating = false;
+  let firstLoad = true;
+
+  function badge(ev) {
+    if (ev.status === 'en_curso') return '<span class="badge">En vivo</span>';
+    if (ev.status === 'finalizado') return '<span class="badge off">Finalizado</span>';
+    if (ev.status === 'cancelado') return '<span class="badge off">Cancelado</span>';
+    return '<span class="badge soon">Próximamente</span>';
+  }
+
+  function roundLabel(r, ev) {
+    if (r.kind === 'final') return `Gran final 1v1 · al mejor de ${ev.final_best_of}`;
+    const half = r.slots.length / 2;
+    return `Ronda ${r.number} · ${half}v${half}`;
+  }
+
+  function revealed(r) {
+    if (!animating || animRound !== r.id) return r.slots.length;
+    const n = Math.min(r.slots.length, Math.floor((Date.now() - animStart) / STEP_MS) + 1);
+    if (n >= r.slots.length) animating = false;
+    return n;
+  }
+
+  function nameSize(n) {
+    // Tamaño de letra según cuántos nombres hay por grupo (hasta 32).
+    if (n <= 4) return 54;
+    if (n <= 8) return 44;
+    if (n <= 12) return 36;
+    if (n <= 20) return 32;
+    return 26;
+  }
+
+  function groupBox(r, g, shown, newest) {
+    const slots = r.slots.filter((s) => s.group === g);
+    const visible = slots.filter((s) => s.order <= shown);
+    const finished = r.status === 'terminada';
+    const cls = finished ? (r.winner_group === g ? ' won' : ' lost') : '';
+    const half = slots.length;
+    const two = half > 12;
+    const size = nameSize(two ? Math.ceil(half / 2) : half);
+    const names = visible.map((s) =>
+      `<div class="nm${s.order === newest ? ' pop' : ''}" style="font-size:${size}px">${esc(s.name)}</div>`).join('');
+    return `<div class="group${cls}">
+        <div class="gh o">${finished && r.winner_group === g ? '🏆 ' : ''}Grupo ${g}<span class="cnt">${visible.length}/${half}</span></div>
+        <div class="names${two ? ' two' : ''}">${names}</div>
+      </div>`;
+  }
+
+  function finalBox(r, g, shown) {
+    const s = r.slots.find((x) => x.group === g);
+    const finished = r.status === 'terminada';
+    const cls = finished ? (r.winner_group === g ? ' won' : ' lost') : '';
+    const score = finished ? (g === 1 ? r.score_1 : r.score_2) : null;
+    const show = s && s.order <= shown;
+    return `<div class="group${cls}">
+        <div class="gh o">${finished && r.winner_group === g ? '🏆 ' : ''}Finalista ${g}</div>
+        <div class="who">
+          ${show ? `<div class="n o${s.order === shown && animating ? ' nm pop' : ''}">${esc(s.name)}</div>` : '<div class="n o" style="color:var(--muted)">?</div>'}
+          ${score != null ? `<div class="sc o">${score}</div>` : ''}
+        </div>
+      </div>`;
+  }
+
+  function render() {
+    const stale = !demo && lastOkAt && Date.now() - lastOkAt > POLL_MS * 4;
+    const foot = `<div class="foot"><span>War League Planner · Torneo por Sorteo</span>${
+      stale ? '<span class="warn">Sin conexión, reintentando…</span>' : ''}</div>`;
+
+    if (!data) {
+      paint(`<div class="center"><div class="msg">${esc(error || 'Cargando…')}</div></div>${foot}`);
+      return;
+    }
+    const ev = data.event;
+    if (!ev) {
+      paint(`<div class="center"><div class="msg">No hay torneos por sorteo activos.</div>
+        <div class="msg2">Cuando crees uno en la app, aparecerá aquí solo.</div></div>${foot}`);
+      return;
+    }
+    const head = `<div class="head">${badge(ev)}<span class="title o">${esc(ev.name)}</span></div><div class="line"></div>`;
+    const r = data.round;
+
+    if (ev.status === 'finalizado' && ev.champion && !(animating && r && animRound === r.id)) {
+      paint(`${head}
+        <div class="center">
+          <div class="trophy">🏆</div>
+          <div class="champ-lbl o">Campeón del torneo</div>
+          <div class="champ o">${esc(ev.champion)}</div>
+          ${ev.prize_first ? `<div class="prize">${esc(ev.prize_first)}</div>` : ''}
+          ${ev.runner_up ? `<div class="runner">2º lugar: ${esc(ev.runner_up)}${ev.prize_second ? ' · ' + esc(ev.prize_second) : ''}</div>` : ''}
+          ${r && r.kind === 'final' && r.score_1 != null ? `<div class="runner o" style="font-size:40px;color:var(--gold)">Final ${r.score_1} - ${r.score_2}</div>` : ''}
+        </div>${foot}`);
+      return;
+    }
+
+    if (!r) {
+      const when = ev.status === 'inscripcion'
+        ? new Date(ev.starts_at).toLocaleString('es', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
+        : '';
+      paint(`${head}
+        <div class="center" style="top:360px">
+          <div class="msg">Esperando el sorteo de grupos…</div>
+          <div class="msg2">${ev.players} jugadores inscritos${ev.battle_rating ? ' · BR ' + esc(ev.battle_rating) : ''}${when ? ' · ' + esc(when) : ''}</div>
+        </div>${foot}`);
+      return;
+    }
+
+    const shown = revealed(r);
+    const drawing = shown < r.slots.length;
+    const sub = `<div class="sub o${drawing ? ' drawing' : ''}">${drawing ? 'Seleccionando grupos…' : esc(roundLabel(r, ev))}</div>`;
+    const body = r.kind === 'final'
+      ? `<div class="groups final">${finalBox(r, 1, shown)}<div class="vs o">VS</div>${finalBox(r, 2, shown)}</div>`
+      : `<div class="groups">${groupBox(r, 1, shown, drawing || animating ? shown : -1)}${groupBox(r, 2, shown, drawing || animating ? shown : -1)}</div>`;
+    paint(head + sub + body + foot);
+  }
+
+  // Decide si arrancar la animación cuando llega una ronda.
+  function onData(next) {
+    const r = next.round;
+    if (r && r.id !== animRound) {
+      const age = new Date(next.server_now).getTime() - new Date(r.drawn_at).getTime();
+      if (!firstLoad || age < FRESH_MS) {
+        animating = true;
+        animStart = Date.now();
+      } else {
+        animating = false;
+      }
+      animRound = r.id;
+    }
+    firstLoad = false;
+    data = next;
+  }
+
+  async function poll() {
+    if (demo) return;
+    if (!overlayKey) {
+      error = 'Falta la clave en el link (&clave=…).';
+      render();
+      return;
+    }
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/sorteo_stream`, {
+        method: 'POST',
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_event: eventId || null, p_key: overlayKey }),
+        cache: 'no-store',
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        error = res.status === 404 ? 'El overlay del sorteo todavía no está activado en el servidor.'
+          : json && /Clave/.test(json.message || '') ? 'La clave del link no es correcta.'
+          : 'No se pudo cargar el sorteo.';
+        if (!data) render();
+      } else {
+        error = null;
+        lastOkAt = Date.now();
+        onData(json);
+      }
+    } catch (e) {
+      error = 'Sin conexión, reintentando…';
+    }
+    setTimeout(poll, POLL_MS);
+  }
+
+  // Solo se reemplaza el HTML si cambió: así no se reinicia la animación del nombre nuevo.
+  let lastHtml = '';
+  function paint(html) {
+    if (html === lastHtml) return;
+    lastHtml = html;
+    app.innerHTML = html;
+  }
+
+  // Redibuja seguido mientras aparecen los nombres; si no, cada segundo alcanza.
+  function tick() {
+    render();
+    setTimeout(tick, animating ? 150 : 1000);
+  }
+
+  // ---------- Modo demo: un torneo de 16 que avanza solo ----------
+  if (demo) {
+    const pool = ['Dorito', 'xXshirayukiXx1', 'markmota', 'Dj_Maximus64', 'Brieeel', 'D4rKSY', 'tommybenja', 'khada_jhil',
+                  'Exilios', '-Kurt knispel-', 'Manopla', 'Jalapeos', 'AmekiVT', 'Deadpoolkun', 'IronWolf', 'SkyBaron'];
+    let alive = [...pool];
+    let num = 0;
+    const ev = { id: 'demo', name: 'Torneo GRCHL del sábado', status: 'en_curso', final_best_of: 3, battle_rating: '5.7',
+                 prize_first: 'Paquete premium a elección', prize_second: '2500 Águilas doradas', players: 16, active: 16 };
+    const shuffle = (a) => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    function draw() {
+      num += 1;
+      const byGroup = shuffle(alive);
+      const order = shuffle(alive);
+      const slots = order.map((name, i) => ({ name, order: i + 1, group: byGroup.indexOf(name) < alive.length / 2 ? 1 : 2 }));
+      const round = { id: 'r' + num, number: num, kind: alive.length === 2 ? 'final' : 'grupos', status: 'en_juego', winner_group: null,
+                      score_1: null, score_2: null, drawn_at: new Date().toISOString(), slots };
+      onData({ server_now: new Date().toISOString(), event: { ...ev }, round });
+      setTimeout(() => finish(round), alive.length * STEP_MS + 5000);
+    }
+    function finish(round) {
+      const g = Math.random() < 0.5 ? 1 : 2;
+      const done = { ...round, status: 'terminada', winner_group: g };
+      if (round.kind === 'final') { done.score_1 = g === 1 ? 2 : 1; done.score_2 = g === 1 ? 1 : 2; }
+      alive = round.slots.filter((s) => s.group === g).map((s) => s.name);
+      const evNow = { ...ev };
+      if (round.kind === 'final') {
+        evNow.status = 'finalizado';
+        evNow.champion = alive[0];
+        evNow.runner_up = round.slots.find((s) => s.group !== g).name;
+      }
+      data = { server_now: new Date().toISOString(), event: evNow, round: done };
+      if (round.kind === 'final') {
+        setTimeout(() => { alive = [...pool]; num = 0; draw(); }, 8000);
+      } else {
+        setTimeout(draw, 4000);
+      }
+    }
+    setTimeout(draw, 800);
+  }
+
+  render();
+  poll();
+  tick();
+})();
+</script>
+</body>
+</html>
