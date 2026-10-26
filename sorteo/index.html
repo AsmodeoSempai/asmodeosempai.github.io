@@ -13,7 +13,7 @@
     transparente=1         (sin fondo, para poner encima del juego)
     demo=1                 (datos de prueba que avanzan solos; no necesita clave)
   Se actualiza solo cada 3 segundos. Cuando el organizador sortea, los nombres
-  aparecen de a uno por segundo en Grupo 1 y Grupo 2.
+  aparecen de a uno por segundo en los equipos Cruz y Estrella.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@500;600;700&display=swap">
@@ -54,6 +54,8 @@
   .line { position: absolute; left: 50%; top: 118px; width: 460px; height: 3px; margin-left: -230px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
   .sub { position: absolute; left: 0; right: 0; top: 138px; text-align: center; font-size: 30px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; }
   .sub.drawing { color: var(--text); animation: blink 1s infinite; }
+  .sub .map { color: var(--text-2); font-size: 24px; letter-spacing: 0.04em; margin-left: 18px; }
+  .gh .ic { font-size: 40px; line-height: 1; }
   @keyframes blink { 50% { opacity: 0.55; } }
 
   /* Grupos */
@@ -137,6 +139,9 @@
     return '<span class="badge soon">Próximamente</span>';
   }
 
+  const TEAM = { 1: { name: 'Cruz', icon: '✚' }, 2: { name: 'Estrella', icon: '★' } };
+  const teamHead = (g, won) => `${won ? '🏆 ' : ''}<span class="ic">${TEAM[g].icon}</span>${TEAM[g].name}`;
+
   function roundLabel(r, ev) {
     if (r.kind === 'final') return `Gran final 1v1 · al mejor de ${ev.final_best_of}`;
     const half = r.slots.length / 2;
@@ -170,7 +175,7 @@
     const names = visible.map((s) =>
       `<div class="nm${s.order === newest ? ' pop' : ''}" style="font-size:${size}px">${esc(s.name)}</div>`).join('');
     return `<div class="group${cls}">
-        <div class="gh o">${finished && r.winner_group === g ? '🏆 ' : ''}Grupo ${g}<span class="cnt">${visible.length}/${half}</span></div>
+        <div class="gh o">${teamHead(g, finished && r.winner_group === g)}<span class="cnt">${visible.length}/${half}</span></div>
         <div class="names${two ? ' two' : ''}">${names}</div>
       </div>`;
   }
@@ -182,7 +187,7 @@
     const score = finished ? (g === 1 ? r.score_1 : r.score_2) : null;
     const show = s && s.order <= shown;
     return `<div class="group${cls}">
-        <div class="gh o">${finished && r.winner_group === g ? '🏆 ' : ''}Finalista ${g}</div>
+        <div class="gh o">${teamHead(g, finished && r.winner_group === g)}</div>
         <div class="who">
           ${show ? `<div class="n o${s.order === shown && animating ? ' nm pop' : ''}">${esc(s.name)}</div>` : '<div class="n o" style="color:var(--muted)">?</div>'}
           ${score != null ? `<div class="sc o">${score}</div>` : ''}
@@ -235,7 +240,10 @@
 
     const shown = revealed(r);
     const drawing = shown < r.slots.length;
-    const sub = `<div class="sub o${drawing ? ' drawing' : ''}">${drawing ? 'Seleccionando grupos…' : esc(roundLabel(r, ev))}</div>`;
+    const extra = !drawing && (r.map_name || ev.match_minutes)
+      ? `<span class="map">${r.map_name ? 'Mapa: ' + esc(r.map_name) : ''}${r.map_name && ev.match_minutes ? ' · ' : ''}${ev.match_minutes ? 'máx. ' + ev.match_minutes + ' min' : ''}</span>`
+      : '';
+    const sub = `<div class="sub o${drawing ? ' drawing' : ''}">${drawing ? 'Seleccionando equipos…' : esc(roundLabel(r, ev)) + extra}</div>`;
     const body = r.kind === 'final'
       ? `<div class="groups final">${finalBox(r, 1, shown)}<div class="vs o">VS</div>${finalBox(r, 2, shown)}</div>`
       : `<div class="groups">${groupBox(r, 1, shown, drawing || animating ? shown : -1)}${groupBox(r, 2, shown, drawing || animating ? shown : -1)}</div>`;
@@ -310,7 +318,8 @@
                   'Exilios', '-Kurt knispel-', 'Manopla', 'Jalapeos', 'AmekiVT', 'Deadpoolkun', 'IronWolf', 'SkyBaron'];
     let alive = [...pool];
     let num = 0;
-    const ev = { id: 'demo', name: 'Torneo GRCHL del sábado', status: 'en_curso', final_best_of: 3, battle_rating: '5.7',
+    const maps = ['Karelia', 'Polonia', 'Fábrica abandonada'];
+    const ev = { id: 'demo', name: 'Torneo GRCHL del sábado', status: 'en_curso', final_best_of: 3, battle_rating: '5.7', match_minutes: 15,
                  prize_first: 'Paquete premium a elección', prize_second: '2500 Águilas doradas', players: 16, active: 16 };
     const shuffle = (a) => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
     function draw() {
@@ -319,7 +328,7 @@
       const order = shuffle(alive);
       const slots = order.map((name, i) => ({ name, order: i + 1, group: byGroup.indexOf(name) < alive.length / 2 ? 1 : 2 }));
       const round = { id: 'r' + num, number: num, kind: alive.length === 2 ? 'final' : 'grupos', status: 'en_juego', winner_group: null,
-                      score_1: null, score_2: null, drawn_at: new Date().toISOString(), slots };
+                      score_1: null, score_2: null, map_name: maps[num % maps.length], drawn_at: new Date().toISOString(), slots };
       onData({ server_now: new Date().toISOString(), event: { ...ev }, round });
       setTimeout(() => finish(round), alive.length * STEP_MS + 5000);
     }
