@@ -1,0 +1,379 @@
+{
+  "version": 1,
+  "updated": "2026-10-26",
+  "tutorials": [
+    {
+      "id": "inscripcion",
+      "icon": "add-circle-outline",
+      "title": "How to register for a tournament",
+      "summary": "Pick a tournament, set your lineup, add subs and confirm.",
+      "steps": [
+        {
+          "image": "img/en/inscripcion/01.jpg",
+          "title": "Find the tournament in \"Upcoming\"",
+          "body": "In the Tournaments tab, open \"Upcoming\": that's where tournaments with open registration are. Tap the one you like."
+        },
+        {
+          "image": "img/en/inscripcion/02.jpg",
+          "title": "Check the details and tap \"Register my team\"",
+          "body": "Look at the format, the maps, the date and the registration deadline. Then tap the gold \"Register my team\" button."
+        },
+        {
+          "image": "img/en/inscripcion/03.jpg",
+          "title": "Pick the starting lineup",
+          "body": "Check the squadron players who will play. The counter shows how many are left; once the spots are filled, the rest are locked."
+        },
+        {
+          "image": "img/en/inscripcion/04.jpg",
+          "title": "Subs (optional)",
+          "body": "You can add up to 2 reserve players. If a starter can't play, swap them from \"Registered players\". Once the tournament starts, no more can be added."
+        },
+        {
+          "image": "img/en/inscripcion/05.jpg",
+          "title": "Teammate with an iPhone (optional)",
+          "body": "If a teammate has an iPhone and can't download the app, turn on \"Add a player without the app\" and fill in their name, ID, Discord and a screenshot of their profile. An admin reviews them before the draw."
+        },
+        {
+          "image": "img/en/inscripcion/06.jpg",
+          "title": "Tap \"Confirm registration\"",
+          "body": "The button turns on once you pick all the starters (and fill in the guest's details, if you added one)."
+        },
+        {
+          "image": "img/en/inscripcion/07.jpg",
+          "title": "Squadron registered!",
+          "body": "Done. Remember: at the end of each game you'll need to take a PHOTO on the spot with your phone's camera as evidence of the result."
+        },
+        {
+          "image": "img/en/inscripcion/08.jpg",
+          "title": "Withdraw or make changes",
+          "body": "While registration is open you can withdraw the squadron, swap starters and subs in \"Subs and swaps\", or register another squadron if you have players to spare."
+        },
+        {
+          "image": "img/en/inscripcion/09.jpg",
+          "title": "1v1 tournaments",
+          "body": "In 1v1 tournaments you register solo with one tap on \"Register\". No need to pick a lineup."
+        },
+        {
+          "image": "img/en/inscripcion/10.jpg",
+          "title": "Don't see the button?",
+          "body": "For team tournaments you need a squadron (in \"My Squadron\") and only the captain can register it. If you're not the captain, ask your captain to register the team."
+        }
+      ]
+    },
+    {
+      "id": "subir-resultado",
+      "icon": "camera",
+      "title": "How to report a match result",
+      "summary": "Photo on the spot, pick the winner and the opponent confirms.",
+      "steps": [
+        {
+          "image": "img/en/subir-resultado/01.jpg",
+          "title": "Open your tournament and tap \"View bracket\"",
+          "body": "When the tournament is in progress, the gold \"View bracket\" button shows up in the details."
+        },
+        {
+          "image": "img/en/subir-resultado/02.jpg",
+          "title": "Find your match and tap \"Report result\"",
+          "body": "The button only shows up on the match where you play as a starter. There you also see the drawn map and who hosts the lobby."
+        },
+        {
+          "image": "img/en/subir-resultado/03.jpg",
+          "title": "Tap \"Take photo with camera\"",
+          "body": "The evidence is a PHOTO taken on the spot with your phone's camera. Gallery images and screenshots don't count."
+        },
+        {
+          "image": "img/en/subir-resultado/04.jpg",
+          "title": "Take a photo of the victory screen",
+          "body": "Point your phone at the monitor showing the game's result screen and snap it. Make sure the result and the names are readable."
+        },
+        {
+          "image": "img/en/subir-resultado/05.jpg",
+          "title": "Check the photo and pick the winner",
+          "body": "If it's blurry, tap \"Take another photo\". If it looks good, tap the name of the winning team."
+        },
+        {
+          "image": "img/en/subir-resultado/06.jpg",
+          "title": "Confirm",
+          "body": "The app reminds you that the photo and the result must be real. Reporting a fake result can get you banned."
+        },
+        {
+          "image": "img/en/subir-resultado/07.jpg",
+          "title": "Final confirmation",
+          "body": "This can't be undone. By continuing, you confirm that the result is true."
+        },
+        {
+          "image": "img/en/subir-resultado/08.jpg",
+          "title": "Report sent!",
+          "body": "The opposing team has 5 minutes to confirm or reject it. If they don't respond in time, the result is accepted automatically."
+        },
+        {
+          "image": "img/en/subir-resultado/09.jpg",
+          "title": "What the reporter sees",
+          "body": "The bracket shows \"Waiting for opponent's confirmation\" with the countdown."
+        },
+        {
+          "image": "img/en/subir-resultado/10.jpg",
+          "title": "What the opponent sees",
+          "body": "The opponent picks \"Confirm\" or \"I don't accept\". If they don't accept, the match goes into dispute and the host resolves it."
+        },
+        {
+          "image": "img/en/subir-resultado/11.jpg",
+          "title": "Result confirmed: the winner advances",
+          "body": "The match is marked green as \"Confirmed\", with a trophy and the score, and the winner moves on to the next round."
+        },
+        {
+          "image": "img/en/subir-resultado/12.jpg",
+          "title": "Best of 3 or best of 5 tournaments",
+          "body": "In BO3 and BO5 you report game by game with \"Report game\". At the top you see the game number and the series score. Each game needs its own photo and the opponent's confirmation."
+        }
+      ]
+    },
+    {
+      "id": "no-show",
+      "icon": "timer-outline",
+      "title": "If your opponent doesn't show up (forfeit)",
+      "summary": "15-minute wait, \"I'm here\" and the host's decision.",
+      "steps": [
+        {
+          "image": "img/en/no-show/01.jpg",
+          "title": "Tap \"I'm waiting for my opponent\"",
+          "body": "It's match time and your opponent isn't here. On your match, tap \"I'm waiting for my opponent\". You can only do this if nothing has been reported yet."
+        },
+        {
+          "image": "img/en/no-show/02.jpg",
+          "title": "Confirm: a 15-minute timer starts",
+          "body": "Your opponent and the host are notified. If your opponent doesn't tap \"I'm here\" before it ends, an admin is notified to decide."
+        },
+        {
+          "image": "img/en/no-show/03.jpg",
+          "title": "Notifications to the opponent and the host",
+          "body": "The opponent gets \"Your opponent is waiting for you\" and the host gets \"A player is waiting for their opponent\"."
+        },
+        {
+          "image": "img/en/no-show/04.jpg",
+          "title": "The opponent taps \"I'm here\"",
+          "body": "The countdown stops and the other team gets \"Your opponent is here. Game on!\". Then you play and report as usual."
+        },
+        {
+          "image": "img/en/no-show/05.jpg",
+          "title": "If time runs out",
+          "body": "If the 15 minutes pass without \"I'm here\", the team that was waiting gets \"The wait timer is over\". Nothing else to do: an admin or the host decides."
+        },
+        {
+          "image": "img/en/no-show/06.jpg",
+          "title": "The host decides the match",
+          "body": "The host and the admins get \"Wait is over: decide the match\". On the card they tap \"Decide result\". The host can also start the 15 minutes themselves with \"15 min wait\"."
+        },
+        {
+          "image": "img/en/no-show/07.jpg",
+          "title": "Options in a single-game match",
+          "body": "Award the win by forfeit to the team that did show up, or mark \"No one showed up\"."
+        },
+        {
+          "image": "img/en/no-show/08.jpg",
+          "title": "Options in BO3 or BO5",
+          "body": "Award only the game that was being played (the series continues) or the whole match."
+        },
+        {
+          "image": "img/en/no-show/09.jpg",
+          "title": "Win by forfeit",
+          "body": "No photo needed. The match is confirmed and the winner advances to the next round."
+        },
+        {
+          "image": "img/en/no-show/10.jpg",
+          "title": "If neither side showed up",
+          "body": "Confirmation is required. The match is voided, both are out and the winner of the other bracket side advances directly (bye)."
+        },
+        {
+          "image": "img/en/no-show/11.jpg",
+          "title": "Any problem? Call the host",
+          "body": "On your match, tap \"Call the host\" and pick the reason: they get a notification right away."
+        }
+      ]
+    },
+    {
+      "id": "escalerilla-como-funciona",
+      "icon": "podium-outline",
+      "title": "Wings of Steel: how it works",
+      "summary": "Your account, the divisions, the week, points, strikes, the table and the playoffs.",
+      "steps": [
+        {
+          "image": "img/en/escalerilla-como-funciona/01.jpg",
+          "title": "Open War Thunder",
+          "body": "On the home screen, tap the \"War Thunder\" card."
+        },
+        {
+          "image": "img/en/escalerilla-como-funciona/02.jpg",
+          "title": "Tap \"Wings of Steel\"",
+          "body": "It's a 1v1 air league: every week you play one match against an opponent with a similar score. It lasts 12 operations (about 3 months) and at the end the best players go to the playoffs."
+        },
+        {
+          "image": "img/en/escalerilla-como-funciona/03.jpg",
+          "title": "Set up your account",
+          "body": "To sign up you need 3 things: link your Discord, enter your War Thunder name exactly as it appears in the game, and a photo of your War Thunder profile. It's valid for the whole season. Using more than one account means expulsion."
+        },
+        {
+          "image": "img/en/escalerilla-como-funciona/04.jpg",
+          "title": "Pick your division and sign up",
+          "body": "There are 3 divisions by BR: Bronze, Silver and Gold. The metal shows the planes' BR, not the skill level. You can play in 2 at most and join at any point in the season."
+        },
+        {
+          "image": "img/en/escalerilla-como-funciona/05.jpg",
+          "title": "What each week looks like",
+          "body": "Monday and Tuesday you register your schedule and planes. Tuesday 23:59 your opponent and time are posted. Until Friday 12:00 you can ask for another time. Games run Friday 18:00 to Sunday, and you have until Monday 23:59 to confirm or dispute results."
+        },
+        {
+          "image": "img/en/escalerilla-como-funciona/06.jpg",
+          "title": "How to earn points",
+          "body": "Both players score, but a clearer win scores more. In Bo3: winning 2-0 gives 4 points and 1 to the loser; winning 2-1 gives 3 and 2 to the loser. Forfeit: 3 for whoever showed up and −3 for the no-show. Bye: 3."
+        },
+        {
+          "image": "img/en/escalerilla-como-funciona/07.jpg",
+          "title": "Score and points aren't the same",
+          "body": "\"Score 2-1\" is the rounds each player won. \"Points 3-2\" is what each player adds to the table."
+        },
+        {
+          "image": "img/en/escalerilla-como-funciona/08.jpg",
+          "title": "Strikes and penalties",
+          "body": "Not registering, losing by forfeit, or not confirming or disputing in time: −3 points and a strike. With 2 strikes in a row you become inactive; when you reach the strike limit (4 in 12 operations) you're suspended and can tap \"Ask to come back\"."
+        },
+        {
+          "image": "img/en/escalerilla-como-funciona/09.jpg",
+          "title": "Check the table",
+          "body": "In \"Ranking\" you see your spot. Ties are broken by Buchholz (the sum of your weekly opponents' points), then round difference and rounds won."
+        },
+        {
+          "image": "img/en/escalerilla-como-funciona/10.jpg",
+          "title": "Playoffs and champion",
+          "body": "The top 8 of each division who played at least 8 of the 12 operations qualify. It's all played in one weekend, single elimination, with the final in a longer format. The organizer sets each match's time."
+        }
+      ]
+    },
+    {
+      "id": "escalerilla-partida",
+      "icon": "calendar-outline",
+      "title": "Wings of Steel: your weekly match",
+      "summary": "Registration, opponent and time, check-in, each round's plane, reporting, confirming and what to do if something goes wrong.",
+      "steps": [
+        {
+          "image": "img/en/escalerilla-partida/01.jpg",
+          "title": "Tap \"Register schedule and planes\"",
+          "body": "You do it every week on Monday or Tuesday, until 23:59. If you don't register: −3 points, a strike and you don't play that operation."
+        },
+        {
+          "image": "img/en/escalerilla-partida/02.jpg",
+          "title": "Mark when you can play",
+          "body": "In your time. Mark at least 2 days (Friday, Saturday or Sunday) and, on each one, a window of 3 hours or more. That's used to find a time that works for both of you."
+        },
+        {
+          "image": "img/en/escalerilla-partida/03.jpg",
+          "title": "Pick your planes and save",
+          "body": "In Bo3 you pick 3 (in Bo1, 1; in Bo5, 3 to 5), all within your division's BR. Your opponent can't see them until Friday 12:00."
+        },
+        {
+          "image": "img/en/escalerilla-partida/04.jpg",
+          "title": "Tuesday 23:59: your opponent",
+          "body": "You get a notification with your opponent and match time, in your time. If your schedules didn't overlap, the match is on Saturday at 21:00 (Chile time)."
+        },
+        {
+          "image": "img/en/escalerilla-partida/05.jpg",
+          "title": "Check your match",
+          "body": "In \"My match\" you see your opponent's War Thunder name and the time. To coordinate, join the Wings of Steel Discord."
+        },
+        {
+          "image": "img/en/escalerilla-partida/06.jpg",
+          "title": "If you can't make it, ask for another time",
+          "body": "Until Friday 12:00. Mark your windows (at least 2 days and 3 hours each day) and tap \"Send request\". If your opponent doesn't answer or declines, the assigned time stays."
+        },
+        {
+          "image": "img/en/escalerilla-partida/07.jpg",
+          "title": "If your opponent asks for another time, pick one",
+          "body": "You see their windows in your time. Pick the day and time and tap \"Accept that time\", or tap \"Decline\" to keep the assigned time."
+        },
+        {
+          "image": "img/en/escalerilla-partida/08.jpg",
+          "title": "Friday 12:00: everything is revealed",
+          "body": "You see your opponent's planes, the map and who creates the lobby: the higher-ranked player, with the settings posted for the operation."
+        },
+        {
+          "image": "img/en/escalerilla-partida/09.jpg",
+          "title": "Check in before you play",
+          "body": "From 15 minutes before, tap \"I'm ready\" and take a photo of the lobby with the app. If you create the lobby, also take a photo of the settings. The app generates the lobby password and only you two can see it."
+        },
+        {
+          "image": "img/en/escalerilla-partida/10.jpg",
+          "title": "Pick your plane for each round",
+          "body": "Before each round, both players lock their plane in the app, blind. It can't be changed: if you use another one in the game, you lose the round. You can't reuse a plane you won a round with. Sides switch every round."
+        },
+        {
+          "image": "img/en/escalerilla-partida/11.jpg",
+          "title": "Report each round with a photo",
+          "body": "As soon as it ends, pick who won and tap \"Take photo and send\": a photo of the final screen showing both names. If there was no winner, whoever has the higher battle score wins."
+        },
+        {
+          "image": "img/en/escalerilla-partida/12.jpg",
+          "title": "Confirm what your opponent reports",
+          "body": "Tap \"Confirm\" or \"I don't agree\". If you don't answer within 5 minutes, the round confirms itself. To dispute you have to attach proof (photo or replay); you get 3 risk-free disputes per season."
+        },
+        {
+          "image": "img/en/escalerilla-partida/13.jpg",
+          "title": "If something goes wrong",
+          "body": "If your opponent doesn't show up, tap \"My opponent isn't here\" (only if you checked in): they get 15 minutes and then the organizer decides. A disconnect is only replayed if it happened in the first 2 minutes with no damage. If your opponent doesn't pick a plane within 10 minutes, tap \"My opponent isn't coming back\"."
+        },
+        {
+          "image": "img/en/escalerilla-partida/14.jpg",
+          "title": "Match finished",
+          "body": "Once all rounds are confirmed, the match is \"Finished\" with its points. You have until Monday 23:59 to confirm or dispute; if nobody reports, both players lose 3 points and get a strike."
+        }
+      ]
+    },
+    {
+      "id": "escalerilla-desafios",
+      "icon": "flash-outline",
+      "title": "Wings of Steel: challenges and ads",
+      "summary": "Challenging someone higher up, the two rounds, answering in time, points, challenge-free week and ads.",
+      "steps": [
+        {
+          "image": "img/en/escalerilla-desafios/01.jpg",
+          "title": "Challenge someone higher up",
+          "body": "From operation 2, Tuesday 00:00 to Thursday 23:59, you can challenge someone up to a quarter of the table above you (2 to 10 spots). It's separate from your weekly match. Challenging is optional; answering isn't."
+        },
+        {
+          "image": "img/en/escalerilla-desafios/02.jpg",
+          "title": "Mark your windows and send",
+          "body": "Mark at least 2 days with a window of 3 hours or more. Your opponent can only pick times that don't clash with either player's weekly match. It's played until Sunday 23:59."
+        },
+        {
+          "image": "img/en/escalerilla-desafios/03.jpg",
+          "title": "There are two rounds",
+          "body": "Until Wednesday 12:00 challenges are collected, and each challenged player gets the highest-ranked challenger; the rest are canceled with no penalty. After that, until Thursday 23:59, you can challenge anyone with a free slot."
+        },
+        {
+          "image": "img/en/escalerilla-desafios/04.jpg",
+          "title": "If you're challenged, answer",
+          "body": "You have 24 hours from the assignment. Pick a time from their windows, propose yours if none work, or decline. If you don't answer in time, it counts as a decline."
+        },
+        {
+          "image": "img/en/escalerilla-desafios/05.jpg",
+          "title": "Free declines and strikes",
+          "body": "In each block of 4 operations you get 2 free declines. With none left, declining costs −5 points and a strike; so does accepting or challenging and not showing up."
+        },
+        {
+          "image": "img/en/escalerilla-desafios/06.jpg",
+          "title": "Challenge points",
+          "body": "If the challenger wins: +4 for them and +1 for the challenged player (+2 if it's the 2nd time against the same person). If the challenged player wins: +3 for them and +1 for the challenger. Max 12 points from challenges per season."
+        },
+        {
+          "image": "img/en/escalerilla-desafios/07.jpg",
+          "title": "Challenge-free week",
+          "body": "If you're in the top 3, you can turn on \"no challenges for me this week\" once per block of 4 operations, Tuesday to Thursday, if you haven't received a challenge."
+        },
+        {
+          "image": "img/en/escalerilla-desafios/08.jpg",
+          "title": "Perks with ads",
+          "body": "Ads you watch to the end add up (up to 10 count per day). 5: see the map before Friday. 20: an extra decline (1 per season). 40: a challenge-free week (1 per season)."
+        }
+      ]
+    }
+  ]
+}
