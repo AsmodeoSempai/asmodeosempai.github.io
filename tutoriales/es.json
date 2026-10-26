@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-10-19",
+  "updated": "2026-10-26",
   "tutorials": [
     {
       "id": "inscripcion",
@@ -188,6 +188,190 @@
           "image": "img/no-show/11.jpg",
           "title": "¿Algún problema? Llama al organizador",
           "body": "Desde tu cruce toca «Llamar al organizador» y elige el motivo: le llega un aviso al instante."
+        }
+      ]
+    },
+    {
+      "id": "escalerilla-como-funciona",
+      "icon": "podium-outline",
+      "title": "Alas de Acero: cómo funciona",
+      "summary": "Tu cuenta, las divisiones, la semana, los puntos, las faltas, la tabla y los playoffs.",
+      "steps": [
+        {
+          "image": "img/escalerilla-como-funciona/01.jpg",
+          "title": "Entra a War Thunder",
+          "body": "En el inicio toca la tarjeta «War Thunder»."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/02.jpg",
+          "title": "Toca «Alas de Acero»",
+          "body": "Es una liga 1v1 de aviones: cada semana juegas una partida contra un rival de puntaje parecido. Dura 12 operaciones (unos 3 meses) y al final los mejores van a playoffs."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/03.jpg",
+          "title": "Prepara tu cuenta",
+          "body": "Para inscribirte necesitas 3 cosas: vincular tu Discord, escribir tu nombre de War Thunder tal cual sale en el juego y una foto de tu perfil de War Thunder. Vale para toda la temporada. Usar más de una cuenta significa la expulsión."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/04.jpg",
+          "title": "Elige tu división e inscríbete",
+          "body": "Hay 3 divisiones por BR: Bronce, Plata y Oro. El metal indica el BR de los aviones, no el nivel. Puedes jugar en 2 como máximo y entrar en cualquier momento de la temporada."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/05.jpg",
+          "title": "Así es cada semana",
+          "body": "Lunes y martes registras tu horario y tus aviones. El martes 23:59 sale tu rival y la hora. Hasta el viernes 12:00 puedes pedir otra hora. Del viernes 18:00 al domingo se juega, y tienes hasta el lunes 23:59 para confirmar o disputar resultados."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/06.jpg",
+          "title": "Cómo se ganan puntos",
+          "body": "Los dos jugadores suman, pero gana más quien gana más claro. En Bo3: ganar 2-0 da 4 puntos y al perdedor 1; ganar 2-1 da 3 y al perdedor 2. W.O.: 3 para quien se presentó y −3 al ausente. Permiso: 3."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/07.jpg",
+          "title": "Marcador y puntos no son lo mismo",
+          "body": "«Marcador 2-1» son las rondas que ganó cada uno. «Puntos 3-2» es lo que suma cada uno a la tabla."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/08.jpg",
+          "title": "Faltas y castigos",
+          "body": "No registrarte, perder por W.O. o no confirmar ni disputar a tiempo: −3 puntos y una falta. Con 2 faltas seguidas quedas inactivo; al llegar al límite de faltas (4 en 12 operaciones) quedas suspendido y puedes tocar «Pedir volver»."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/09.jpg",
+          "title": "Revisa la tabla",
+          "body": "En «Ranking» ves tu puesto. Si hay empate, decide el Buchholz (la suma de los puntos de tus rivales semanales), luego la diferencia de rondas y las rondas ganadas."
+        },
+        {
+          "image": "img/escalerilla-como-funciona/10.jpg",
+          "title": "Playoffs y campeón",
+          "body": "Clasifican los 8 mejores de cada división que jugaron al menos 8 de las 12 operaciones. Se juega todo en un fin de semana, en eliminación directa, y la final en un formato superior. La hora de cada cruce la fija el organizador."
+        }
+      ]
+    },
+    {
+      "id": "escalerilla-partida",
+      "icon": "calendar-outline",
+      "title": "Alas de Acero: tu partida de la semana",
+      "summary": "Registro, rival y hora, check-in, avión de cada ronda, reportar, confirmar y qué hacer si algo sale mal.",
+      "steps": [
+        {
+          "image": "img/escalerilla-partida/01.jpg",
+          "title": "Toca «Registrar horario y aviones»",
+          "body": "Lo haces cada semana el lunes o el martes, hasta las 23:59. Si no te registras: −3 puntos, una falta y no juegas esa operación."
+        },
+        {
+          "image": "img/escalerilla-partida/02.jpg",
+          "title": "Marca cuándo puedes jugar",
+          "body": "En tu hora. Marca al menos 2 días (viernes, sábado o domingo) y, en cada uno, un rango de 3 horas o más. Con eso se busca una hora que les sirva a los dos."
+        },
+        {
+          "image": "img/escalerilla-partida/03.jpg",
+          "title": "Elige tus aviones y guarda",
+          "body": "En Bo3 eliges 3 (en Bo1, 1; en Bo5, entre 3 y 5), todos dentro del BR de tu división. Tu rival no los ve hasta el viernes 12:00."
+        },
+        {
+          "image": "img/escalerilla-partida/04.jpg",
+          "title": "El martes 23:59 llega tu rival",
+          "body": "Te llega un aviso con tu rival y la hora, en tu hora. Si sus horarios no coincidían, la partida queda el sábado a las 21:00 (hora de Chile)."
+        },
+        {
+          "image": "img/escalerilla-partida/05.jpg",
+          "title": "Mira tu partida",
+          "body": "En «Mi partida» ves el nombre de tu rival en War Thunder y la hora. Para coordinar, entra al Discord de Alas de Acero."
+        },
+        {
+          "image": "img/escalerilla-partida/06.jpg",
+          "title": "Si no puedes, pide otra hora",
+          "body": "Hasta el viernes 12:00. Marca tus horarios (mínimo 2 días y 3 horas cada día) y toca «Enviar pedido». Si tu rival no responde o rechaza, queda la hora asignada."
+        },
+        {
+          "image": "img/escalerilla-partida/07.jpg",
+          "title": "Si tu rival pide otra hora, elige una",
+          "body": "Ves sus horarios en tu hora. Elige el día y la hora y toca «Aceptar esa hora», o toca «Rechazar» para dejar la hora asignada."
+        },
+        {
+          "image": "img/escalerilla-partida/08.jpg",
+          "title": "El viernes 12:00 se revela todo",
+          "body": "Ves los aviones de tu rival, el mapa y quién crea la sala: el mejor ubicado en la tabla, con los ajustes publicados para la operación."
+        },
+        {
+          "image": "img/escalerilla-partida/09.jpg",
+          "title": "Haz check-in antes de jugar",
+          "body": "Desde 15 minutos antes, toca «Estoy listo» y saca con la app una foto del lobby. Si creas la sala, saca también una foto de la configuración. La contraseña de la sala la genera la app y solo la ven ustedes dos."
+        },
+        {
+          "image": "img/escalerilla-partida/10.jpg",
+          "title": "Elige tu avión de cada ronda",
+          "body": "Antes de cada ronda, los dos bloquean su avión en la app, a ciegas. No se puede cambiar: si usas otro en el juego, pierdes la ronda. Con el avión que ganas una ronda no puedes repetir. Los lados se alternan en cada ronda."
+        },
+        {
+          "image": "img/escalerilla-partida/11.jpg",
+          "title": "Reporta cada ronda con una foto",
+          "body": "Apenas termine, elige quién ganó y toca «Tomar foto y enviar»: una foto de la pantalla final, donde se vean los dos nombres. Si no hubo ganador, gana quien tiene más puntaje de batalla."
+        },
+        {
+          "image": "img/escalerilla-partida/12.jpg",
+          "title": "Confirma lo que reporta tu rival",
+          "body": "Toca «Confirmar» o «No acepto». Si no respondes en 5 minutos, la ronda se confirma sola. Para disputar tienes que adjuntar una prueba (foto o repetición); tienes 3 disputas por temporada sin riesgo."
+        },
+        {
+          "image": "img/escalerilla-partida/13.jpg",
+          "title": "Si algo sale mal",
+          "body": "Si tu rival no llega, toca «Mi rival no aparece» (solo si hiciste check-in): tiene 15 minutos y luego decide el organizador. Una desconexión solo se repite si fue en los primeros 2 minutos y sin daño. Si tu rival no elige avión en 10 minutos, toca «Mi rival no vuelve»."
+        },
+        {
+          "image": "img/escalerilla-partida/14.jpg",
+          "title": "Partida terminada",
+          "body": "Con todas las rondas confirmadas, la partida queda «Terminada» con sus puntos. Tienes hasta el lunes 23:59 para confirmar o disputar; si nadie reporta, los dos pierden 3 puntos y suman una falta."
+        }
+      ]
+    },
+    {
+      "id": "escalerilla-desafios",
+      "icon": "flash-outline",
+      "title": "Alas de Acero: desafíos y anuncios",
+      "summary": "Desafiar a alguien de más arriba, las dos vueltas, responder a tiempo, puntos, semana sin desafíos y anuncios.",
+      "steps": [
+        {
+          "image": "img/escalerilla-desafios/01.jpg",
+          "title": "Desafía a alguien de más arriba",
+          "body": "Desde la operación 2, del martes 00:00 al jueves 23:59, puedes desafiar a alguien hasta un cuarto de la tabla más arriba (mínimo 2 y máximo 10 puestos). Es aparte de tu partida semanal. Desafiar es opcional; responder, no."
+        },
+        {
+          "image": "img/escalerilla-desafios/02.jpg",
+          "title": "Marca tus horarios y envía",
+          "body": "Marca al menos 2 días con un rango de 3 horas o más. Tu rival solo podrá elegir horas que no choquen con la partida semanal de ninguno de los dos. Se juega hasta el domingo 23:59."
+        },
+        {
+          "image": "img/escalerilla-desafios/03.jpg",
+          "title": "Hay dos vueltas",
+          "body": "Hasta el miércoles 12:00 los desafíos se juntan, y a cada desafiado le toca el desafiante mejor ubicado; los demás se cancelan sin castigo. Después, hasta el jueves 23:59, puedes desafiar a quien tenga el cupo libre."
+        },
+        {
+          "image": "img/escalerilla-desafios/04.jpg",
+          "title": "Si te desafían, responde",
+          "body": "Tienes 24 horas desde la asignación. Elige una hora de sus horarios, propón los tuyos si no puedes en ninguno, o rechaza. Si no respondes a tiempo, cuenta como rechazo."
+        },
+        {
+          "image": "img/escalerilla-desafios/05.jpg",
+          "title": "Rechazos gratis y faltas",
+          "body": "En cada bloque de 4 operaciones tienes 2 rechazos gratis. Sin rechazos gratis, rechazar cuesta −5 puntos y una falta; aceptar o desafiar y no presentarte, también."
+        },
+        {
+          "image": "img/escalerilla-desafios/06.jpg",
+          "title": "Puntos de un desafío",
+          "body": "Si gana quien desafía: +4 para él y +1 para el desafiado (+2 si es la 2.ª vez contra la misma persona). Si gana el desafiado: +3 para él y +1 para quien desafió. Máximo 12 puntos por desafíos en la temporada."
+        },
+        {
+          "image": "img/escalerilla-desafios/07.jpg",
+          "title": "Semana sin desafíos",
+          "body": "Si estás en el top 3, puedes activar «esta semana no recibo desafíos» 1 vez por bloque de 4 operaciones, del martes al jueves y si no tienes un desafío recibido."
+        },
+        {
+          "image": "img/escalerilla-desafios/08.jpg",
+          "title": "Ventajas con anuncios",
+          "body": "Los anuncios que ves completos se acumulan (cuentan hasta 10 por día). 5: ver el mapa antes del viernes. 20: un rechazo extra (1 por temporada). 40: una semana sin desafíos (1 por temporada)."
         }
       ]
     }
