@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><title>Intro</title>
-<link rel="stylesheet" href="../comun/comun.css">
+<link rel="stylesheet" href="../comun/comun.css?v=2">
 <style>
 .diapo{position:absolute;inset:0;padding:120px 140px 150px;display:flex;flex-direction:column;justify-content:center;
   opacity:0;transform:translateX(60px);pointer-events:none;transition:opacity .45s var(--sale),transform .45s var(--sale)}
@@ -50,7 +50,7 @@
 <div class="fondo-hud"></div>
 <div id="diapos"></div>
 <div class="pie"><span class="k num" id="contador">01 / 09</span><div class="casillas" id="puntos"></div><span class="k" style="margin-left:auto">Sueños Hechos Realidad · Mistel 2</span></div>
-<script src="../comun/comun.js"></script>
+<script src="../comun/comun.js?v=2"></script>
 <script>
 const premioCaja = (n, estrella) => `<div class="premio hud ${estrella ? 'estrella' : ''}"><div class="fondo-n">${n}</div>${imgOpcional('premio-' + n + '.png')}
   <div class="n">Etapa ${n}</div><div class="p">${EVENTO.premios[n - 1]}</div></div>`;
