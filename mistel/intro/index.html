@@ -115,8 +115,8 @@ const DIAPOS = [
 
 let estado = null, actual = -1;
 function construir() {
-  $('#diapos').innerHTML = DIAPOS.map((_, i) => `<section class="diapo" data-i="${i}"></section>`).join('');
-  $('#puntos').innerHTML = DIAPOS.map(() => '<span></span>').join('');
+  poner('#diapos', DIAPOS.map((_, i) => `<section class="diapo" data-i="${i}"></section>`).join(''), 'innerHTML');
+  poner('#puntos', DIAPOS.map(() => '<span></span>').join(''), 'innerHTML');
 }
 function rellenar(i) {
   const ev = calcularEvento();
@@ -131,7 +131,7 @@ function mostrar(i) {
     s.classList.toggle('antes', j < i);
   });
   document.querySelectorAll('#puntos span').forEach((p, j) => p.classList.toggle('on', j <= i));
-  $('#contador').textContent = `${String(i + 1).padStart(2, '0')} / ${String(DIAPOS.length).padStart(2, '0')}`;
+  poner('#contador', `${String(i + 1).padStart(2, '0')} / ${String(DIAPOS.length).padStart(2, '0')}`, 'textContent');
   actual = i;
 }
 construir();

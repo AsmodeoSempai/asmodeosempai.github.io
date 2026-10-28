@@ -131,17 +131,17 @@ function conConfirmacion(btn, alConfirmar) {
 function pintar() {
   if (!estado) return;
   const ev = calcularEvento(), e = etapa(), pts = puntosDe(estado, e), h = etapaHecha(estado, e);
-  $('#r-t').textContent = `Mistel 2 · Etapa ${ev.etapa}/7 · Día ${ev.dia}/14`;
-  $('#r-s').textContent = ev.fase === 'antes' ? `El evento parte en ${fmtDuracion(ev.restante)}`
+  poner('#r-t', `Mistel 2 · Etapa ${ev.etapa}/7 · Día ${ev.dia}/14`, 'textContent');
+  poner('#r-s', ev.fase === 'antes' ? `El evento parte en ${fmtDuracion(ev.restante)}`
     : ev.fase === 'despues' ? 'Evento terminado'
-    : `${ev.etapa === 7 ? 'Termina' : 'Cambia de etapa'} en ${fmtDuracion(ev.restante)} · ${etapasHechas(estado)}/7 hechas`;
-  $('#et-sel-txt').textContent = `Etapa ${e}${etapaElegida && etapaElegida !== ev.etapa ? ' (no es la actual)' : ''}`;
-  $('#pts').innerHTML = `${fmtPuntos(pts)} <small>/ 35.000${h ? ' · hecha ✓' : ''}</small>`;
+    : `${ev.etapa === 7 ? 'Termina' : 'Cambia de etapa'} en ${fmtDuracion(ev.restante)} · ${etapasHechas(estado)}/7 hechas`, 'textContent');
+  poner('#et-sel-txt', `Etapa ${e}${etapaElegida && etapaElegida !== ev.etapa ? ' (no es la actual)' : ''}`, 'textContent');
+  poner('#pts', `${fmtPuntos(pts)} <small>/ 35.000${h ? ' · hecha ✓' : ''}</small>`, 'innerHTML');
   const htmlEtapas = [1, 2, 3, 4, 5, 6, 7].map((n) =>
     `<button data-etapa="${n}" class="${n === e ? 'sel' : ''} ${etapaHecha(estado, n) ? 'hecha' : ''}">${n}${etapaHecha(estado, n) ? '✓' : ''}</button>`).join('');
-  if (pintar.etapas !== htmlEtapas) { $('#etapas').innerHTML = htmlEtapas; pintar.etapas = htmlEtapas; } // solo si cambió, para no perder clics
-  $('#marcar').textContent = estado.hechas[e] ? 'Quitar marca de hecha' : 'Marcar hecha (comprada)';
-  $('#diapo-txt').textContent = `${estado.diapo + 1} / 9`;
+  poner('#etapas', htmlEtapas); // solo si cambió, para no perder clics
+  poner('#marcar', estado.hechas[e] ? 'Quitar marca de hecha' : 'Marcar hecha (comprada)', 'textContent');
+  poner('#diapo-txt', `${estado.diapo + 1} / 9`, 'textContent');
   // Configuración: no se pisa el campo que estás editando
   document.querySelectorAll('[data-cfg]').forEach((el) => {
     if (document.activeElement !== el) el.value = estado.config[el.dataset.cfg] ?? '';

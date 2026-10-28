@@ -145,3 +145,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const $ = (s, r = document) => r.querySelector(s);
+
+// Escribe en la página solo si el contenido cambió. Reescribir lo mismo cada segundo
+// hace parpadear el texto en el navegador de OBS.
+const _ultimo = new WeakMap();
+function poner(sel, valor, como = 'innerHTML') {
+  const el = typeof sel === 'string' ? $(sel) : sel;
+  if (!el) return;
+  const firma = como + '|' + valor;
+  if (_ultimo.get(el) === firma) return;
+  _ultimo.set(el, firma);
+  el[como] = valor;
+}

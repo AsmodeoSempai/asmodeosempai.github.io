@@ -54,7 +54,7 @@ body.transparente{background:transparent}
 @keyframes entra-der{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
 @keyframes entra-izq{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
 @keyframes entra-zoom{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
-.anim{animation:entra-abajo .8s var(--entra) both}
+.anim{animation:entra-abajo .8s var(--entra) backwards} /* backwards: al terminar no deja una capa fija (evita parpadeos en OBS) */
 .anim-1{animation-delay:.1s}.anim-2{animation-delay:.2s}.anim-3{animation-delay:.3s}.anim-4{animation-delay:.45s}.anim-5{animation-delay:.6s}
 
 /* Tarjeta pequeña de Alas de Acero (esquina) */

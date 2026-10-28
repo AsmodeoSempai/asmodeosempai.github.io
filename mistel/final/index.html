@@ -43,21 +43,21 @@ let estado = null;
 function pintar() {
   if (!estado) return;
   const ev = calcularEvento();
-  $('#etapas').innerHTML = [1, 2, 3, 4, 5, 6, 7].map((n) => {
+  poner('#etapas', [1, 2, 3, 4, 5, 6, 7].map((n) => {
     const h = etapaHecha(estado, n), a = ev.fase === 'durante' && n === ev.etapa, pts = puntosDe(estado, n);
     const s = h ? 'Hecha ✓' : a ? fmtPuntos(pts) + ' pts' : (ev.fase !== 'antes' && n < ev.etapa) ? 'Pendiente' : 'Por abrir';
     const barra = a && !h ? `<div class="barra"><i style="width:${Math.min(100, pts / EVENTO.meta * 100)}%"></i></div>` : '';
     return `<div class="et hud ${h ? 'hecha' : ''} ${a ? 'actual' : ''}"><div class="n">Etapa ${n}</div><div class="p">${EVENTO.premios[n - 1]}</div><div class="s">${s}</div>${barra}</div>`;
-  }).join('');
+  }).join(''), 'innerHTML');
   const p = fmtProximoStream(estado.config.proximoStream);
   if (p) {
-    $('#prox').innerHTML = `${p.texto} · <span class="rojo">${p.hora}</span>`;
+    poner('#prox', `${p.texto} · <span class="rojo">${p.hora}</span>`, 'innerHTML');
     const falta = p.ts - Date.now();
-    $('#prox-c').innerHTML = falta > 0 ? `Faltan <span class="amarillo num">${fmtDuracion(falta)}</span> · ${etapasHechas(estado)} de 7 etapas hechas`
-      : `${etapasHechas(estado)} de 7 etapas hechas`;
+    poner('#prox-c', falta > 0 ? `Faltan <span class="amarillo num">${fmtDuracion(falta)}</span> · ${etapasHechas(estado)} de 7 etapas hechas`
+      : `${etapasHechas(estado)} de 7 etapas hechas`, 'innerHTML');
   } else {
-    $('#prox').textContent = 'Atento a mis redes';
-    $('#prox-c').textContent = `${etapasHechas(estado)} de 7 etapas hechas`;
+    poner('#prox', 'Atento a mis redes', 'textContent');
+    poner('#prox-c', `${etapasHechas(estado)} de 7 etapas hechas`, 'textContent');
   }
 }
 conectar((n) => { estado = n; pintar(); });

@@ -78,7 +78,7 @@ function proximoAviso() {
 function mostrarAviso() {
   const f = $('#franja');
   clearTimeout(ocultarT);
-  $('#franja-txt').innerHTML = MENSAJES[indiceMsg % MENSAJES.length];
+  poner('#franja-txt', MENSAJES[indiceMsg % MENSAJES.length], 'innerHTML');
   indiceMsg++;
   ultimoAviso = Date.now();
   mostrando = true;
@@ -94,21 +94,21 @@ function pintar() {
   const e = ev.etapa, pts = puntosDe(estado, e), hecha = etapaHecha(estado, e);
   const p = $('#prog');
   p.className = 'prog hud listo ' + estado.config.panelEsquina;
-  $('#p-sup').textContent = ev.fase === 'antes' ? 'Sueños Hechos Realidad · Pronto'
-    : `Sueños Hechos Realidad · Día ${ev.dia}/14`;
-  $('#p-etapa').textContent = `Etapa ${e}/7`;
-  $('#p-pts').innerHTML = `${fmtPuntos(Math.min(pts, 999999))} <small>/ ${fmtPuntos(EVENTO.meta)}</small>`;
+  poner('#p-sup', ev.fase === 'antes' ? 'Sueños Hechos Realidad · Pronto'
+    : `Sueños Hechos Realidad · Día ${ev.dia}/14`, 'textContent');
+  poner('#p-etapa', `Etapa ${e}/7`, 'textContent');
+  poner('#p-pts', `${fmtPuntos(Math.min(pts, 999999))} <small>/ ${fmtPuntos(EVENTO.meta)}</small>`, 'innerHTML');
   const pct = hecha ? 100 : Math.min(100, Math.floor(pts / EVENTO.meta * 100));
-  $('#p-pct').innerHTML = hecha ? '<span class="ok">Hecha ✓</span>' : pct + '%';
+  poner('#p-pct', hecha ? '<span class="ok">Hecha ✓</span>' : pct + '%', 'innerHTML');
   $('#p-barra').classList.toggle('completa', hecha);
   $('#p-barra i').style.width = pct + '%';
-  $('#p-casillas').innerHTML = [1, 2, 3, 4, 5, 6, 7].map((n) =>
-    `<span class="${etapaHecha(estado, n) ? 'hecha' : ''} ${n === e ? 'actual' : ''}"></span>`).join('');
-  $('#p-premio').textContent = EVENTO.premios[e - 1];
-  $('#p-cambio').innerHTML = ev.fase === 'despues' ? 'Evento <em>terminado</em>'
+  poner('#p-casillas', [1, 2, 3, 4, 5, 6, 7].map((n) =>
+    `<span class="${etapaHecha(estado, n) ? 'hecha' : ''} ${n === e ? 'actual' : ''}"></span>`).join(''), 'innerHTML');
+  poner('#p-premio', EVENTO.premios[e - 1], 'textContent');
+  poner('#p-cambio', ev.fase === 'despues' ? 'Evento <em>terminado</em>'
     : ev.fase === 'antes' ? `Empieza en <em class="num">${fmtDuracion(ev.restante)}</em>`
     : e === 7 ? `Termina en <em class="num">${fmtDuracion(ev.restante)}</em>`
-    : `Cambia en <em class="num">${fmtDuracion(ev.restante)}</em>`;
+    : `Cambia en <em class="num">${fmtDuracion(ev.restante)}</em>`, 'innerHTML');
 
   const f = $('#franja');
   const pos = estado.config.avisoPosicion === 'arriba' ? 'arriba' : 'abajo';

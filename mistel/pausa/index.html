@@ -39,12 +39,12 @@ let estado = null;
 function pintar() {
   if (!estado) return;
   const ev = calcularEvento(), e = ev.etapa, pts = puntosDe(estado, e), h = etapaHecha(estado, e);
-  $('#m-etapa').textContent = `Etapa ${e}/7`;
-  $('#m-pts').textContent = h ? 'Etapa hecha ✓' : `${fmtPuntos(pts)} / ${fmtPuntos(EVENTO.meta)}`;
-  $('#m-cambio').textContent = ev.fase === 'despues' ? 'Terminado' : (ev.fase === 'antes' ? 'Parte en ' : e === 7 ? 'Termina en ' : 'Cambia en ') + fmtDuracion(ev.restante);
+  poner('#m-etapa', `Etapa ${e}/7`, 'textContent');
+  poner('#m-pts', h ? 'Etapa hecha ✓' : `${fmtPuntos(pts)} / ${fmtPuntos(EVENTO.meta)}`, 'textContent');
+  poner('#m-cambio', ev.fase === 'despues' ? 'Terminado' : (ev.fase === 'antes' ? 'Parte en ' : e === 7 ? 'Termina en ' : 'Cambia en ') + fmtDuracion(ev.restante), 'textContent');
   $('#m-barra').classList.toggle('completa', h);
   $('#m-barra i').style.width = (h ? 100 : Math.min(100, pts / EVENTO.meta * 100)) + '%';
-  $('#m-casillas').innerHTML = [1, 2, 3, 4, 5, 6, 7].map((n) => `<span class="${etapaHecha(estado, n) ? 'hecha' : ''} ${n === e ? 'actual' : ''}"></span>`).join('');
+  poner('#m-casillas', [1, 2, 3, 4, 5, 6, 7].map((n) => `<span class="${etapaHecha(estado, n) ? 'hecha' : ''} ${n === e ? 'actual' : ''}"></span>`).join(''), 'innerHTML');
 }
 conectar((n) => { estado = n; pintar(); });
 cadaSegundo(pintar);
