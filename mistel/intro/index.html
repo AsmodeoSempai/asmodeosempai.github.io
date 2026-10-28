@@ -31,15 +31,29 @@
 .premio .p{font-weight:700;font-size:40px;color:var(--blanco);text-transform:uppercase;line-height:1.05;margin-top:6px}
 .premio.estrella{border-color:var(--amarillo)}
 .premio.estrella .p{color:var(--amarillo)}
-.estados{display:flex;gap:16px;margin-top:44px}
-.estado{flex:1;padding:22px 16px;text-align:center}
-.estado .n{font-weight:700;font-size:56px;color:var(--blanco)}
-.estado .s{font-weight:700;font-size:20px;letter-spacing:.14em;text-transform:uppercase;margin-top:4px;color:var(--tenue)}
-.estado.hecha .s{color:var(--amarillo)}
-.estado.actual{border-color:var(--rojo)}
-.estado.actual .s{color:var(--rojo)}
-.alas{display:flex;gap:70px;align-items:center}
-.alas .qr{width:330px;height:330px;padding:14px}
+.dos-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:40px;max-width:1500px}
+.pieza{padding:22px 26px}
+.pieza .n{font-weight:700;font-size:20px;letter-spacing:.16em;color:var(--rojo);text-transform:uppercase}
+.pieza .p{font-weight:700;font-size:44px;color:var(--blanco);text-transform:uppercase;line-height:1.05;margin-top:6px}
+.pieza .d{font-size:28px;line-height:1.3;margin-top:10px}
+.pieza .d b{color:var(--blanco)}
+.pieza .d b.amarillo{color:var(--amarillo)}
+.pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:44px}
+.paso{padding:24px 26px}
+.paso .num{position:absolute;right:20px;top:4px;font-weight:700;font-size:120px;line-height:1;color:rgba(214,40,40,.18)}
+.paso .p{font-weight:700;font-size:40px;color:var(--blanco);text-transform:uppercase;line-height:1.05;position:relative}
+.paso .d{font-size:28px;line-height:1.3;margin-top:12px;position:relative}
+.lista{list-style:none;margin-top:36px;display:grid;gap:14px;font-size:32px;line-height:1.3;max-width:1550px}
+.lista li{display:flex;gap:18px;align-items:baseline}
+.lista li:before{content:"";flex:none;width:12px;height:12px;background:var(--rojo);transform:translateY(-4px) rotate(45deg)}
+.lista b{color:var(--blanco)}
+.premios7{display:grid;grid-template-columns:repeat(7,1fr);gap:16px;margin-top:44px}
+.premios7 .premio{min-height:260px;padding:22px 18px}
+.premios7 .premio .p{font-size:30px}
+.premios7 .premio .d{font-size:22px;color:var(--tenue);margin-top:8px;line-height:1.2}
+.premios7 .premio .fondo-n{font-size:130px}
+.trofeo{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px;max-width:1500px}
+.trofeo .pieza .p{font-size:36px}
 .pie{position:absolute;left:140px;right:140px;bottom:60px;display:flex;align-items:center;gap:24px}
 .pie .k{font-size:18px}
 .pie .casillas{width:420px}
@@ -49,68 +63,109 @@
 <body>
 <div class="fondo-hud"></div>
 <div id="diapos"></div>
-<div class="pie"><span class="k num" id="contador">01 / 09</span><div class="casillas" id="puntos"></div><span class="k" style="margin-left:auto">Sueños Hechos Realidad · Mistel 2</span></div>
+<div class="pie"><span class="k num" id="contador">01 / 09</span><div class="casillas" id="puntos"></div><span class="k" style="margin-left:auto">Rumbo al Mistel 2 · Sueños Hechos Realidad</span></div>
 <script src="../comun/comun.js?v=2"></script>
 <script>
-const premioCaja = (n, estrella) => `<div class="premio hud ${estrella ? 'estrella' : ''}"><div class="fondo-n">${n}</div>${imgOpcional('premio-' + n + '.png')}
-  <div class="n">Etapa ${n}</div><div class="p">${EVENTO.premios[n - 1]}</div></div>`;
-
-// Las 9 diapositivas. Las que dependen del progreso se vuelven a dibujar con cada cambio.
+// Las 9 diapositivas, en el orden del guion. Las que muestran progreso se vuelven a dibujar con cada cambio.
+const etiquetaEtapa = (n) => `<div class="n">Etapa ${n}</div>`;
 const DIAPOS = [
+  // 1 — Portada
   () => `${imgOpcional('portada.jpg', 'portada-img')}
-    <div class="kick">Evento de War Thunder</div>
-    <div class="grande">Sueños<br>Hechos<br><span class="rojo">Realidad</span></div>
+    <div class="kick">Sueños Hechos Realidad · War Thunder</div>
+    <div class="grande">Rumbo al<br><span class="rojo">Mistel 2</span></div>
     <div class="linea-roja"></div>
-    <div class="texto">Premio mayor: el <b>Mistel 2</b> · 28 oct – 11 nov 2026</div>`,
+    <div class="texto">14 días · un stream diario · del <b>miércoles 28 de octubre</b> al <b>miércoles 11 de noviembre</b>, 08:00 (Chile)</div>`,
 
-  () => `<div class="kick">¿De qué se trata?</div>
-    <div class="titulo">14 días · <span class="rojo">7 etapas</span></div>
-    <div class="texto">En cada etapa juntas <b>35.000 puntos de misión</b> jugando partidas. Cada etapa completada entrega un premio, y en la <b>etapa 6</b> está el <span class="amarillo">Mistel 2</span>.</div>`,
-
-  () => `<div class="kick">Las reglas</div>
-    <div class="titulo">Una etapa cada <span class="rojo">2 días</span></div>
-    <div class="chips">
-      <div class="chip hud"><div class="k">Meta por etapa</div><div class="v">35.000 pts</div></div>
-      <div class="chip hud"><div class="k">Cambio de etapa</div><div class="v">08:00 Chile</div></div>
-      <div class="chip hud"><div class="k">En hora GMT</div><div class="v">11:00 GMT</div></div>
+  // 2 — Qué es el Mistel 2
+  () => `<div class="kick">El premio</div>
+    <div class="titulo">«Padre <span class="rojo">e Hijo</span>»</div>
+    <div class="dos-col">
+      <div class="pieza hud"><div class="n">Arriba · lo pilotas tú</div><div class="p">Fw 190 A-8</div><div class="d">Sin armas: le quitaron todo para alivianar el despegue. <b>Cero cañones.</b></div></div>
+      <div class="pieza hud"><div class="n">Abajo · la bomba</div><div class="p">Ju 88 G-1</div><div class="d">Cabina cambiada por una ojiva de <b>3.500 kg</b>.</div></div>
     </div>
-    <div class="texto">Cuando se abre una etapa nueva, el contador de puntos parte de cero.</div>`,
-
-  (estado, ev) => `<div class="kick">Calendario</div>
-    <div class="titulo">Las 7 etapas</div>
-    <table class="tabla">${[1, 2, 3, 4, 5, 6, 7].map((n) => `<tr class="${ev.fase === 'durante' && n === ev.etapa ? 'actual' : ''}">
-      <td>Etapa ${n}</td><td>Desde el ${fmtFechaCorta(EVENTO.inicioEtapa(n))} · ${fmtHora(EVENTO.inicioEtapa(n))}</td><td>${EVENTO.premios[n - 1]}</td></tr>`).join('')}</table>`,
-
-  () => `<div class="kick">Premios · parte 1</div>
-    <div class="titulo">Etapas 1 a 4</div>
-    <div class="premios" style="grid-template-columns:repeat(4,1fr)">${[1, 2, 3, 4].map((n) => premioCaja(n)).join('')}</div>`,
-
-  () => `<div class="kick">Premios · parte 2</div>
-    <div class="titulo">Etapas 5 a 7</div>
-    <div class="premios" style="grid-template-columns:repeat(3,1fr)">${premioCaja(5)}${premioCaja(6, true)}${premioCaja(7)}</div>
-    <div class="texto">El <b>Mistel 2</b>: un Ju 88 sin piloto cargado de explosivos, guiado por un Fw 190 montado encima.</div>`,
-
-  (estado, ev) => `<div class="kick">Dónde vamos</div>
-    <div class="titulo">${etapasHechas(estado)} de 7 <span class="rojo">etapas hechas</span></div>
-    <div class="estados">${[1, 2, 3, 4, 5, 6, 7].map((n) => {
-      const h = etapaHecha(estado, n), a = ev.fase === 'durante' && n === ev.etapa;
-      const s = h ? 'Hecha ✓' : a ? fmtPuntos(puntosDe(estado, n)) + ' pts' : n < ev.etapa && ev.fase !== 'antes' ? 'Pendiente' : 'Por abrir';
-      return `<div class="estado hud ${h ? 'hecha' : ''} ${a ? 'actual' : ''}"><div class="n">${n}</div><div class="s">${s}</div></div>`;
-    }).join('')}</div>`,
-
-  () => `<div class="alas">
-      <div class="qr"><img src="../comun/qr-play.svg" alt=""></div>
-      <div><div class="kick">También en este canal</div>
-      <div class="titulo">Alas de <span class="rojo">Acero</span></div>
-      <div class="texto">Liga 1v1 de aviones en <b>War League Planner</b>. Una partida por semana, 3 meses, y el <b>top 8</b> va a playoffs transmitidos en stream. Escanea el QR para inscribirte.</div></div>
+    <div class="chips">
+      <div class="chip hud"><div class="k">Tipo</div><div class="v">Bombardero premium</div></div>
+      <div class="chip hud"><div class="k">Nación</div><div class="v">Alemania · Rango III</div></div>
+      <div class="chip hud"><div class="k">Historia</div><div class="v">Normandía 1944 · Óder 1945</div></div>
     </div>`,
 
-  (estado, ev) => `<div class="kick">Stream de hoy</div>
-    <div class="grande">¡A <span class="rojo">volar</span>!</div>
-    <div class="linea-roja"></div>
-    <div class="texto">${ev.fase === 'durante'
-      ? `Día <b>${ev.dia}</b> de 14 · Etapa <b>${ev.etapa}</b>: ${fmtPuntos(puntosDe(estado, ev.etapa))} de 35.000 puntos · cambia en <b class="num">${fmtDuracion(ev.restante)}</b>`
-      : ev.fase === 'antes' ? 'El evento parte el 28 de octubre a las 08:00.' : 'El evento terminó. ¡Gracias por acompañarme!'}</div>`
+  // 3 — Cómo se juega
+  () => `<div class="kick">En partida</div>
+    <div class="titulo">Cómo se <span class="rojo">juega</span></div>
+    <div class="pasos">
+      <div class="paso hud"><div class="num">1</div><div class="p">Apunta el conjunto</div><div class="d">Diriges los dos aviones hacia el objetivo.</div></div>
+      <div class="paso hud"><div class="num">2</div><div class="p">Suelta el Ju 88</div><div class="d">La «bomba» sigue sola con piloto automático.</div></div>
+      <div class="paso hud"><div class="num">3</div><div class="p">Escapa y rearma</div><div class="d">Vuelves al aeródromo. En Arcade se recarga en el aire.</div></div>
+    </div>
+    <div class="texto">De vuelta vas sin armas, pero liviano y rápido: <b>escapa, no pelees.</b></div>`,
+
+  // 4 — Cómo se consiguen los puntos
+  () => `<div class="kick">Lo importante</div>
+    <div class="titulo">Cómo se consiguen <span class="rojo">los puntos</span></div>
+    <div class="chips">
+      <div class="chip hud"><div class="k">Etapas</div><div class="v">7</div></div>
+      <div class="chip hud"><div class="k">Por etapa</div><div class="v">35.000 pts</div></div>
+      <div class="chip hud"><div class="k">Para el Mistel</div><div class="v">6 etapas</div></div>
+    </div>
+    <ul class="lista">
+      <li><span><b>Batallas Aéreas</b> de Rango III o superior: Arcade, Realista o Simulador.</span></li>
+      <li><span>Los puntos dependen del modo y del rango: el multiplicador sale en la tarea del juego.</span></li>
+      <li><span>También sirven los <b>vehículos de evento</b> de Rango I y II.</span></li>
+      <li><span>El premio se reclama a mano: <b>Perfil → Logros → «Sueños Hechos Realidad: Mistel»</b>.</span></li>
+    </ul>`,
+
+  // 5 — Calendario
+  (estado, ev) => `<div class="kick">Calendario</div>
+    <div class="titulo">Una etapa cada <span class="rojo">2 días</span></div>
+    <table class="tabla">${[1, 2, 3, 4, 5, 6, 7].map((n) => `<tr class="${ev.fase === 'durante' && n === ev.etapa ? 'actual' : ''}">
+      <td>Etapa ${n}</td><td>Se abre el ${fmtFechaCorta(EVENTO.inicioEtapa(n))} · ${fmtHora(EVENTO.inicioEtapa(n))}</td><td>${n === 6 ? 'Mistel 2' : ''}</td></tr>`).join('')}</table>
+    <div class="texto">Si una etapa se te pasa, ya no se recupera jugando: <b>solo se compra.</b> Por eso hay stream todos los días: <b>dos por etapa.</b></div>`,
+
+  // 6 — Recompensas
+  () => `<div class="kick">Recompensas</div>
+    <div class="titulo">Lo que te llevas <span class="rojo">por etapa</span></div>
+    <div class="premios7">
+      ${[
+        ['Calcomanía', '«Padre e Hijo»'],
+        ['Trofeo', 'Premio aleatorio'],
+        ['Calcomanía', '«Niño con una Bomba»'],
+        ['Trofeo', 'Premio aleatorio'],
+        ['Marco «Muérdago»', '«Mistel» en alemán'],
+        ['Mistel 2', 'El avión'],
+        ['Camuflaje', 'Para el Mistel 2']
+      ].map(([p, d], i) => `<div class="premio hud ${i === 5 ? 'estrella' : ''}"><div class="fondo-n">${i + 1}</div>${imgOpcional('premio-' + (i + 1) + '.png')}
+        ${etiquetaEtapa(i + 1)}<div class="p">${p}</div><div class="d">${d}</div></div>`).join('')}
+    </div>`,
+
+  // 7 — El trofeo
+  () => `<div class="kick">Etapas 2 y 4</div>
+    <div class="titulo">¿Qué trae <span class="rojo">el trofeo</span>?</div>
+    <div class="texto">Te toca <b>una</b> de estas:</div>
+    <div class="trofeo">
+      ${['50.000 a 100.000 Leones de Plata', 'Potenciadores', 'Apuestas u órdenes', 'Respaldos universales', 'Un camuflaje aleatorio', '1 día de cuenta premium']
+        .map((t) => `<div class="pieza hud"><div class="p">${t}</div></div>`).join('')}
+    </div>`,
+
+  // 8 — Plan B
+  () => `<div class="kick">Plan B</div>
+    <div class="titulo">¿No llegas? <span class="rojo">Cómprala</span></div>
+    <div class="texto">Con <b>Águilas de Oro</b>, hasta el <b>14 de noviembre</b>. Mientras más cerca estés, más barata:</div>
+    <div class="dos-col">
+      <div class="pieza hud"><div class="n">Con el 85 % o más</div><div class="p">Mitad de precio</div><div class="d">Ejemplo: 30.000 pts → <b class="amarillo">499 Águilas</b></div></div>
+      <div class="pieza hud"><div class="n">Con el 95 % o más</div><div class="p">Precio ÷ 5</div><div class="d">Ejemplo: 33.500 pts → <b class="amarillo">199 Águilas</b></div></div>
+    </div>
+    <div class="texto">Moraleja: aunque no llegues, <b>acércate lo más que puedas.</b></div>`,
+
+  // 9 — El plan del stream (con el progreso en vivo)
+  (estado, ev) => `<div class="kick">El plan</div>
+    <div class="titulo">Vamos a buscar <span class="rojo">ese Mistel</span></div>
+    <div class="chips">
+      <div class="chip hud"><div class="k">Streams</div><div class="v">Uno cada día</div></div>
+      <div class="chip hud"><div class="k">Meta por stream</div><div class="v">≈ 17.500 pts</div></div>
+      ${ev.fase === 'durante' ? `<div class="chip hud"><div class="k">Hoy · día ${ev.dia} de 14 · etapa ${ev.etapa}</div><div class="v num">${etapaHecha(estado, ev.etapa) ? 'Hecha ✓' : fmtPuntos(puntosDe(estado, ev.etapa)) + ' / 35.000'}</div></div>
+      <div class="chip hud"><div class="k">${ev.etapa === 7 ? 'Termina en' : 'Cambia de etapa en'}</div><div class="v num">${fmtDuracion(ev.restante)}</div></div>` : ''}
+    </div>
+    <div class="texto">El progreso va en la esquina durante el stream. ¿Quieres hacer las etapas acompañado? <b>Únete al Discord y armamos escuadrón.</b></div>`
 ];
 
 let estado = null, actual = -1;
