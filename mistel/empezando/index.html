@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Empezando</title>
+<link rel="stylesheet" href="../comun/comun.css">
+<style>
+.centro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:80px}
+.centro .k{font-size:22px}
+h1{font-weight:700;font-size:120px;text-transform:uppercase;color:var(--blanco);letter-spacing:.02em;line-height:1;margin-top:10px}
+.linea-roja{width:520px;margin-top:22px}
+.reloj{font-weight:700;font-size:200px;color:var(--blanco);line-height:1;margin-top:30px}
+.reloj.cero{color:var(--amarillo)}
+.sub{font-weight:600;font-size:30px;margin-top:18px;letter-spacing:.06em}
+.caja{position:absolute;bottom:64px;left:80px;display:flex;gap:44px;padding:16px 32px}
+.caja div{text-align:center}
+.caja .v{font-weight:700;font-size:34px;color:var(--blanco);margin-top:2px}
+.pulso{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--rojo);margin-right:10px;vertical-align:middle;animation:pulso 1.6s ease-in-out infinite}
+@keyframes pulso{50%{opacity:.25}}
+</style></head>
+<body>
+<div class="fondo-hud"></div>
+<div class="centro">
+  <div class="k anim"><span class="pulso"></span>Sueños Hechos Realidad · War Thunder</div>
+  <h1 class="anim anim-1" id="titulo">El stream <span class="rojo">empieza</span> en</h1>
+  <div class="linea-roja anim anim-2"></div>
+  <div class="reloj num anim anim-2" id="reloj">--:--</div>
+  <div class="sub anim anim-3" id="sub"></div>
+</div>
+<div class="caja hud anim anim-4">
+  <div><div class="k">Etapa actual</div><div class="v num" id="c-etapa">–</div></div>
+  <div><div class="k">Puntos</div><div class="v num" id="c-pts">–</div></div>
+  <div><div class="k" id="c-cambio-k">Cambio de etapa</div><div class="v num" id="c-cambio">–</div></div>
+</div>
+<div class="tarjeta-alas hud anim anim-5">
+  <div class="qr"><img src="../comun/qr-play.svg" alt=""></div>
+  <div><span class="etiqueta">Mientras esperas</span><b>Alas de Acero</b><p>Liga 1v1 de aviones en War League Planner. Escanea e inscríbete.</p></div>
+</div>
+<script src="../comun/comun.js"></script>
+<script>
+let estado = null, objetivo = null, cuentaN = null, usaPanel = false;
+const carga = Date.now();
+
+function pintar() {
+  if (!estado) return;
+  if (!usaPanel) objetivo = carga + estado.config.empezandoMin * 60000;
+  const falta = objetivo - Date.now();
+  const r = $('#reloj');
+  if (falta > 0) {
+    r.textContent = fmtDuracion(falta, false);
+    r.classList.remove('cero');
+    $('#titulo').innerHTML = 'El stream <span class="rojo">empieza</span> en';
+  } else {
+    r.textContent = '¡Ya!';
+    r.classList.add('cero');
+    $('#titulo').innerHTML = 'Estamos <span class="rojo">por partir</span>';
+  }
+  const ev = calcularEvento(), e = ev.etapa;
+  $('#sub').innerHTML = ev.fase === 'antes' ? 'Hoy: <span class="amarillo">Mistel 2</span> · el evento parte pronto'
+    : ev.fase === 'despues' ? 'El evento <span class="amarillo">Mistel 2</span> ya terminó'
+    : `Hoy: <span class="amarillo">Mistel 2</span> · Etapa ${e} de 7 · Día ${ev.dia} de 14`;
+  $('#c-etapa').textContent = `${e} / 7`;
+  $('#c-pts').textContent = etapaHecha(estado, e) ? 'Hecha ✓' : `${fmtPuntos(puntosDe(estado, e))} / ${fmtPuntos(EVENTO.meta)}`;
+  $('#c-cambio-k').textContent = ev.fase === 'antes' ? 'El evento parte en' : e === 7 ? 'El evento termina en' : 'Cambio de etapa';
+  $('#c-cambio').textContent = ev.fase === 'despues' ? 'Terminado' : fmtDuracion(ev.restante);
+}
+
+conectar((nuevo) => {
+  // Si al abrir ya hay una cuenta lanzada desde el panel y sigue corriendo, se usa esa.
+  if (cuentaN === null && nuevo.cuenta.fin > Date.now()) { usaPanel = true; objetivo = nuevo.cuenta.fin; }
+  // "Reiniciar cuenta" desde el panel mientras la escena está abierta
+  if (cuentaN !== null && nuevo.cuenta.n > cuentaN) { usaPanel = true; objetivo = nuevo.cuenta.fin; }
+  cuentaN = nuevo.cuenta.n;
+  estado = nuevo;
+  pintar();
+});
+cadaSegundo(pintar);
+</script>
+</body></html>

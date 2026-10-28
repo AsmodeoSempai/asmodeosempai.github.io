@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Final</title>
+<link rel="stylesheet" href="../comun/comun.css">
+<style>
+.arriba{position:absolute;left:120px;top:110px}
+.kick{font-weight:600;font-size:26px;letter-spacing:.2em;text-transform:uppercase;color:var(--amarillo)}
+h1{font-weight:700;font-size:130px;line-height:.95;text-transform:uppercase;color:var(--blanco);margin-top:10px}
+.linea-roja{width:600px;margin-top:26px;background:linear-gradient(90deg,var(--rojo),transparent)}
+.etapas{position:absolute;left:120px;right:120px;top:480px;display:grid;grid-template-columns:repeat(7,1fr);gap:16px}
+.et{padding:18px 16px 16px;min-height:190px;display:flex;flex-direction:column}
+.et .n{font-weight:700;font-size:20px;letter-spacing:.16em;text-transform:uppercase;color:var(--tenue)}
+.et .p{font-weight:700;font-size:28px;color:var(--blanco);text-transform:uppercase;line-height:1.05;margin-top:8px}
+.et .s{margin-top:auto;font-weight:700;font-size:20px;letter-spacing:.1em;text-transform:uppercase;color:var(--tenue)}
+.et.hecha .s{color:var(--amarillo)}
+.et.hecha{border-color:rgba(255,183,3,.5)}
+.et.actual{border-color:var(--rojo)}
+.et.actual .s{color:var(--rojo)}
+.et .barra{margin-top:10px;height:5px}
+.prox{position:absolute;left:120px;bottom:80px;padding:22px 30px;min-width:760px}
+.prox .v{font-weight:700;font-size:48px;color:var(--blanco);line-height:1.05;margin-top:6px}
+.prox .c{font-weight:600;font-size:24px;margin-top:6px}
+</style></head>
+<body>
+<div class="fondo-hud"></div>
+<div class="arriba">
+  <div class="kick anim">Fin del stream</div>
+  <h1 class="anim anim-1">Gracias por<br><span class="rojo">acompañarme</span></h1>
+  <div class="linea-roja anim anim-2"></div>
+</div>
+<div class="etapas anim anim-3" id="etapas"></div>
+<div class="prox hud anim anim-4">
+  <div class="k">Próximo stream</div>
+  <div class="v" id="prox">Atento a mis redes</div>
+  <div class="c" id="prox-c"></div>
+</div>
+<div class="tarjeta-alas hud anim anim-5" style="animation-name:entra-der">
+  <div class="qr"><img src="../comun/qr-play.svg" alt=""></div>
+  <div><span class="etiqueta">Alas de Acero</span><b>Liga 1v1 de aviones</b><p>Escanea, descarga War League Planner e inscríbete.</p></div>
+</div>
+<script src="../comun/comun.js"></script>
+<script>
+let estado = null;
+function pintar() {
+  if (!estado) return;
+  const ev = calcularEvento();
+  $('#etapas').innerHTML = [1, 2, 3, 4, 5, 6, 7].map((n) => {
+    const h = etapaHecha(estado, n), a = ev.fase === 'durante' && n === ev.etapa, pts = puntosDe(estado, n);
+    const s = h ? 'Hecha ✓' : a ? fmtPuntos(pts) + ' pts' : (ev.fase !== 'antes' && n < ev.etapa) ? 'Pendiente' : 'Por abrir';
+    const barra = a && !h ? `<div class="barra"><i style="width:${Math.min(100, pts / EVENTO.meta * 100)}%"></i></div>` : '';
+    return `<div class="et hud ${h ? 'hecha' : ''} ${a ? 'actual' : ''}"><div class="n">Etapa ${n}</div><div class="p">${EVENTO.premios[n - 1]}</div><div class="s">${s}</div>${barra}</div>`;
+  }).join('');
+  const p = fmtProximoStream(estado.config.proximoStream);
+  if (p) {
+    $('#prox').innerHTML = `${p.texto} · <span class="rojo">${p.hora}</span>`;
+    const falta = p.ts - Date.now();
+    $('#prox-c').innerHTML = falta > 0 ? `Faltan <span class="amarillo num">${fmtDuracion(falta)}</span> · ${etapasHechas(estado)} de 7 etapas hechas`
+      : `${etapasHechas(estado)} de 7 etapas hechas`;
+  } else {
+    $('#prox').textContent = 'Atento a mis redes';
+    $('#prox-c').textContent = `${etapasHechas(estado)} de 7 etapas hechas`;
+  }
+}
+conectar((n) => { estado = n; pintar(); });
+cadaSegundo(pintar);
+</script>
+</body></html>

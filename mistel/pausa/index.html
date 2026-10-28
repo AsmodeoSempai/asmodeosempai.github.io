@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Pausa</title>
+<link rel="stylesheet" href="../comun/comun.css">
+<style>
+.centro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:60px}
+.centro .k{font-size:22px}
+h1{font-weight:700;font-size:150px;text-transform:uppercase;color:var(--blanco);line-height:1;margin-top:12px}
+.radar{position:relative;width:560px;height:3px;background:rgba(255,255,255,.1);margin-top:34px;overflow:hidden}
+.radar i{position:absolute;top:0;bottom:0;width:140px;background:linear-gradient(90deg,transparent,var(--rojo),transparent);animation:barrer 2.6s cubic-bezier(.65,0,.35,1) infinite alternate}
+@keyframes barrer{from{left:-140px}to{left:560px}}
+.sub{font-weight:600;font-size:32px;margin-top:28px;letter-spacing:.04em}
+.mini{position:absolute;left:48px;bottom:48px;width:440px;padding:16px 18px}
+.mini .ttl{font-weight:700;font-size:26px;text-transform:uppercase;color:var(--blanco)}
+.mini .fila{display:flex;justify-content:space-between;margin:8px 0 6px;font-weight:600;font-size:20px}
+.mini .casillas{margin-top:10px}
+</style></head>
+<body>
+<div class="fondo-hud"></div>
+<div class="centro">
+  <div class="k anim">Pausa táctica</div>
+  <h1 class="anim anim-1">Vuelvo <span class="rojo">enseguida</span></h1>
+  <div class="radar anim anim-2"><i></i></div>
+  <div class="sub anim anim-3">No te vayas: sigo con el <span class="amarillo">Mistel 2</span> en un momento</div>
+</div>
+<div class="mini hud anim anim-4" style="animation-name:entra-izq">
+  <div class="k">Progreso del evento</div>
+  <div class="ttl"><span class="rojo">Mistel 2</span> · <span id="m-etapa">Etapa 1/7</span></div>
+  <div class="fila"><span class="num" id="m-pts">0 / 35.000</span><span class="num amarillo" id="m-cambio"></span></div>
+  <div class="barra" id="m-barra"><i style="width:0"></i></div>
+  <div class="casillas" id="m-casillas"></div>
+</div>
+<div class="tarjeta-alas hud anim anim-5" style="animation-name:entra-der">
+  <div class="qr"><img src="../comun/qr-play.svg" alt=""></div>
+  <div><span class="etiqueta">Alas de Acero</span><b>Liga 1v1 de aviones</b><p>Escanea, descarga War League Planner e inscríbete.</p></div>
+</div>
+<script src="../comun/comun.js"></script>
+<script>
+let estado = null;
+function pintar() {
+  if (!estado) return;
+  const ev = calcularEvento(), e = ev.etapa, pts = puntosDe(estado, e), h = etapaHecha(estado, e);
+  $('#m-etapa').textContent = `Etapa ${e}/7`;
+  $('#m-pts').textContent = h ? 'Etapa hecha ✓' : `${fmtPuntos(pts)} / ${fmtPuntos(EVENTO.meta)}`;
+  $('#m-cambio').textContent = ev.fase === 'despues' ? 'Terminado' : (ev.fase === 'antes' ? 'Parte en ' : e === 7 ? 'Termina en ' : 'Cambia en ') + fmtDuracion(ev.restante);
+  $('#m-barra').classList.toggle('completa', h);
+  $('#m-barra i').style.width = (h ? 100 : Math.min(100, pts / EVENTO.meta * 100)) + '%';
+  $('#m-casillas').innerHTML = [1, 2, 3, 4, 5, 6, 7].map((n) => `<span class="${etapaHecha(estado, n) ? 'hecha' : ''} ${n === e ? 'actual' : ''}"></span>`).join('');
+}
+conectar((n) => { estado = n; pintar(); });
+cadaSegundo(pintar);
+</script>
+</body></html>

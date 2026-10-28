@@ -1,0 +1,10 @@
+Imágenes opcionales. Si un archivo no está, la escena se ve igual, solo que sin esa imagen.
+
+  portada.jpg     -> fondo de la diapositiva 1 de la intro (se ve a la derecha, semitransparente)
+  premio-1.png    -> imagen del premio de la etapa 1 (diapositivas 5 y 6 de la intro)
+  premio-2.png
+  ...
+  premio-7.png
+
+Usa exactamente esos nombres (en minúsculas). No hace falta reiniciar el servidor:
+en OBS, abre las propiedades de la fuente y toca "Actualizar caché de la página actual".

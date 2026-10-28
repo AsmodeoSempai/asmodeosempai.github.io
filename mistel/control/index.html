@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Control de overlays</title>
+<link rel="stylesheet" href="../comun/comun.css">
+<style>
+html,body{width:auto;height:auto;min-height:100%;overflow:auto}
+body{font-size:16px;padding:0 0 20px;background:#151515}
+.sec{border-bottom:1px solid var(--linea);padding:12px 12px 14px}
+h2{font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--tenue);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+h2 span{color:var(--amarillo);letter-spacing:.04em}
+.resumen{padding:12px;background:#1c1c1c;border-bottom:2px solid var(--rojo)}
+.resumen .t{font-weight:700;font-size:22px;color:var(--blanco);text-transform:uppercase}
+.resumen .s{font-weight:600;font-size:15px;color:var(--tenue);margin-top:2px}
+.grande{font-weight:700;font-size:34px;color:var(--blanco);line-height:1}
+.grande small{font-size:17px;color:var(--tenue)}
+.fila{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.fila>*{flex:1 1 0;min-width:0}
+button{font:700 16px var(--fuente);color:var(--texto);background:#262626;border:1px solid #3a3a3a;padding:9px 6px;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;
+  transition:background .15s ease-out}
+button:hover{background:#333}
+button:active{background:#444}
+button.rojo{background:var(--rojo);border-color:var(--rojo);color:#fff}
+button.rojo:hover{background:#e33a3a}
+button.amarillo{background:var(--amarillo);border-color:var(--amarillo);color:#111}
+button.sel{border-color:var(--rojo);color:var(--blanco);box-shadow:inset 0 -3px 0 var(--rojo)}
+button.hecha{color:var(--amarillo)}
+button.confirmar{background:#5a1414;border-color:var(--rojo);color:#fff}
+input,select{font:600 17px var(--fuente);color:var(--blanco);background:#0d0d0d;border:1px solid #3a3a3a;padding:8px;width:100%;color-scheme:dark}
+input:focus,select:focus{outline:1px solid var(--amarillo)}
+label{display:block;font-weight:600;font-size:14px;color:var(--tenue);margin-top:8px}
+label input,label select{margin-top:3px}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.etapas button{padding:7px 0;font-size:15px}
+.nota{font-size:13px;color:var(--tenue);margin-top:6px}
+#toast{position:fixed;left:8px;right:8px;bottom:8px;background:var(--amarillo);color:#111;font-weight:700;padding:8px 10px;text-align:center;
+  opacity:0;transform:translateY(10px);transition:opacity .25s ease-in,transform .25s ease-in;pointer-events:none}
+#toast.ver{opacity:1;transform:none;transition:opacity .3s var(--entra),transform .3s var(--entra)}
+#toast.error{background:var(--rojo);color:#fff}
+</style></head>
+<body class="control">
+<div class="resumen">
+  <div class="t" id="r-t">Mistel 2 · Etapa –</div>
+  <div class="s num" id="r-s">Conectando…</div>
+</div>
+
+<div class="sec">
+  <h2>Puntos <span id="et-sel-txt">Etapa –</span></h2>
+  <div class="grande num" id="pts">0 <small>/ 35.000</small></div>
+  <div class="fila">
+    <button data-sumar="100">+100</button><button data-sumar="500">+500</button><button data-sumar="1000">+1.000</button><button data-sumar="-1000">−1.000</button>
+  </div>
+  <div class="fila">
+    <input id="exacto" type="number" min="0" step="1" inputmode="numeric" placeholder="Número exacto" style="flex:2">
+    <button class="rojo" id="fijar">Fijar</button>
+  </div>
+</div>
+
+<div class="sec">
+  <h2>Etapa</h2>
+  <div class="fila etapas" id="etapas"></div>
+  <div class="nota" id="nota-etapa">Por defecto sigues la etapa actual. Toca otra para corregir sus puntos.</div>
+  <div class="fila">
+    <button class="amarillo" id="marcar">Marcar hecha</button>
+    <button id="reiniciar">Reiniciar etapa</button>
+  </div>
+</div>
+
+<div class="sec">
+  <h2>Intro <span id="diapo-txt">1 / 9</span></h2>
+  <div class="fila"><button id="atras">◀ Anterior</button><button class="rojo" id="adelante">Siguiente ▶</button></div>
+  <div class="fila"><button id="primera">Ir a la 1</button></div>
+</div>
+
+<div class="sec">
+  <h2>Avisos y cuenta</h2>
+  <div class="fila"><button class="rojo" id="aviso">Lanzar aviso de Alas ahora</button></div>
+  <div class="fila"><button id="cuenta">Reiniciar cuenta de «Empezando»</button></div>
+</div>
+
+<div class="sec">
+  <h2>Configuración</h2>
+  <div class="dos">
+    <label>Cuenta regresiva (min)<input type="number" min="1" max="180" data-cfg="empezandoMin"></label>
+    <label>Primer aviso (min)<input type="number" min="0" max="120" data-cfg="avisoPrimeroMin"></label>
+    <label>Aviso cada (min)<input type="number" min="1" max="240" data-cfg="avisoCadaMin"></label>
+    <label>Aviso sale<select data-cfg="avisoPosicion"><option value="abajo">Abajo</option><option value="arriba">Arriba</option></select></label>
+  </div>
+  <label>Esquina del panel de gameplay
+    <select data-cfg="panelEsquina">
+      <option value="arriba-derecha">Arriba derecha</option><option value="arriba-izquierda">Arriba izquierda</option>
+      <option value="abajo-derecha">Abajo derecha</option><option value="abajo-izquierda">Abajo izquierda</option>
+    </select></label>
+  <label>Próximo stream (fecha y hora)<input type="datetime-local" data-cfg="proximoStream"></label>
+  <div class="fila"><button id="borrar-prox">Quitar fecha del próximo stream</button></div>
+</div>
+<div id="toast"></div>
+
+<script src="../comun/comun.js"></script>
+<script>
+let estado = null, etapaElegida = null; // null = seguir la etapa actual
+
+function toast(txt, error) {
+  const t = $('#toast'); t.textContent = txt; t.classList.toggle('error', !!error); t.classList.add('ver');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('ver'), 1600);
+}
+let ultimaAccion = 0;
+async function accion(datos, msg) {
+  try {
+    ultimaAccion = Date.now();
+    estado = await enviarAccion(datos);
+    ultimaAccion = Date.now();
+    pintar();
+    if (msg) toast(msg);
+  } catch (e) { toast(e.claveMala ? 'La clave del link no es válida' : 'No se pudo: ' + e.message, true); }
+}
+const etapa = () => etapaElegida || calcularEvento().etapa;
+
+// Botón que pide un segundo toque para confirmar (OBS no muestra ventanas de confirmación)
+function conConfirmacion(btn, alConfirmar) {
+  const original = btn.textContent;
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('confirmar')) {
+      clearTimeout(btn._t); btn.classList.remove('confirmar'); btn.textContent = original; alConfirmar();
+    } else {
+      btn.classList.add('confirmar'); btn.textContent = '¿Seguro? Toca otra vez';
+      btn._t = setTimeout(() => { btn.classList.remove('confirmar'); btn.textContent = original; }, 3000);
+    }
+  });
+}
+
+function pintar() {
+  if (!estado) return;
+  const ev = calcularEvento(), e = etapa(), pts = puntosDe(estado, e), h = etapaHecha(estado, e);
+  $('#r-t').textContent = `Mistel 2 · Etapa ${ev.etapa}/7 · Día ${ev.dia}/14`;
+  $('#r-s').textContent = ev.fase === 'antes' ? `El evento parte en ${fmtDuracion(ev.restante)}`
+    : ev.fase === 'despues' ? 'Evento terminado'
+    : `${ev.etapa === 7 ? 'Termina' : 'Cambia de etapa'} en ${fmtDuracion(ev.restante)} · ${etapasHechas(estado)}/7 hechas`;
+  $('#et-sel-txt').textContent = `Etapa ${e}${etapaElegida && etapaElegida !== ev.etapa ? ' (no es la actual)' : ''}`;
+  $('#pts').innerHTML = `${fmtPuntos(pts)} <small>/ 35.000${h ? ' · hecha ✓' : ''}</small>`;
+  const htmlEtapas = [1, 2, 3, 4, 5, 6, 7].map((n) =>
+    `<button data-etapa="${n}" class="${n === e ? 'sel' : ''} ${etapaHecha(estado, n) ? 'hecha' : ''}">${n}${etapaHecha(estado, n) ? '✓' : ''}</button>`).join('');
+  if (pintar.etapas !== htmlEtapas) { $('#etapas').innerHTML = htmlEtapas; pintar.etapas = htmlEtapas; } // solo si cambió, para no perder clics
+  $('#marcar').textContent = estado.hechas[e] ? 'Quitar marca de hecha' : 'Marcar hecha (comprada)';
+  $('#diapo-txt').textContent = `${estado.diapo + 1} / 9`;
+  // Configuración: no se pisa el campo que estás editando
+  document.querySelectorAll('[data-cfg]').forEach((el) => {
+    if (document.activeElement !== el) el.value = estado.config[el.dataset.cfg] ?? '';
+  });
+}
+
+document.querySelectorAll('[data-sumar]').forEach((b) => b.addEventListener('click', () =>
+  accion({ tipo: 'sumar', etapa: etapa(), valor: Number(b.dataset.sumar) })));
+const fijar = () => {
+  const v = $('#exacto').value.trim();
+  if (v === '' || isNaN(Number(v))) return toast('Escribe un número', true);
+  accion({ tipo: 'fijar', etapa: etapa(), valor: Number(v) }, 'Puntos actualizados');
+  $('#exacto').value = '';
+};
+$('#fijar').addEventListener('click', fijar);
+$('#exacto').addEventListener('keydown', (e) => { if (e.key === 'Enter') fijar(); });
+$('#etapas').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-etapa]'); if (!b) return;
+  const n = Number(b.dataset.etapa);
+  etapaElegida = n === calcularEvento().etapa ? null : n;
+  pintar();
+});
+$('#marcar').addEventListener('click', () => accion({ tipo: 'hecha', etapa: etapa(), valor: !estado.hechas[etapa()] }));
+conConfirmacion($('#reiniciar'), () => accion({ tipo: 'reiniciarEtapa', etapa: etapa() }, 'Etapa reiniciada'));
+$('#atras').addEventListener('click', () => accion({ tipo: 'diapo', paso: -1 }));
+$('#adelante').addEventListener('click', () => accion({ tipo: 'diapo', paso: 1 }));
+$('#primera').addEventListener('click', () => accion({ tipo: 'irDiapo', valor: 0 }));
+$('#aviso').addEventListener('click', () => accion({ tipo: 'aviso' }, 'Aviso lanzado'));
+$('#cuenta').addEventListener('click', () => accion({ tipo: 'cuenta' }, 'Cuenta reiniciada'));
+document.querySelectorAll('[data-cfg]').forEach((el) => el.addEventListener('change', () => {
+  const v = el.type === 'number' ? Number(el.value) : el.value;
+  accion({ tipo: 'config', valores: { [el.dataset.cfg]: v } }, 'Guardado');
+  el.blur();
+}));
+$('#borrar-prox').addEventListener('click', () => accion({ tipo: 'config', valores: { proximoStream: '' } }, 'Fecha quitada'));
+
+// Una consulta que salió antes de tu último clic puede traer datos viejos: se ignora.
+conectar((n) => { if (Date.now() - ultimaAccion < 1500) return; estado = n; pintar(); });
+setInterval(pintar, 1000);
+</script>
+</body></html>

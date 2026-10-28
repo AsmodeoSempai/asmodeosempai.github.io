@@ -1,0 +1,68 @@
+@font-face{font-family:Rajdhani;font-weight:500;src:url(fonts/rajdhani-500.woff2) format('woff2')}
+@font-face{font-family:Rajdhani;font-weight:600;src:url(fonts/rajdhani-600.woff2) format('woff2')}
+@font-face{font-family:Rajdhani;font-weight:700;src:url(fonts/rajdhani-700.woff2) format('woff2')}
+
+:root{
+  --fondo:#111111; --rojo:#D62828; --amarillo:#FFB703; --blanco:#FFFFFF; --texto:#ECECEC;
+  --tenue:#8E8E8E; --panel:rgba(17,17,17,.86); --linea:rgba(255,255,255,.14);
+  --entra:cubic-bezier(.16,1,.3,1);   /* ease-out */
+  --sale:cubic-bezier(.7,0,.84,0);    /* ease-in */
+  --fuente:Rajdhani,"Bahnschrift","Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden}
+body{font-family:var(--fuente);font-weight:500;color:var(--texto);background:var(--fondo)}
+body.transparente{background:transparent}
+
+/* Fondo con cuadrícula y viñeta */
+/* El color de fondo va en esta capa (y no solo en body) porque el CSS por defecto de OBS deja el body transparente */
+.fondo-hud{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(255,255,255,.05),transparent 62%),var(--fondo);}
+.fondo-hud:before{content:"";position:absolute;inset:0;opacity:.22;
+  background-image:linear-gradient(var(--linea) 1px,transparent 1px),linear-gradient(90deg,var(--linea) 1px,transparent 1px);
+  background-size:120px 120px}
+
+/* Panel HUD con esquinas marcadas */
+.hud{position:relative;background:var(--panel);border:1px solid var(--linea)}
+.hud:before,.hud:after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--rojo);pointer-events:none}
+.hud:before{left:-1px;top:-1px;border-right:0;border-bottom:0}
+.hud:after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+
+.k{font-weight:600;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--tenue)}
+.rojo{color:var(--rojo)} .amarillo{color:var(--amarillo)} .blanco{color:var(--blanco)}
+.mayus{text-transform:uppercase}
+.num{font-variant-numeric:tabular-nums}
+.etiqueta{display:inline-block;background:var(--rojo);color:#fff;font-weight:700;font-size:16px;letter-spacing:.16em;padding:3px 10px;text-transform:uppercase}
+.linea-roja{height:2px;background:linear-gradient(90deg,transparent,var(--rojo),transparent)}
+
+/* Barra de progreso y casillas de etapas */
+.barra{height:8px;background:rgba(255,255,255,.1);position:relative;overflow:hidden}
+.barra i{position:absolute;left:0;top:0;bottom:0;background:var(--rojo);transition:width .6s var(--entra)}
+.barra.completa i{background:var(--amarillo)}
+.casillas{display:flex;gap:6px}
+.casillas span{flex:1;height:6px;background:rgba(255,255,255,.14);transition:background .4s var(--entra)}
+.casillas span.hecha{background:var(--amarillo)}
+.casillas span.actual{background:var(--rojo)}
+.casillas span.actual.hecha{background:var(--amarillo);box-shadow:0 0 0 1px var(--rojo)}
+
+/* QR */
+.qr{background:#fff;padding:6px;flex:none}
+.qr img{display:block;width:100%;height:100%;image-rendering:pixelated}
+
+/* Animaciones: ease-out al entrar, ease-in al salir */
+@keyframes entra-abajo{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes entra-der{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes entra-izq{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+@keyframes entra-zoom{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.anim{animation:entra-abajo .8s var(--entra) both}
+.anim-1{animation-delay:.1s}.anim-2{animation-delay:.2s}.anim-3{animation-delay:.3s}.anim-4{animation-delay:.45s}.anim-5{animation-delay:.6s}
+
+/* Tarjeta pequeña de Alas de Acero (esquina) */
+.tarjeta-alas{position:absolute;right:48px;bottom:48px;display:flex;gap:16px;align-items:center;padding:14px 18px;width:440px}
+.tarjeta-alas .qr{width:104px;height:104px}
+.tarjeta-alas b{display:block;font-size:24px;color:var(--blanco);text-transform:uppercase;line-height:1.05}
+.tarjeta-alas p{font-size:17px;line-height:1.25;margin-top:4px}
+
+/* Aviso de desconexión: solo se ve en el panel de control, nunca en el stream */
+#sin-conexion{display:none}
+body.control.desconectado #sin-conexion{display:block;position:sticky;top:0;z-index:9;font:700 14px var(--fuente);color:#fff;background:var(--rojo);padding:6px 10px;text-align:center}

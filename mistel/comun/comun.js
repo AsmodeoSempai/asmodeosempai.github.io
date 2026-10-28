@@ -1,0 +1,147 @@
+// Datos del evento y utilidades compartidas por todas las escenas.
+'use strict';
+
+const EVENTO = {
+  nombre: 'Sueños Hechos Realidad',
+  vehiculo: 'Mistel 2',
+  inicio: Date.UTC(2026, 9, 28, 11, 0, 0), // 28 oct 2026 11:00 GMT (08:00 Chile)
+  etapas: 7,
+  meta: 35000,
+  premios: ['Calcomanía', 'Trofeo', 'Calcomanía', 'Trofeo', 'Marco «Muérdago»', 'Mistel 2', 'Camuflaje']
+};
+const DIA = 86400000;
+EVENTO.fin = EVENTO.inicio + 14 * DIA;
+EVENTO.inicioEtapa = (e) => EVENTO.inicio + (e - 1) * 2 * DIA;
+
+
+// Etapa actual, día del stream y tiempo hasta el próximo cambio, según la hora del PC.
+function calcularEvento(ahora = Date.now()) {
+  if (ahora < EVENTO.inicio) {
+    return { fase: 'antes', etapa: 1, dia: 0, proximoCambio: EVENTO.inicio, restante: EVENTO.inicio - ahora };
+  }
+  if (ahora >= EVENTO.fin) {
+    return { fase: 'despues', etapa: 7, dia: 14, proximoCambio: null, restante: 0 };
+  }
+  const pasado = ahora - EVENTO.inicio;
+  const etapa = Math.min(7, Math.floor(pasado / (2 * DIA)) + 1);
+  const dia = Math.min(14, Math.floor(pasado / DIA) + 1);
+  const proximoCambio = etapa < 7 ? EVENTO.inicioEtapa(etapa + 1) : EVENTO.fin;
+  return { fase: 'durante', etapa, dia, proximoCambio, restante: proximoCambio - ahora };
+}
+
+const puntosDe = (estado, e) => Math.max(0, Number(estado.puntos?.[e]) || 0);
+const etapaHecha = (estado, e) => !!estado.hechas?.[e] || puntosDe(estado, e) >= EVENTO.meta;
+const etapasHechas = (estado) => [1, 2, 3, 4, 5, 6, 7].filter((e) => etapaHecha(estado, e)).length;
+
+function fmtPuntos(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+const dos = (n) => String(n).padStart(2, '0');
+function fmtDuracion(ms, conDias = true) {
+  ms = Math.max(0, ms);
+  const s = Math.floor(ms / 1000);
+  const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60), seg = s % 60;
+  if (conDias && d > 0) return `${d}d ${dos(h)}:${dos(m)}:${dos(seg)}`;
+  if (h + d * 24 > 0) return `${h + d * 24}:${dos(m)}:${dos(seg)}`;
+  return `${dos(m)}:${dos(seg)}`;
+}
+function fmtFechaCorta(ts) {
+  return new Date(ts).toLocaleDateString('es-CL', { weekday: 'short', day: 'numeric', month: 'short' }).replace('.', '');
+}
+function fmtHora(ts) {
+  return new Date(ts).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+function fmtProximoStream(valor) {
+  if (!valor) return null;
+  const d = new Date(valor); // "2026-10-30T20:00" se interpreta como hora local del PC
+  if (isNaN(d)) return null;
+  const fecha = d.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
+  return { ts: d.getTime(), texto: fecha.charAt(0).toUpperCase() + fecha.slice(1), hora: fmtHora(d) };
+}
+
+// Imagen opcional de la carpeta img/: si no existe, desaparece sin romper nada.
+function imgOpcional(nombre, clase = '') {
+  return `<img class="${clase}" src="../comun/img/${nombre}" alt="" onerror="this.remove()">`;
+}
+
+// ---------- Conexión con Supabase ----------
+// El estado vive en Supabase. Solo responde con la clave privada del link (?clave=...),
+// la misma del overlay /live.
+const SUPABASE_URL = 'https://xkbsmpeqpezpzexiwfud.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_JB3Fy272a8T03Pipj7sExA_ecHOXT44'; // clave pública (la misma que trae la app)
+const PARAMS = new URLSearchParams(location.search);
+const CLAVE = PARAMS.get('clave') || '';
+// Solo para pruebas en el PC: ?api=http://localhost:8787 (ignorado fuera de localhost)
+const API = (location.hostname === 'localhost' && PARAMS.get('api')) || SUPABASE_URL + '/rest/v1/rpc';
+const CADA_MS = 1000;
+
+async function llamar(funcion, cuerpo) {
+  const res = await fetch(`${API}/${funcion}`, {
+    method: 'POST',
+    cache: 'no-store',
+    headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ p_key: CLAVE, ...cuerpo })
+  });
+  const datos = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const e = new Error(datos.message || 'Error ' + res.status);
+    e.claveMala = res.status === 401 || res.status === 403 || /clave/i.test(datos.message || '');
+    throw e;
+  }
+  return datos;
+}
+
+// Cambia algo del estado (lo usa el panel de control). Devuelve el estado nuevo.
+function enviarAccion(accion) { return llamar('overlay_mistel_accion', { p_accion: accion }); }
+
+function mostrarAvisoClave(texto) {
+  let d = document.getElementById('aviso-clave');
+  if (!d) {
+    d = document.createElement('div');
+    d.id = 'aviso-clave';
+    d.style.cssText = 'position:fixed;left:50%;top:40px;transform:translateX(-50%);z-index:99;background:#D62828;color:#fff;font:700 22px Rajdhani,"Segoe UI",sans-serif;padding:10px 18px;text-align:center;max-width:90%';
+    document.body.appendChild(d);
+  }
+  d.textContent = texto;
+}
+
+// Consulta el estado cada segundo y avisa solo cuando cambia.
+function conectar(alCambiar) {
+  if (!CLAVE) { mostrarAvisoClave('Overlay privado: falta ?clave=... en el link.'); return; }
+  let ultimoJson = '', errores = 0;
+  const tick = async () => {
+    try {
+      const estado = await llamar('overlay_mistel_estado', {});
+      errores = 0;
+      document.body.classList.remove('desconectado');
+      const json = JSON.stringify(estado);
+      if (json !== ultimoJson) { ultimoJson = json; alCambiar(estado); }
+      setTimeout(tick, CADA_MS);
+    } catch (e) {
+      if (e.claveMala) { mostrarAvisoClave('Overlay privado: la clave del link no es válida.'); return; }
+      errores++;
+      document.body.classList.add('desconectado');
+      setTimeout(tick, Math.min(10000, CADA_MS * 2 ** Math.min(errores, 4))); // reintenta cada vez más lento
+    }
+  };
+  tick();
+}
+
+function cadaSegundo(fn) {
+  fn();
+  setTimeout(() => { fn(); setInterval(fn, 1000); }, 1000 - (Date.now() % 1000));
+}
+
+// Modo "?captura": sin animaciones, solo para sacar fotos de prueba.
+if (location.search.includes('captura')) {
+  document.documentElement.insertAdjacentHTML('beforeend',
+    '<style>*,*:before,*:after{animation-duration:0s!important;animation-delay:0s!important;transition:none!important}</style>');
+}
+
+// Pone el aviso de "sin conexión" en la página.
+document.addEventListener('DOMContentLoaded', () => {
+  const d = document.createElement('div');
+  d.id = 'sin-conexion';
+  d.textContent = 'Sin conexión con Supabase: reintentando…';
+  document.body.appendChild(d);
+});
+
+const $ = (s, r = document) => r.querySelector(s);

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Gameplay</title>
+<link rel="stylesheet" href="../comun/comun.css">
+<style>
+/* Panel de progreso: compacto y en una esquina */
+.prog{position:absolute;width:400px;padding:16px 18px 14px;opacity:0;transition:opacity .5s var(--entra)}
+.prog.listo{opacity:1}
+.prog.arriba-derecha{right:28px;top:28px}
+.prog.arriba-izquierda{left:28px;top:28px}
+.prog.abajo-derecha{right:28px;bottom:28px}
+.prog.abajo-izquierda{left:28px;bottom:28px}
+.prog .ttl{font-weight:700;font-size:26px;letter-spacing:.04em;text-transform:uppercase;color:var(--blanco);line-height:1.1}
+.prog .fila{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px}
+.prog .pts{font-weight:700;font-size:30px;color:var(--blanco)}
+.prog .pts small{font-size:18px;color:var(--tenue)}
+.prog .barra{margin-top:6px}
+.prog .casillas{margin-top:12px}
+.prog .pie{display:flex;justify-content:space-between;margin-top:10px;font-weight:600;font-size:17px}
+.prog .pie em{font-style:normal;color:var(--amarillo)}
+.prog .ok{color:var(--amarillo)}
+
+/* Franja de Alas de Acero */
+.franja{position:absolute;left:50%;width:1080px;min-height:128px;display:flex;align-items:center;gap:22px;padding:16px 22px 20px;
+  transform:translateX(-50%) translateY(30px);opacity:0;pointer-events:none;
+  transition:opacity .45s var(--sale),transform .45s var(--sale)}
+.franja.abajo{bottom:150px}
+.franja.arriba{top:120px;transform:translateX(-50%) translateY(-30px)}
+.franja.visible{opacity:1;transform:translateX(-50%);transition:opacity .7s var(--entra),transform .7s var(--entra)}
+.franja .qr{width:96px;height:96px}
+.franja h2{font-weight:700;font-size:34px;text-transform:uppercase;color:var(--blanco);margin-top:6px;line-height:1}
+.franja p{font-size:21px;margin-top:5px;line-height:1.25}
+.franja p b{color:var(--amarillo);font-weight:700}
+.franja .tiempo{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.08)}
+.franja .tiempo i{display:block;height:100%;background:var(--rojo);width:100%}
+.franja.visible .tiempo i{animation:vaciar var(--dur,25s) linear forwards}
+@keyframes vaciar{to{width:0}}
+</style></head>
+<body class="transparente">
+<div id="prog" class="prog hud arriba-derecha">
+  <div class="k" id="p-sup">Sueños Hechos Realidad</div>
+  <div class="ttl"><span class="rojo">Mistel 2</span> · <span id="p-etapa">Etapa 1/7</span></div>
+  <div class="fila"><span class="pts num" id="p-pts">0 <small>/ 35.000</small></span><span class="k num" id="p-pct">0%</span></div>
+  <div class="barra" id="p-barra"><i style="width:0"></i></div>
+  <div class="casillas" id="p-casillas"></div>
+  <div class="pie"><span>Premio: <em id="p-premio">—</em></span><span id="p-cambio">—</span></div>
+</div>
+
+<div id="franja" class="franja hud abajo">
+  <div class="qr"><img src="../comun/qr-play.svg" alt=""></div>
+  <div id="franja-txt"></div>
+  <div class="tiempo"><i></i></div>
+</div>
+
+<script src="../comun/comun.js"></script>
+<script>
+const DURACION_AVISO = 25000;
+const MENSAJES = [
+  `<span class="etiqueta">Alas de Acero · Temporada 1</span>
+   <h2>Liga 1v1 de aviones en War League Planner</h2>
+   <p>Alas de Bronce <b>1.0–6.3</b> · Alas de Plata <b>6.7–10.3</b> · Alas de Oro <b>10.7+</b> · una partida por semana</p>`,
+  `<span class="etiqueta">Alas de Acero · Premios</span>
+   <h2>Campeón de cada división: 5.000 Águilas de Oro</h2>
+   <p>2.º <b>2.500</b> · 3.º y 4.º <b>1.000</b> · 5.º a 8.º <b>Skilled Pilot Pack</b> · el top 8 va a playoffs en stream</p>`,
+  `<span class="etiqueta">Alas de Acero · Inscríbete</span>
+   <h2>Escanea el QR y descarga War League Planner</h2>
+   <p>Gratis en Google Play. ¿Tienes iPhone? Úsala en el PC con <b>BlueStacks</b>. Cada división parte con <b>30 pilotos</b>.</p>`
+];
+
+let estado = null;
+const cargaPagina = Date.now();
+let indiceMsg = 0, ultimoAviso = 0, avisoN = null, mostrando = false, ocultarT = null;
+
+function proximoAviso() {
+  const c = estado.config;
+  return ultimoAviso ? ultimoAviso + c.avisoCadaMin * 60000 : cargaPagina + c.avisoPrimeroMin * 60000;
+}
+
+function mostrarAviso() {
+  const f = $('#franja');
+  clearTimeout(ocultarT);
+  $('#franja-txt').innerHTML = MENSAJES[indiceMsg % MENSAJES.length];
+  indiceMsg++;
+  ultimoAviso = Date.now();
+  mostrando = true;
+  f.classList.remove('visible'); void f.offsetWidth; // reinicia la animación
+  f.style.setProperty('--dur', DURACION_AVISO + 'ms');
+  f.classList.add('visible');
+  ocultarT = setTimeout(() => { f.classList.remove('visible'); mostrando = false; }, DURACION_AVISO);
+}
+
+function pintar() {
+  if (!estado) return;
+  const ev = calcularEvento();
+  const e = ev.etapa, pts = puntosDe(estado, e), hecha = etapaHecha(estado, e);
+  const p = $('#prog');
+  p.className = 'prog hud listo ' + estado.config.panelEsquina;
+  $('#p-sup').textContent = ev.fase === 'antes' ? 'Sueños Hechos Realidad · Pronto'
+    : `Sueños Hechos Realidad · Día ${ev.dia}/14`;
+  $('#p-etapa').textContent = `Etapa ${e}/7`;
+  $('#p-pts').innerHTML = `${fmtPuntos(Math.min(pts, 999999))} <small>/ ${fmtPuntos(EVENTO.meta)}</small>`;
+  const pct = hecha ? 100 : Math.min(100, Math.floor(pts / EVENTO.meta * 100));
+  $('#p-pct').innerHTML = hecha ? '<span class="ok">Hecha ✓</span>' : pct + '%';
+  $('#p-barra').classList.toggle('completa', hecha);
+  $('#p-barra i').style.width = pct + '%';
+  $('#p-casillas').innerHTML = [1, 2, 3, 4, 5, 6, 7].map((n) =>
+    `<span class="${etapaHecha(estado, n) ? 'hecha' : ''} ${n === e ? 'actual' : ''}"></span>`).join('');
+  $('#p-premio').textContent = EVENTO.premios[e - 1];
+  $('#p-cambio').innerHTML = ev.fase === 'despues' ? 'Evento <em>terminado</em>'
+    : ev.fase === 'antes' ? `Empieza en <em class="num">${fmtDuracion(ev.restante)}</em>`
+    : e === 7 ? `Termina en <em class="num">${fmtDuracion(ev.restante)}</em>`
+    : `Cambia en <em class="num">${fmtDuracion(ev.restante)}</em>`;
+
+  const f = $('#franja');
+  const pos = estado.config.avisoPosicion === 'arriba' ? 'arriba' : 'abajo';
+  if (!f.classList.contains(pos)) { f.classList.remove('arriba', 'abajo'); f.classList.add(pos); }
+
+  if (!mostrando && Date.now() >= proximoAviso()) mostrarAviso();
+}
+
+conectar((nuevo) => {
+  // "Lanzar aviso ahora" desde el panel (se ignora el valor que ya había al cargar)
+  if (avisoN !== null && nuevo.aviso.n > avisoN) { estado = nuevo; mostrarAviso(); }
+  avisoN = nuevo.aviso.n;
+  estado = nuevo;
+  pintar();
+});
+cadaSegundo(pintar);
+</script>
+</body></html>
