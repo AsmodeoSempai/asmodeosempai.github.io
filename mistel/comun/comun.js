@@ -157,3 +157,40 @@ function poner(sel, valor, como = 'innerHTML') {
   _ultimo.set(el, firma);
   el[como] = valor;
 }
+
+// ---------- Adornos de Halloween (solo con ?tema=halloween y en escenas con fondo) ----------
+function telarana() {
+  // Telaraña de esquina: rayos desde (0,0) y hilos que cuelgan entre rayos
+  const angulos = [0, 15, 30, 45, 60, 75, 90].map((g) => g * Math.PI / 180);
+  const radios = [55, 110, 170, 235, 300];
+  let d = '';
+  for (const a of angulos) d += `M0 0L${(300 * Math.cos(a)).toFixed(1)} ${(300 * Math.sin(a)).toFixed(1)}`;
+  for (const r of radios) {
+    angulos.forEach((a, i) => {
+      const x = r * Math.cos(a), y = r * Math.sin(a);
+      if (i === 0) { d += `M${x.toFixed(1)} ${y.toFixed(1)}`; return; }
+      const m = (a + angulos[i - 1]) / 2, rr = r * 0.86; // el hilo cuelga hacia la esquina
+      d += `Q${(rr * Math.cos(m)).toFixed(1)} ${(rr * Math.sin(m)).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`;
+    });
+  }
+  return `<svg viewBox="0 0 300 300"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`;
+}
+const MURCIELAGO = '<svg viewBox="0 0 64 30"><path fill="currentColor" d="M32 9c-1-3-3-5-3-5l-1 4C24 4 15 2 6 5c4 2 6 6 6 11 3-2 7-2 10 1 1-3 4-5 7-4 1-2 2-3 3-3s2 1 3 3c3-1 6 1 7 4 3-3 7-3 10-1 0-5 2-9 6-11-9-3-18-1-22 3l-1-4s-2 2-3 5z"/></svg>';
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!document.documentElement.classList.contains('halloween')) return;
+  const fondo = document.querySelector('.fondo-hud');
+  if (!fondo) return; // gameplay (transparente) y panel: sin adornos
+  const murcielagos = [
+    { l: 1180, t: 90, w: 112, d: '8s', r: '0s', x: '160px', y: '-25px' },
+    { l: 1330, t: 175, w: 74, d: '6.5s', r: '-2s', x: '-120px', y: '30px' },
+    { l: 1520, t: 120, w: 54, d: '7.5s', r: '-4s', x: '90px', y: '35px' },
+    { l: 420, t: 70, w: 64, d: '9s', r: '-1s', x: '140px', y: '20px' },
+    { l: 1660, t: 250, w: 45, d: '6s', r: '-3s', x: '-90px', y: '-30px' }
+  ].map((m) => `<div class="murcielago" style="left:${m.l}px;top:${m.t}px;width:${m.w}px;--d:${m.d};--r:${m.r};--x:${m.x};--y:${m.y}">${MURCIELAGO}</div>`).join('');
+  fondo.insertAdjacentHTML('afterend', `<div class="deco-halloween">
+    <div class="tela izq">${telarana()}</div><div class="tela der">${telarana()}</div>
+    ${murcielagos}
+    <div class="sello"><i class="calabaza"></i>Especial de Halloween</div>
+  </div>`);
+});

@@ -66,3 +66,65 @@ body.transparente{background:transparent}
 /* Aviso de desconexión: solo se ve en el panel de control, nunca en el stream */
 #sin-conexion{display:none}
 body.control.desconectado #sin-conexion{display:block;position:sticky;top:0;z-index:9;font:700 14px var(--fuente);color:#fff;background:var(--rojo);padding:6px 10px;text-align:center}
+
+/* =====================================================================
+   Variantes (se activan desde el link):
+   ?tema=halloween  -> colores y adornos de Halloween
+   ?formato=tiktok  -> letras más grandes y márgenes seguros para TikTok LIVE horizontal
+   ===================================================================== */
+
+/* ---------- Halloween ---------- */
+html.halloween{
+  --fondo:#0E0A14; --rojo:#FF7518; --amarillo:#C77DFF; --texto:#F1EAF7; --tenue:#9C8FB0;
+  --panel:rgba(20,12,30,.88); --linea:rgba(199,125,255,.20);
+}
+html.halloween .fondo-hud{
+  background:
+    radial-gradient(circle at 86% 16%,rgba(255,226,170,.16) 0,rgba(255,226,170,.06) 9%,transparent 18%),
+    radial-gradient(ellipse at 50% 115%,rgba(255,117,24,.22),transparent 55%),
+    radial-gradient(ellipse at 50% 40%,rgba(199,125,255,.07),transparent 60%),var(--fondo);
+}
+html.halloween .fondo-hud:before{opacity:.12}
+html.halloween .etiqueta{color:#1A0E06}
+html.halloween .barra.completa i,html.halloween .casillas span.hecha{background:var(--amarillo)}
+/* calabaza junto al título del panel de gameplay */
+.calabaza,html.halloween .prog .ttl:before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 7c1-3 3-5 6-5-2 1-3 3-3 5' fill='%235BA33A'/%3E%3Cellipse cx='10' cy='19' rx='8' ry='10' fill='%23E8650F'/%3E%3Cellipse cx='22' cy='19' rx='8' ry='10' fill='%23E8650F'/%3E%3Cellipse cx='16' cy='19' rx='7' ry='11' fill='%23FF7518'/%3E%3Cpath d='M10 16l3 2-3 1zM22 16l-3 2 3 1zM10 23q6 4 12 0-2 1-3 0-1 1-3 0-1 1-3 0-2 1-3 0z' fill='%231A0E06'/%3E%3C/svg%3E") center/contain no-repeat}
+html.halloween .prog .ttl:before{content:"";display:inline-block;width:26px;height:26px;margin-right:8px;vertical-align:-3px}
+
+/* Adornos (solo en escenas de pantalla completa; los pone comun.js) */
+.deco-halloween{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.deco-halloween .tela{position:absolute;width:300px;height:300px;color:rgba(241,234,247,.20)}
+.deco-halloween .tela.izq{left:0;top:0}
+.deco-halloween .tela.der{right:0;top:0;transform:scaleX(-1)}
+.deco-halloween .murcielago{position:absolute;color:#1B0F27;filter:drop-shadow(0 0 8px rgba(255,117,24,.55));
+  animation:volar var(--d,9s) ease-in-out var(--r,0s) infinite alternate}
+.deco-halloween .murcielago svg{display:block;width:100%;animation:aletear .35s ease-in-out infinite alternate}
+@keyframes volar{from{transform:translate(0,0) rotate(-4deg)}to{transform:translate(var(--x,140px),var(--y,-30px)) rotate(5deg)}}
+@keyframes aletear{from{transform:scaleY(1)}to{transform:scaleY(.55)}}
+.deco-halloween .sello{position:absolute;right:60px;top:40px;display:flex;align-items:center;gap:10px;
+  font:700 18px var(--fuente);letter-spacing:.18em;text-transform:uppercase;color:var(--rojo)}
+.deco-halloween .sello .calabaza{width:30px;height:30px}
+html.halloween .pulso{background:var(--rojo)}
+
+/* ---------- TikTok LIVE horizontal ---------- */
+/* Los celulares muestran la imagen chica: textos más grandes y nada pegado a los bordes,
+   donde TikTok pone el anfitrión, los espectadores, el chat y los regalos. */
+html.tiktok .k{font-size:19px}
+html.tiktok .prog .k{font-size:15px} /* el panel ya va agrandado */
+html.tiktok .prog{transform:scale(1.3)}
+html.tiktok .prog.arriba-derecha{right:70px;top:150px;transform-origin:top right}
+html.tiktok .prog.arriba-izquierda{left:70px;top:150px;transform-origin:top left}
+html.tiktok .prog.abajo-derecha{right:70px;bottom:120px;transform-origin:bottom right}
+html.tiktok .prog.abajo-izquierda{left:70px;bottom:120px;transform-origin:bottom left}
+html.tiktok .franja{width:1240px}
+html.tiktok .franja.abajo{bottom:210px}
+html.tiktok .franja.arriba{top:150px}
+html.tiktok .franja h2{font-size:42px}
+html.tiktok .franja p{font-size:26px}
+html.tiktok .franja .qr{width:120px;height:120px}
+html.tiktok .tarjeta-alas{transform:scale(1.2);transform-origin:bottom right;right:80px;bottom:110px}
+html.tiktok .pie{bottom:100px}
+html.tiktok .pie .k{font-size:22px}
+html.tiktok .caja{bottom:110px}
+html.tiktok .mini{transform:scale(1.2);transform-origin:bottom left;left:80px;bottom:110px}
+html.tiktok .prox{bottom:110px}
