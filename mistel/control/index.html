@@ -66,7 +66,7 @@ label input,label select{margin-top:3px}
 </div>
 
 <div class="sec">
-  <h2>Diapositivas (intro y torneo) <span id="diapo-txt">1 / 9</span></h2>
+  <h2>Diapositivas (intro y torneo) <span id="diapo-txt">1</span></h2>
   <div class="fila"><button id="atras">◀ Anterior</button><button class="rojo" id="adelante">Siguiente ▶</button></div>
   <div class="fila"><button id="primera">Ir a la 1</button></div>
 </div>
@@ -141,7 +141,7 @@ function pintar() {
     `<button data-etapa="${n}" class="${n === e ? 'sel' : ''} ${etapaHecha(estado, n) ? 'hecha' : ''}">${n}${etapaHecha(estado, n) ? '✓' : ''}</button>`).join('');
   poner('#etapas', htmlEtapas); // solo si cambió, para no perder clics
   poner('#marcar', estado.hechas[e] ? 'Quitar marca de hecha' : 'Marcar hecha (comprada)', 'textContent');
-  poner('#diapo-txt', `${estado.diapo + 1} / 9`, 'textContent');
+  poner("#diapo-txt", `${estado.diapo + 1}`, "textContent");
   // Configuración: no se pisa el campo que estás editando
   document.querySelectorAll('[data-cfg]').forEach((el) => {
     if (document.activeElement !== el) el.value = estado.config[el.dataset.cfg] ?? '';
