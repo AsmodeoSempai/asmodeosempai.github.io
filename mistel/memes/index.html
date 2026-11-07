@@ -17,6 +17,24 @@ h1{font-weight:700;font-size:150px;line-height:.95;text-transform:uppercase;colo
 .caja .link{display:inline-block;margin-top:10px;font-weight:700;font-size:46px;color:var(--blanco);letter-spacing:.02em}
 .caja .link span{color:var(--rojo)}
 .premio{margin-top:26px;font-weight:600;font-size:26px;letter-spacing:.18em;text-transform:uppercase;color:var(--amarillo)}
+
+/* Versión chica para jugar (?modo=chico): panel compacto en una esquina, fondo transparente */
+body.chico .centro{inset:auto;width:480px;padding:16px 20px 14px;justify-content:flex-start;text-align:left;align-items:stretch}
+body.chico.arriba-izquierda .centro{left:28px;top:28px}
+body.chico.arriba-derecha .centro{right:28px;top:28px}
+body.chico.abajo-izquierda .centro{left:28px;bottom:28px}
+body.chico.abajo-derecha .centro{right:28px;bottom:28px}
+body.chico .kick{font-size:14px;letter-spacing:.18em}
+body.chico h1{font-size:34px;margin-top:2px;line-height:1}
+body.chico .linea-roja{width:100%;margin-top:10px;background:linear-gradient(90deg,var(--rojo),transparent)}
+body.chico .reloj{font-size:76px;min-height:76px;margin-top:6px}
+body.chico .reloj.urgente{transform-origin:left center}
+body.chico .comienza{font-size:38px;line-height:1.05;transform-origin:left center}
+body.chico .caja{margin-top:8px;padding:0;background:none;border:0}
+body.chico .caja:before,body.chico .caja:after{display:none}
+body.chico .caja p{font-size:18px;line-height:1.25;white-space:nowrap}
+body.chico .caja .link{font-size:24px;margin-top:2px}
+body.chico .premio{margin-top:8px;font-size:15px;letter-spacing:.16em}
 </style></head>
 <body>
 <div class="fondo-hud"></div>
@@ -35,7 +53,15 @@ h1{font-weight:700;font-size:150px;line-height:.95;text-transform:uppercase;colo
 // Hora objetivo: 21:00 en Chile (America/Santiago), sin depender de la zona horaria del PC.
 // Se puede cambiar desde el link: ?fecha=2026-11-07&hora=21:00  ·  ?transparente=1 quita el fondo.
 const params = new URLSearchParams(location.search);
-if (params.get('transparente') === '1') {
+// ?modo=chico: panel compacto para poner encima del juego. ?esquina=arriba-izquierda (por defecto),
+// arriba-derecha, abajo-izquierda o abajo-derecha.
+if (params.get('modo') === 'chico') {
+  const esquinas = ['arriba-izquierda', 'arriba-derecha', 'abajo-izquierda', 'abajo-derecha'];
+  const esquina = esquinas.includes(params.get('esquina')) ? params.get('esquina') : 'arriba-izquierda';
+  document.body.classList.add('chico', esquina, 'transparente');
+  document.querySelector('.fondo-hud').remove();
+  document.querySelector('.centro').classList.add('hud');
+} else if (params.get('transparente') === '1') {
   document.body.classList.add('transparente');
   document.querySelector('.fondo-hud').remove();
 }
