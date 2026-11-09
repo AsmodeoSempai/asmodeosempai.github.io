@@ -369,6 +369,31 @@ body{font-family:var(--fuente);font-weight:500;color:var(--texto)}
   var ini=(parseInt(p.get('diapo'),10)||1)-1;
   actual=Math.min(Math.max(ini,0),n-1);
   ir(actual);
+
+  // Con ?clave=... la mueven los botones de diapositivas del panel mistel/control
+  // (mismo número que la intro y el torneo; el panel llega hasta 20 y aquí hay 11).
+  var clave=p.get('clave');
+  if(clave){
+    var URL_RPC='https://xkbsmpeqpezpzexiwfud.supabase.co/rest/v1/rpc/overlay_mistel_estado';
+    var ANON='sb_publishable_JB3Fy272a8T03Pipj7sExA_ecHOXT44';
+    var ultimo=null, errores=0;
+    var aviso=function(t){var d=document.getElementById('aviso');if(!d){d=document.createElement('div');d.id='aviso';
+      d.style.cssText='position:fixed;left:50%;top:30px;transform:translateX(-50%);z-index:99;background:#C8262B;color:#fff;font:700 22px Rajdhani,sans-serif;padding:10px 18px';
+      document.body.appendChild(d)}d.textContent=t;d.style.display=t?'':'none'};
+    var tick=function(){
+      fetch(URL_RPC,{method:'POST',cache:'no-store',headers:{apikey:ANON,Authorization:'Bearer '+ANON,'Content-Type':'application/json'},body:JSON.stringify({p_key:clave})})
+      .then(function(r){return r.json().then(function(d){return {ok:r.ok,status:r.status,d:d}})})
+      .then(function(r){
+        if(!r.ok){ if(r.status===401||r.status===403||/clave/i.test(r.d&&r.d.message||'')){aviso('La clave del link no es válida');return} throw 0 }
+        errores=0; aviso('');
+        var i=Math.min(n-1,Math.max(0,(r.d.diapo|0)));
+        if(i!==ultimo){ultimo=i; if(i!==actual)ir(i)}
+        setTimeout(tick,1000);
+      })
+      .catch(function(){errores++;setTimeout(tick,Math.min(10000,1000*Math.pow(2,Math.min(errores,4))))});
+    };
+    tick();
+  }
 })();
 </script>
 </body></html>
