@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La Gran Guerra 2026</title>
+<meta name="robots" content="noindex">
+<style>
+@font-face{font-family:Rajdhani;font-weight:500;src:url(../mistel/comun/fonts/rajdhani-500.woff2) format('woff2')}
+@font-face{font-family:Rajdhani;font-weight:600;src:url(../mistel/comun/fonts/rajdhani-600.woff2) format('woff2')}
+@font-face{font-family:Rajdhani;font-weight:700;src:url(../mistel/comun/fonts/rajdhani-700.woff2) format('woff2')}
+:root{
+  --fondo:#12100d; --barro:#1d1a15; --rojo:#C8262B; --khaki:#D8C690; --blanco:#fff; --texto:#E9E4D8;
+  --tenue:#9a927f; --panel:rgba(18,16,13,.82); --linea:rgba(216,198,144,.22);
+  --entra:cubic-bezier(.16,1,.3,1); --sale:cubic-bezier(.7,0,.84,0);
+  --fuente:Rajdhani,"Bahnschrift","Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:var(--fuente);font-weight:500;color:var(--texto)}
+#escena{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--fondo)}
+
+/* Diapositivas */
+.diapo{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .6s var(--sale)}
+.diapo.activa{opacity:1;transition:opacity .9s var(--entra)}
+.bg{position:absolute;inset:-2%;background-size:cover;background-position:center;transform:scale(1.04)}
+.diapo.activa .bg{animation:zoom 18s linear forwards}
+@keyframes zoom{from{transform:scale(1.04)}to{transform:scale(1.13)}}
+.velo{position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,10,8,.94) 0%,rgba(12,10,8,.78) 42%,rgba(12,10,8,.15) 100%)}
+.velo.abajo{background:linear-gradient(0deg,rgba(12,10,8,.96) 0%,rgba(12,10,8,.55) 45%,rgba(12,10,8,0) 75%)}
+.velo.total{background:rgba(12,10,8,.84)}
+.grano{position:absolute;inset:0;pointer-events:none;opacity:.10;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E")}
+.cont{position:absolute;inset:0;padding:110px 130px 130px;display:flex;flex-direction:column;justify-content:center}
+
+/* Entrada escalonada */
+.e{opacity:0;transform:translateY(30px)}
+.diapo.activa .e{opacity:1;transform:none;transition:opacity .8s var(--entra),transform .8s var(--entra)}
+.diapo.activa .e1{transition-delay:.25s}.diapo.activa .e2{transition-delay:.4s}.diapo.activa .e3{transition-delay:.55s}
+.diapo.activa .e4{transition-delay:.7s}.diapo.activa .e5{transition-delay:.85s}.diapo.activa .e6{transition-delay:1s}
+.diapo.activa .e7{transition-delay:1.15s}.diapo.activa .e8{transition-delay:1.3s}
+
+/* Tipografía */
+.kick{font-weight:700;font-size:28px;letter-spacing:.24em;text-transform:uppercase;color:var(--khaki);display:flex;align-items:center;gap:16px}
+.kick:before{content:"";width:44px;height:3px;background:var(--rojo)}
+.mega{font-weight:700;font-size:168px;line-height:.86;text-transform:uppercase;color:var(--blanco);margin-top:18px;text-shadow:0 6px 30px rgba(0,0,0,.6)}
+.titulo{font-weight:700;font-size:96px;line-height:.95;text-transform:uppercase;color:var(--blanco);margin-top:14px;text-shadow:0 4px 24px rgba(0,0,0,.5)}
+.texto{font-size:38px;line-height:1.3;max-width:1100px;margin-top:26px}
+.texto b{color:var(--blanco)}
+.rojo{color:var(--rojo)}.khaki{color:var(--khaki)}
+.sello{display:inline-block;background:var(--rojo);color:#fff;font-weight:700;font-size:26px;letter-spacing:.18em;padding:6px 16px;text-transform:uppercase}
+.panel{background:var(--panel);border:1px solid var(--linea);position:relative}
+.panel:before,.panel:after{content:"";position:absolute;width:16px;height:16px;border:3px solid var(--rojo)}
+.panel:before{left:-2px;top:-2px;border-right:0;border-bottom:0}
+.panel:after{right:-2px;bottom:-2px;border-left:0;border-top:0}
+
+/* Chips de datos */
+.chips{display:flex;gap:20px;margin-top:44px;flex-wrap:wrap}
+.chip{padding:18px 26px;min-width:300px}
+.chip .k{font-weight:600;font-size:20px;letter-spacing:.18em;text-transform:uppercase;color:var(--tenue)}
+.chip .v{font-weight:700;font-size:44px;color:var(--blanco);margin-top:2px;white-space:nowrap}
+.chip .v small{font-size:26px;color:var(--khaki)}
+
+/* Portada */
+#d1 .cont{justify-content:flex-end;padding-bottom:120px}
+.poppy{position:absolute;right:120px;bottom:120px;text-align:right}
+
+/* Collage */
+.collage{position:absolute;right:100px;top:120px;bottom:120px;width:820px;display:grid;grid-template-rows:1.25fr 1fr;grid-template-columns:1fr 1fr;gap:16px}
+.collage figure{position:relative;overflow:hidden;border:1px solid var(--linea)}
+.collage figure:first-child{grid-column:1/3}
+.collage img{width:100%;height:100%;object-fit:cover;display:block}
+.collage figcaption{position:absolute;left:0;bottom:0;background:var(--rojo);color:#fff;font-weight:700;font-size:22px;letter-spacing:.14em;text-transform:uppercase;padding:4px 12px}
+
+/* Progreso */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:46px;max-width:1660px}
+.stat{padding:26px 30px 24px}
+.stat .n{font-weight:700;font-size:96px;line-height:.9;color:var(--blanco)}
+.stat .n small{font-size:40px;color:var(--khaki);margin-left:6px}
+.stat .d{font-size:28px;line-height:1.2;margin-top:10px}
+.stat.dest{border-color:rgba(200,38,43,.6);background:rgba(60,14,14,.72)}
+.stat.dest .n{color:var(--khaki)}
+.formula{margin-top:30px;font-size:32px;color:var(--tenue)}
+.formula b{color:var(--blanco)}
+
+/* Ruta de menús */
+.ruta{display:flex;align-items:center;gap:18px;margin-top:40px;flex-wrap:wrap}
+.ruta .paso{padding:20px 28px;font-weight:700;font-size:40px;text-transform:uppercase;color:var(--blanco)}
+.ruta .paso.final{background:var(--rojo);border-color:var(--rojo)}
+.ruta .fl{font-weight:700;font-size:56px;color:var(--rojo)}
+.ruta .paso.final + .fl{color:var(--blanco)}
+
+/* Recompensas */
+.bando{display:flex;align-items:baseline;gap:24px}
+.vehs{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:36px}
+.veh{overflow:hidden}
+.veh img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#1a1916}
+.veh .nm{padding:12px 16px 14px}
+.veh .nm b{display:block;font-weight:700;font-size:34px;color:var(--blanco);text-transform:uppercase;line-height:1}
+.veh .nm span{font-size:22px;letter-spacing:.12em;text-transform:uppercase;color:var(--khaki)}
+.extras{display:flex;gap:18px;margin-top:22px}
+.extra{display:flex;align-items:center;gap:18px;padding:12px 24px 12px 14px;flex:1}
+.extra img{width:96px;height:96px;object-fit:contain;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%)}
+.extra .i{width:96px;height:96px;display:grid;place-items:center;font-size:56px;color:var(--khaki)}
+.extra b{display:block;font-weight:700;font-size:30px;color:var(--blanco);line-height:1.05}
+.extra span{font-size:22px;letter-spacing:.12em;text-transform:uppercase;color:var(--tenue)}
+
+/* Avión estrella */
+.estrella{background:radial-gradient(ellipse at 65% 50%,#2c2c2c,#141414 75%)}
+.estrella .bg{left:30%;right:-1%;top:6%;bottom:2%;background-size:contain;background-repeat:no-repeat;transform-origin:60% 50%;
+  -webkit-mask-image:radial-gradient(ellipse 52% 48% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 52% 48% at 50% 50%,#000 70%,transparent 100%)}
+.estrella .velo{background:linear-gradient(90deg,rgba(14,13,11,.95) 0%,rgba(14,13,11,.7) 30%,rgba(14,13,11,0) 42%)}
+.estrella .cont{justify-content:flex-start;padding-top:120px}
+.nuevo{display:inline-block;background:var(--khaki);color:#16130e;font-weight:700;font-size:30px;letter-spacing:.2em;padding:6px 18px;text-transform:uppercase;margin-top:28px;align-self:flex-start;
+  animation:late 1.6s ease-in-out infinite}
+@keyframes late{50%{box-shadow:0 0 0 12px rgba(216,198,144,0)}0%{box-shadow:0 0 0 0 rgba(216,198,144,.55)}}
+
+/* Lista de condiciones */
+.lista{list-style:none;margin-top:40px;display:grid;gap:20px;max-width:1300px}
+.lista li{display:flex;gap:24px;align-items:flex-start;padding:22px 28px;font-size:34px;line-height:1.25}
+.lista li b{color:var(--blanco)}
+.lista .ic{flex:none;width:52px;height:52px;display:grid;place-items:center;background:var(--rojo);color:#fff;font-weight:700;font-size:30px}
+
+/* Cierre */
+.cierre{text-align:center;align-items:center}
+.cierre .kick:after{content:"";width:44px;height:3px;background:var(--rojo)}
+.tipgrande{font-weight:700;font-size:150px;line-height:.9;color:var(--blanco);text-transform:uppercase;margin-top:16px}
+.tipgrande span{color:var(--khaki)}
+.cta{display:flex;gap:22px;margin-top:56px;justify-content:center}
+.cta div{padding:20px 36px;font-weight:700;font-size:40px;text-transform:uppercase;color:var(--blanco)}
+.cta div.r{background:var(--rojo);border-color:var(--rojo)}
+
+/* Barra inferior */
+#pie{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;gap:22px;padding:0 130px;z-index:5;
+  background:linear-gradient(0deg,rgba(12,10,8,.85),transparent)}
+#pie .marca{font-weight:700;font-size:22px;letter-spacing:.22em;text-transform:uppercase;color:var(--khaki)}
+#pie .marca b{color:var(--rojo)}
+#progreso{flex:1;height:4px;background:rgba(255,255,255,.12);position:relative}
+#progreso i{position:absolute;left:0;top:0;bottom:0;background:var(--rojo);transition:width .6s var(--entra)}
+#pie .num{font-weight:700;font-size:22px;color:var(--tenue);font-variant-numeric:tabular-nums;min-width:70px;text-align:right}
+.sin-pie #pie{display:none}
+.captura *{transition:none !important;animation:none !important}
+</style></head>
+<body>
+<div id="escena">
+
+<!-- 1. Portada -->
+<section class="diapo" id="d1">
+  <div class="bg" style="background-image:url(img/portada.jpg)"></div>
+  <div class="velo abajo"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="kick e e1">Evento de War Thunder · Noviembre 2026</div>
+    <div class="mega e e2">Vuelve<br><span class="khaki">La Gran Guerra</span></div>
+    <div class="chips">
+      <div class="chip panel e e3"><div class="k">Fechas</div><div class="v">11 – 18 nov</div></div>
+      <div class="chip panel e e4"><div class="k">Aviones nuevos</div><div class="v">2 <small>gratis</small></div></div>
+      <div class="chip panel e e5"><div class="k">Vehículos</div><div class="v">9 <small>en total</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Fechas y ambientación -->
+<section class="diapo" id="d2">
+  <div class="bg" style="background-image:url(img/carga.jpg)"></div>
+  <div class="velo"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="kick e e1">11 de noviembre · Armisticio de 1918</div>
+    <div class="titulo e e2">De vuelta a las<br><span class="khaki">trincheras de Flandes</span></div>
+    <div class="texto e e3">Frente Occidental, <b>1918</b>. Una batalla histórica para recordar el fin de la Primera Guerra Mundial.</div>
+    <div class="chips">
+      <div class="chip panel e e4"><div class="k">Empieza</div><div class="v">Mié 11 nov</div></div>
+      <div class="chip panel e e5"><div class="k">Termina</div><div class="v">Mié 18 nov <small>08:00</small></div></div>
+      <div class="chip panel e e6"><div class="k">Nueva etapa cada día</div><div class="v">08:00 <small>hora Chile</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Qué hay en la batalla -->
+<section class="diapo" id="d3">
+  <div class="bg" style="background-image:url(img/artilleria.jpg)"></div>
+  <div class="velo total"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="kick e e1">Qué vas a encontrar</div>
+    <div class="titulo e e2">Todo en<br>una misma<br><span class="khaki">batalla</span></div>
+    <div class="texto e e3" style="max-width:820px">Tanques, biplanos, un <b>zepelín gigante</b> e <b>infantería controlada por IA</b> en las trincheras.</div>
+  </div>
+  <div class="collage">
+    <figure class="e e3"><img src="img/zepelin-escena.jpg" alt=""><figcaption>Zepelín</figcaption></figure>
+    <figure class="e e4"><img src="img/granada-tanque.jpg" alt=""><figcaption>Tanques</figcaption></figure>
+    <figure class="e e5"><img src="img/trinchera-aleman.jpg" alt=""><figcaption>Infantería IA</figcaption></figure>
+  </div>
+</section>
+
+<!-- 4. Cómo se progresa -->
+<section class="diapo" id="d4">
+  <div class="bg" style="background-image:url(img/apuntando.jpg)"></div>
+  <div class="velo total"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="kick e e1">Cómo se progresa</div>
+    <div class="titulo e e2">Elimina soldados, <span class="khaki">sube de etapa</span></div>
+    <div class="stats">
+      <div class="stat panel e e3"><div class="n">5 <small>pts</small></div><div class="d">por cada <b>soldado IA</b> eliminado</div></div>
+      <div class="stat panel e e4"><div class="n">500 <small>pts</small></div><div class="d">tope por batalla (= 100 soldados)</div></div>
+      <div class="stat panel e e5"><div class="n">5.000 <small>pts</small></div><div class="d">para completar cada etapa</div></div>
+      <div class="stat panel e e6"><div class="n">1 <small>por día</small></div><div class="d">etapa por bando, y los dos bandos van en paralelo</div></div>
+      <div class="stat panel dest e e7"><div class="n">10 <small>batallas</small></div><div class="d">mínimo por etapa, sacando el tope en cada una</div></div>
+      <div class="stat panel e e8"><div class="n">599 <small>águilas</small></div><div class="d">para saltarte una etapa</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Cómo entrar -->
+<section class="diapo" id="d5">
+  <div class="bg" style="background-image:url(img/trinchera-entente.jpg)"></div>
+  <div class="velo"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="kick e e1">Cómo entrar</div>
+    <div class="titulo e e2">Dos bandos,<br><span class="khaki">6 etapas cada uno</span></div>
+    <div class="ruta e e3">
+      <div class="paso panel">Eventos y Torneos</div><div class="fl">›</div>
+      <div class="paso panel">Eventos Históricos</div><div class="fl">›</div>
+      <div class="paso panel final">La Gran Guerra</div>
+    </div>
+    <div class="texto e e4">Juega con la <b>Triple Entente</b> y con el <b>Imperio Alemán</b>: cada bando tiene sus propios premios.</div>
+    <div class="texto e e5" style="margin-top:14px"><span class="rojo">Ojo:</span> los premios se reclaman <b>a mano</b> en <b>Logros → «La Gran Guerra»</b>.</div>
+  </div>
+</section>
+
+<!-- 6. Triple Entente -->
+<section class="diapo" id="d6">
+  <div class="bg" style="background-image:url(img/trinchera-entente.jpg)"></div>
+  <div class="velo total"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="bando"><div class="kick e e1">Recompensas</div></div>
+    <div class="titulo e e2">Triple <span class="khaki">Entente</span></div>
+    <div class="vehs">
+      <div class="veh panel e e3"><img src="img/mark-v.jpg" alt=""><div class="nm"><b>Mark V</b><span>Tanque</span></div></div>
+      <div class="veh panel e e4"><img src="img/st-chamond.jpg" alt=""><div class="nm"><b>St-Chamond</b><span>Tanque</span></div></div>
+      <div class="veh panel e e5"><img src="img/garford.jpg" alt=""><div class="nm"><b>Garford</b><span>Blindado · URSS</span></div></div>
+      <div class="veh panel e e6"><img src="img/hp12.jpg" alt=""><div class="nm"><b>H.P.12</b><span>Avión</span></div></div>
+    </div>
+    <div class="extras">
+      <div class="extra panel e e7"><img src="img/calco-yette.png" alt=""><div><b>Calcomanía «Yette»</b><span>Premio intermedio</span></div></div>
+      <div class="extra panel e e7"><img src="img/calco-excelente.png" alt=""><div><b>Calcomanía «Excelente»</b><span>Premio intermedio</span></div></div>
+      <div class="extra panel e e8" style="border-color:rgba(216,198,144,.6)"><div class="i">★</div><div><b>SPAD S.XIII</b><span class="khaki">Premio final · Nuevo</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. SPAD S.XIII -->
+<section class="diapo estrella" id="d7">
+  <div class="bg" style="background-image:url(img/spad-13.jpg);background-position:62% center"></div>
+  <div class="velo"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="kick e e1">Triple Entente · Premio final</div>
+    <div class="mega e e2" style="font-size:150px">SPAD<br>S.XIII</div>
+    <div class="nuevo e e3">Nuevo · Gratis</div>
+    <div class="texto e e4" style="max-width:560px">El caza francés que estrena el evento este año.</div>
+  </div>
+</section>
+
+<!-- 8. Imperio Alemán -->
+<section class="diapo" id="d8">
+  <div class="bg" style="background-image:url(img/trinchera-aleman.jpg)"></div>
+  <div class="velo total"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="kick e e1">Recompensas</div>
+    <div class="titulo e e2">Imperio <span class="khaki">Alemán</span></div>
+    <div class="vehs">
+      <div class="veh panel e e3"><img src="img/a7v.jpg" alt=""><div class="nm"><b>A7V</b><span>Tanque</span></div></div>
+      <div class="veh panel e e4"><img src="img/beutepanzer.jpg" alt=""><div class="nm"><b>Beutepanzer Mk IV</b><span>Tanque capturado</span></div></div>
+      <div class="veh panel e e5"><img src="img/garford-beute.jpg" alt=""><div class="nm"><b>Garford-Beute</b><span>Blindado capturado</span></div></div>
+      <div class="veh panel e e6" style="border-color:rgba(216,198,144,.6)"><img src="img/fokker-d7.jpg" alt=""><div class="nm"><b>Fokker D.VII</b><span class="khaki">Premio final · Nuevo</span></div></div>
+    </div>
+    <div class="extras">
+      <div class="extra panel e e7"><img src="img/calco-calavera.png" alt=""><div><b>«Calavera Sonriente»</b><span>Calcomanía intermedia</span></div></div>
+      <div class="extra panel e e7"><img src="img/calco-tanquista.png" alt=""><div><b>«Insignia de Tanquista»</b><span>Calcomanía intermedia</span></div></div>
+      <div class="extra panel e e8"><div class="i">✠</div><div><b>«Luchador de Trincheras»</b><span>Título · 6 etapas</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Fokker D.VII -->
+<section class="diapo estrella" id="d9">
+  <div class="bg" style="background-image:url(img/fokker-d7.jpg);background-position:62% center"></div>
+  <div class="velo"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="kick e e1">Imperio Alemán · Premio final</div>
+    <div class="mega e e2" style="font-size:150px">Fokker<br>D.VII</div>
+    <div class="nuevo e e3">Nuevo · Gratis</div>
+    <div class="texto e e4" style="max-width:560px">El caza alemán más temido de 1918, ahora para tu hangar.</div>
+  </div>
+</section>
+
+<!-- 10. Condiciones -->
+<section class="diapo" id="d10">
+  <div class="bg" style="background-image:url(img/granada-tanque.jpg)"></div>
+  <div class="velo"></div><div class="grano"></div>
+  <div class="cont">
+    <div class="kick e e1">Lo que tienes que saber</div>
+    <div class="titulo e e2">Condiciones</div>
+    <ul class="lista">
+      <li class="panel e e3"><span class="ic">1</span><div>Los vehículos <b>quedan en tu árbol</b> y los puedes usar después del evento.</div></li>
+      <li class="panel e e4"><span class="ic">2</span><div>En el evento los tanques tienen <b>movilidad mejorada</b>; en batallas normales vuelven a la <b>histórica</b>.</div></li>
+      <li class="panel e e5"><span class="ic">3</span><div><b>No se repiten:</b> no puedes recibir dos veces el mismo vehículo.</div></li>
+      <li class="panel e e6"><span class="ic">4</span><div>¿Ya los tienes del año pasado? Recibes <b>trofeos</b> con potenciadores, respaldos, premium o camuflajes.</div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 11. Cierre -->
+<section class="diapo" id="d11">
+  <div class="bg" style="background-image:url(img/portada.jpg);background-position:70% center"></div>
+  <div class="velo total"></div><div class="grano"></div>
+  <div class="cont cierre">
+    <div class="kick e e1">Tip para conseguirlo todo</div>
+    <div class="tipgrande e e2">Entra <span>todos los días</span></div>
+    <div class="texto e e3" style="max-width:1300px">Mínimo <b>10 batallas por etapa</b>. La etapa nueva se abre a las <b>08:00, hora de Chile</b>, del 12 al 17 de noviembre.</div>
+    <div class="cta">
+      <div class="panel r e e4">Suscríbete</div>
+      <div class="panel e e5">Únete a CORPz</div>
+    </div>
+  </div>
+</section>
+
+<div id="pie"><div class="marca">War Thunder · <b>La Gran Guerra</b> 2026</div><div id="progreso"><i></i></div><div class="num" id="num"></div></div>
+</div>
+
+<script>
+(function(){
+  var p=new URLSearchParams(location.search);
+  var diapos=[].slice.call(document.querySelectorAll('.diapo'));
+  var n=diapos.length, actual=0, timer=null;
+  var auto=parseFloat(p.get('auto'))||0;          // ?auto=12 → pasa sola cada 12 s
+  var bucle=p.get('bucle')!=='no';                // al terminar vuelve a la primera
+  if(p.has('sinpie'))document.body.classList.add('sin-pie');
+  if(p.has('captura'))document.body.classList.add('captura');   // sin animaciones (para revisar)
+
+  function ajustar(){                             // escala 1920×1080 a la ventana
+    var e=document.getElementById('escena');
+    var s=Math.min(innerWidth/1920,innerHeight/1080);
+    e.style.transform='translate('+(innerWidth-1920*s)/2+'px,'+(innerHeight-1080*s)/2+'px) scale('+s+')';
+  }
+  addEventListener('resize',ajustar);ajustar();
+
+  function ir(i){
+    if(i<0)i=bucle?n-1:0; if(i>=n)i=bucle?0:n-1;
+    diapos[actual].classList.remove('activa');
+    actual=i;
+    var d=diapos[actual];
+    // reinicia el zoom del fondo
+    var bg=d.querySelector('.bg'); if(bg){bg.style.animation='none';void bg.offsetWidth;bg.style.animation='';}
+    d.classList.add('activa');
+    document.querySelector('#progreso i').style.width=((actual+1)/n*100)+'%';
+    document.getElementById('num').textContent=(actual+1)+' / '+n;
+    try{history.replaceState(null,'',location.pathname+'?'+(function(){p.set('diapo',actual+1);return p.toString()})())}catch(e){}
+    programar();
+  }
+  function programar(){clearTimeout(timer);if(auto>0)timer=setTimeout(function(){ir(actual+1)},auto*1000)}
+
+  addEventListener('keydown',function(ev){
+    var k=ev.key;
+    if(k==='ArrowRight'||k===' '||k==='PageDown'||k==='Enter'){ev.preventDefault();ir(actual+1)}
+    else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){ev.preventDefault();ir(actual-1)}
+    else if(k==='Home')ir(0); else if(k==='End')ir(n-1);
+    else if(/^[1-9]$/.test(k))ir(+k-1); else if(k==='0')ir(9);
+  });
+  addEventListener('click',function(ev){ir(ev.clientX<innerWidth*0.25?actual-1:actual+1)});
+  addEventListener('contextmenu',function(ev){ev.preventDefault();ir(actual-1)});
+
+  var ini=(parseInt(p.get('diapo'),10)||1)-1;
+  actual=Math.min(Math.max(ini,0),n-1);
+  ir(actual);
+})();
+</script>
+</body></html>
