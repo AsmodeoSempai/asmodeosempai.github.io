@@ -35,7 +35,7 @@ h1{font-weight:700;font-size:120px;text-transform:uppercase;color:var(--blanco);
   </div>
   <div class="qrs" id="p-qrs"></div>
 </div>
-<script src="../comun/copa.js?v=2"></script>
+<script src="../comun/copa.js?v=3"></script>
 <script>
 $('#p-qrs').innerHTML = QR_DISCORD + QR_APP;
 fondoOpcional('fondo.jpg');
@@ -61,8 +61,8 @@ function pintar() {
   poner(et, t.enVivo ? 'Hoy, en vivo' : abierta ? (t.ultimos ? `Inscripciones abiertas · últimos ${t.libres} cupos` : 'Inscripciones abiertas')
     : t.fase === 'terminado' ? 'Gracias por participar' : 'Inscripciones cerradas', 'textContent');
   poner('#p-txt', abierta
-    ? `Torneo 2 vs 2 de tanques + aviones · sáb 28 y dom 29 de noviembre, <b>${esc(c.horaSab)}</b> (Chile) · premio: <b>1.000 Águilas Doradas</b> para cada campeón`
-    : `Torneo 2 vs 2 de tanques + aviones · sáb 28 y dom 29 de noviembre, <b>${esc(c.horaSab)}</b> (Chile) · ¡síguelo en vivo aquí!`);
+    ? `Torneo 2 vs 2 de tanques + aviones · BR máximo 1.0 · sáb 28 y dom 29 de noviembre, <b>${esc(c.horaSab)}</b> hora de Chile · premio: <b>1.000 Águilas Doradas</b> para cada campeón · inscripciones hasta el ${t.cierreTxt}, ${esc(c.horaCierre)}`
+    : `Torneo 2 vs 2 de tanques + aviones · BR máximo 1.0 · sáb 28 y dom 29 de noviembre, <b>${esc(c.horaSab)}</b> hora de Chile · ¡síguelo en vivo aquí!`);
 }
 
 conectar((nuevo) => {

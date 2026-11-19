@@ -8,6 +8,8 @@ const TORNEO = {
   fechasCorta: '28–29 NOV',
   fechasLarga: 'Sábado 28 y domingo 29 de noviembre',
   modalidad: '2 vs 2 · tanques + aviones',
+  br: 'Máximo 1.0',
+  regla: 'Misma nación por dupla, y si ganas una partida no puedes repetir esa nación en la siguiente',
   premio: '1.000 Águilas Doradas',
   premioLargo: '1.000 Águilas Doradas para cada campeón',
   defensor: 'GRCHL',
@@ -16,6 +18,7 @@ const TORNEO = {
   legal: 'Evento comunitario no oficial, no afiliado a Gaijin Entertainment.'
 };
 const POR_ANUNCIAR = 'Por anunciar';
+const DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
 // Hora de Chile en noviembre 2026 = UTC−3 (horario de verano).
 function horaChile(dia, hhmm) {
@@ -32,18 +35,21 @@ function calcularTorneo(estado, ahora = Date.now() + DESFASE) {
   const c = estado.config;
   const inicio1 = horaChile(28, c.horaSab), inicio2 = horaChile(29, c.horaDom);
   const finDia1 = horaChile(29, '00:00'), fin = horaChile(30, '00:00');
-  const cierre = horaChile(28, c.horaCierre);
+  const diaCierre = c.diaCierre || 28;
+  const cierre = horaChile(diaCierre, c.horaCierre);
   const cupo = c.cupo || 32, inscritos = Math.min(estado.inscritos || 0, cupo);
   const libres = Math.max(0, cupo - inscritos);
-  let fase, objetivo = null;
-  if (ahora < inicio1) { fase = 'antes'; objetivo = inicio1; }
+  const cerradas = ahora >= cierre;
+  // La cuenta apunta primero al cierre de inscripciones y después al inicio.
+  let fase, objetivo = null, cuentaA = '';
+  if (ahora < inicio1) { fase = 'antes'; objetivo = cerradas ? inicio1 : cierre; cuentaA = cerradas ? 'inicio' : 'cierre'; }
   else if (ahora < finDia1) fase = 'vivo1';
-  else if (ahora < inicio2) { fase = 'entre'; objetivo = inicio2; }
+  else if (ahora < inicio2) { fase = 'entre'; objetivo = inicio2; cuentaA = 'dia2'; }
   else if (ahora < fin) fase = 'vivo2';
   else fase = 'terminado';
-  const cerradas = ahora >= cierre;
   return {
-    fase, objetivo, restante: objetivo ? objetivo - ahora : 0,
+    fase, objetivo, cuentaA, restante: objetivo ? objetivo - ahora : 0,
+    cierreTxt: `${DIAS_SEMANA[new Date(Date.UTC(2026, 10, diaCierre)).getUTCDay()]} ${diaCierre}`,
     enVivo: fase === 'vivo1' || fase === 'vivo2',
     cupo, inscritos, libres,
     insc: cerradas ? 'cerradas' : libres === 0 ? 'llenas' : 'abiertas',

@@ -11,6 +11,7 @@ h1 .t{display:block;color:var(--rojo);font-size:64px;letter-spacing:.06em;margin
 .dato{padding:14px 20px 12px}
 .dato .v{font-weight:700;font-size:34px;color:var(--blanco);line-height:1.1;margin-top:3px}
 .dato .v small{font-size:22px;color:var(--tenue);font-weight:600}
+.dato .regla{font-weight:600;font-size:18px;color:var(--amarillo);margin-top:4px}
 .dato.premio{grid-column:1/3;border-color:rgba(255,183,3,.45)}
 .dato.premio .v{color:var(--amarillo);font-size:40px}
 .por-anunciar{color:var(--tenue)}
@@ -39,10 +40,10 @@ h1 .t{display:block;color:var(--rojo);font-size:64px;letter-spacing:.06em;margin
   <div class="linea-roja anim anim-2"></div>
   <div class="datos">
     <div class="dato hud anim anim-2"><div class="k">Fechas</div><div class="v">Sáb 28 y dom 29 <small>nov</small></div></div>
-    <div class="dato hud anim anim-2"><div class="k">Hora de inicio (Chile)</div><div class="v" id="d-hora">–</div></div>
-    <div class="dato hud anim anim-3"><div class="k">Modalidad</div><div class="v">2 vs 2 <small>· tanques + aviones</small></div></div>
+    <div class="dato hud anim anim-2"><div class="k">Hora de inicio</div><div class="v" id="d-hora">–</div></div>
+    <div class="dato hud anim anim-3"><div class="k">Modalidad</div><div class="v">2 vs 2 <small>· tanques + aviones</small></div><div class="regla">Misma nación por dupla · quien gana no repite nación</div></div>
     <div class="dato hud anim anim-3"><div class="k">Formato</div><div class="v" id="d-formato">–</div></div>
-    <div class="dato hud anim anim-4"><div class="k">BR</div><div class="v" id="d-br">–</div></div>
+    <div class="dato hud anim anim-4"><div class="k">BR</div><div class="v">Máximo 1.0</div></div>
     <div class="dato hud anim anim-4"><div class="k">Cupo</div><div class="v num" id="d-cupo">–</div></div>
     <div class="dato premio hud anim anim-5"><div class="k">Premio</div><div class="v">1.000 Águilas Doradas <small>para cada campeón</small></div></div>
   </div>
@@ -65,7 +66,7 @@ h1 .t{display:block;color:var(--rojo);font-size:64px;letter-spacing:.06em;margin
 <div class="logos" id="logos"></div>
 <div class="legal">Evento comunitario no oficial, no afiliado a Gaijin Entertainment.</div>
 
-<script src="../comun/copa.js?v=2"></script>
+<script src="../comun/copa.js?v=3"></script>
 <script>
 $('.qrs').innerHTML = QR_DISCORD + QR_APP;
 $('#logos').innerHTML = imgOpcional('logo-wlp.png', 'logo') + imgOpcional('logo-asmodeo.png', 'logo');
@@ -74,17 +75,16 @@ let estado = null;
 function pintar() {
   if (!estado) return;
   const c = estado.config, t = calcularTorneo(estado);
-  poner('#d-hora', c.horaSab === c.horaDom ? `${esc(c.horaSab)} <small>ambos días</small>` : `${esc(c.horaSab)} <small>sáb ·</small> ${esc(c.horaDom)} <small>dom</small>`);
+  poner('#d-hora', c.horaSab === c.horaDom ? `${esc(c.horaSab)} <small>hora de Chile · ambos días</small>` : `${esc(c.horaSab)} <small>sáb ·</small> ${esc(c.horaDom)} <small>dom · hora de Chile</small>`);
   poner('#d-formato', dato(c.formato));
-  poner('#d-br', dato(c.br));
   poner('#d-cupo', `${t.inscritos} / ${t.cupo} <small>inscritos</small>`);
 
   const r = $('#c-reloj');
   r.classList.toggle('vivo', t.enVivo);
   if (t.enVivo) { poner('#c-k', t.fase === 'vivo1' ? 'Día 1' : 'Día 2 · gran final', 'textContent'); r.innerHTML = '<span class="pulso"></span>EN VIVO AHORA'; }
   else if (t.fase === 'terminado') { poner('#c-k', 'Copa Dupla de Acero T3', 'textContent'); r.textContent = 'Finalizada'; }
-  else { poner('#c-k', t.fase === 'entre' ? 'El día 2 empieza en' : 'El torneo empieza en', 'textContent'); r.textContent = fmtReloj(t.restante); }
-  poner('#c-sub', t.fase === 'antes' ? `Sábado 28 · ${esc(c.horaSab)} hora de Chile` : t.fase === 'entre' ? `Domingo 29 · ${esc(c.horaDom)} hora de Chile` : '');
+  else { poner('#c-k', t.cuentaA === 'dia2' ? 'El día 2 empieza en' : t.cuentaA === 'cierre' ? 'Las inscripciones cierran en' : 'El torneo empieza en', 'textContent'); r.textContent = fmtReloj(t.restante); }
+  poner('#c-sub', t.cuentaA === 'cierre' ? `Cierre: ${t.cierreTxt} · ${esc(c.horaCierre)} hora de Chile` : t.cuentaA === 'inicio' ? `Sábado 28 · ${esc(c.horaSab)} hora de Chile` : t.fase === 'entre' ? `Domingo 29 · ${esc(c.horaDom)} hora de Chile` : '');
 
   const abierta = t.insc === 'abiertas';
   $('#insc').classList.toggle('cerrada', !abierta);
@@ -92,7 +92,7 @@ function pintar() {
   et.className = 'etiqueta' + (abierta && !t.ultimos ? '' : ' amarilla');
   poner(et, abierta ? (t.ultimos ? `Últimos ${t.libres} cupo${t.libres === 1 ? "" : "s"}` : 'Inscripciones abiertas') : t.insc === 'llenas' ? 'Cupos llenos' : 'Inscripciones cerradas', 'textContent');
   poner('#i-titulo', abierta ? 'Inscríbete con tu dupla' : 'Sigue la Copa en vivo en este canal', 'textContent');
-  poner('#i-cierre', abierta ? `Cierre de inscripciones: <b>sábado 28, ${esc(c.horaCierre)}</b> (Chile)` : `Sábado 28 y domingo 29 · <b>${esc(c.horaSab)}</b> (Chile)`);
+  poner('#i-cierre', abierta ? `Inscripciones hasta el <b>${t.cierreTxt}, ${esc(c.horaCierre)}</b> (hora de Chile)` : `Sábado 28 y domingo 29 · <b>${esc(c.horaSab)}</b> hora de Chile`);
 }
 conectar((n) => { estado = n; pintar(); });
 cadaSegundo(pintar);

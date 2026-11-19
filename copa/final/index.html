@@ -35,7 +35,7 @@ h1{font-weight:700;font-size:130px;text-transform:uppercase;color:var(--blanco);
   </div>
 </div>
 <div class="legal">Evento comunitario no oficial, no afiliado a Gaijin Entertainment.</div>
-<script src="../comun/copa.js?v=2"></script>
+<script src="../comun/copa.js?v=3"></script>
 <script>
 $('#qrs').innerHTML = QR_DISCORD + QR_APP;
 fondoOpcional('fondo.jpg');
@@ -48,13 +48,13 @@ function pintar() {
     poner('#cita', 'Copa Dupla de Acero · <span>Temporada 3</span>');
   } else if (t.fase === 'vivo1' || t.fase === 'entre') {
     poner('#titulo', 'Mañana sigue <span class="rojo">la Copa</span>');
-    poner('#cita', `Domingo 29, <span>${esc(c.horaDom)}</span> (Chile)`);
+    poner('#cita', `Domingo 29, <span>${esc(c.horaDom)}</span> hora de Chile`);
   } else if (t.fase === 'vivo2') {
     poner('#titulo', 'Nos vemos en <span class="rojo">la Copa</span>');
     poner('#cita', 'Copa Dupla de Acero · <span>Temporada 3</span>');
   } else {
     poner('#titulo', 'Nos vemos en <span class="rojo">la Copa</span>');
-    poner('#cita', `Sábado 28, <span>${esc(c.horaSab)}</span> (Chile)`);
+    poner('#cita', `Sábado 28, <span>${esc(c.horaSab)}</span> hora de Chile`);
   }
   $('#caja-qr').style.display = t.fase === 'terminado' ? 'none' : '';
   const p = fmtProximoStream(c.proximoStream);

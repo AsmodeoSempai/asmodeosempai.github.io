@@ -60,8 +60,9 @@ label input,label select{margin-top:3px}
     <option value="que">1 · Qué es la Copa</option>
     <option value="premio">2 · Premio</option>
     <option value="inscripcion">3 · Cómo inscribirse (QR)</option>
-    <option value="campeon">4 · GRCHL defiende el título</option>
-    <option value="alas">5 · Alas de Acero</option>
+    <option value="regla">4 · Regla: misma nación por dupla</option>
+    <option value="campeon">5 · GRCHL defiende el título</option>
+    <option value="alas">6 · Alas de Acero</option>
   </select>
   <div class="fila"><button class="rojo" id="lanzar">Lanzar aviso ahora</button></div>
   <label class="check"><input type="checkbox" data-cfg="defensor"> Incluir «GRCHL defiende el título»</label>
@@ -87,16 +88,20 @@ label input,label select{margin-top:3px}
 <div class="sec">
   <h2>Datos del torneo</h2>
   <div class="dos">
-    <label>BR<input type="text" maxlength="40" placeholder="Por anunciar" data-cfg="br"></label>
     <label>Formato<input type="text" maxlength="40" placeholder="Ej.: Bo3 · final Bo5" data-cfg="formato"></label>
-  </div>
-  <div class="tres">
     <label>Cupo (máx. 32)<input type="number" min="2" max="32" data-cfg="cupo"></label>
+  </div>
+  <div class="dos">
     <label>Inicio sáb<input type="time" data-cfg="horaSab"></label>
     <label>Inicio dom<input type="time" data-cfg="horaDom"></label>
   </div>
-  <label>Cierre de inscripciones (sábado 28)<input type="time" data-cfg="horaCierre"></label>
-  <div class="nota">Horas de Chile. Si dejas BR o formato vacíos, en pantalla dice «Por anunciar».</div>
+  <div class="dos">
+    <label>Cierre de inscripciones<select data-cfg="diaCierre">
+      <option value="25">Miércoles 25</option><option value="26">Jueves 26</option><option value="27">Viernes 27</option><option value="28">Sábado 28</option>
+    </select></label>
+    <label>Hora del cierre<input type="time" data-cfg="horaCierre"></label>
+  </div>
+  <div class="nota">Horas de Chile. BR máximo 1.0 (fijo). Si dejas el formato vacío, en pantalla dice «Por anunciar».</div>
 </div>
 
 <div class="sec">
@@ -108,7 +113,7 @@ label input,label select{margin-top:3px}
 </div>
 <div id="toast"></div>
 
-<script src="../comun/copa.js?v=2"></script>
+<script src="../comun/copa.js?v=3"></script>
 <script>
 let estado = null;
 function toast(txt, error) {
@@ -130,7 +135,7 @@ function pintar() {
   if (!estado) return;
   const t = calcularTorneo(estado);
   poner('#r-s', t.enVivo ? '● En vivo ahora' : t.fase === 'entre' ? `El día 2 empieza en ${fmtReloj(t.restante)}`
-    : t.fase === 'antes' ? `Empieza en ${fmtReloj(t.restante)}` : 'Torneo terminado (la insignia ya no se ve)', 'textContent');
+    : t.fase === 'antes' ? `${t.cuentaA === 'cierre' ? 'Las inscripciones cierran' : 'Empieza'} en ${fmtReloj(t.restante)}` : 'Torneo terminado (la insignia ya no se ve)', 'textContent');
   poner('#insc', `${t.inscritos} <small>/ ${t.cupo}</small>`);
   poner('#insc-estado', t.insc === 'cerradas' ? 'Inscripciones cerradas' : t.insc === 'llenas' ? 'Cupos llenos'
     : t.ultimos ? `Últimos ${t.libres}` : `Quedan ${t.libres}`, 'textContent');
@@ -156,7 +161,7 @@ $('#lanzar').addEventListener('click', () => accion({ tipo: 'aviso', msg: $('#ms
 $('#cuenta').addEventListener('click', () => accion({ tipo: 'cuenta' }, 'Cuenta reiniciada'));
 $('#borrar-prox').addEventListener('click', () => accion({ tipo: 'config', valores: { proximoStream: '' } }, 'Fecha quitada'));
 document.querySelectorAll('[data-cfg]').forEach((el) => el.addEventListener('change', () => {
-  const v = el.type === 'checkbox' ? el.checked : el.type === 'number' ? Number(el.value) : el.value;
+  const v = el.type === 'checkbox' ? el.checked : (el.type === 'number' || el.dataset.cfg === 'diaCierre') ? Number(el.value) : el.value;
   accion({ tipo: 'config', valores: { [el.dataset.cfg]: v } }, 'Guardado');
   if (el.type !== 'checkbox') el.blur();
 }));

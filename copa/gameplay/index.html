@@ -12,7 +12,7 @@
 .insignia:before,.insignia:after{width:18px;height:18px;border-width:3px}
 .insignia .ttl{font-weight:700;font-size:33px;letter-spacing:.03em;text-transform:uppercase;color:var(--blanco);line-height:1.05}
 .insignia .ttl .t3{color:var(--rojo)}
-.insignia .fila{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px}
+.insignia .fila{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:8px;white-space:nowrap}
 .insignia .fecha{font-weight:700;font-size:25px;letter-spacing:.1em;color:var(--amarillo)}
 .insignia .cuenta{font-weight:700;font-size:30px;color:var(--blanco)}
 .insignia .cuenta small{font-weight:600;font-size:17px;letter-spacing:.12em;color:var(--tenue);text-transform:uppercase;margin-right:8px}
@@ -60,7 +60,7 @@
   <div class="tiempo"><i></i></div>
 </div>
 
-<script src="../comun/copa.js?v=2"></script>
+<script src="../comun/copa.js?v=3"></script>
 <script>
 const DURACION_AVISO = 25000;
 const ALAS = [
@@ -73,10 +73,10 @@ let indiceAlas = 0;
 // Cada mensaje devuelve { izq, txt } o null si no corresponde mostrarlo.
 const MENSAJES = {
   que(e, t) {
-    const extra = [e.config.formato && `Partidas <b>${esc(e.config.formato)}</b>`, e.config.br && `BR <b>${esc(e.config.br)}</b>`].filter(Boolean).join(' · ');
+    const extra = e.config.formato ? ` · Partidas <b>${esc(e.config.formato)}</b>` : '';
     return { izq: 'logo', txt: `<span class="etiqueta">${TORNEO.corto}</span>
-      <h2>Torneo 2 vs 2 de tanques + aviones</h2>
-      <p>Sábado <b>28</b> y domingo <b>29 de noviembre</b> · ${esc(t.horaSab)} (Chile)${extra ? ' · ' + extra : ''}</p>` };
+      <h2>Torneo 2 vs 2 de tanques + aviones · BR máximo 1.0</h2>
+      <p>Sábado <b>28</b> y domingo <b>29 de noviembre</b> · <b>${esc(t.horaSab)}</b> hora de Chile${extra}</p>` };
   },
   premio() {
     return { izq: 'logo', txt: `<span class="etiqueta">${TORNEO.corto} · Premio</span>
@@ -87,17 +87,22 @@ const MENSAJES = {
     if (t.insc === 'cerradas' || t.insc === 'llenas') {
       return { izq: 'logo', txt: `<span class="etiqueta amarilla">${t.insc === 'llenas' ? 'Cupos llenos' : 'Inscripciones cerradas'}</span>
         <h2>Sigue la Copa en vivo en este canal</h2>
-        <p>Sábado <b>28</b> y domingo <b>29</b> · desde las <b>${esc(t.horaSab)}</b> (Chile)</p>` };
+        <p>Sábado <b>28</b> y domingo <b>29</b> · desde las <b>${esc(t.horaSab)}</b>, hora de Chile</p>` };
     }
     return { izq: 'qrs', txt: `<span class="etiqueta ${t.ultimos ? 'amarilla' : ''}">${t.ultimos ? `Últimos ${t.libres} cupo${t.libres === 1 ? "" : "s"}` : 'Inscripciones abiertas'}</span>
       <h2>Inscríbete en Discord o en War League Planner</h2>
-      <p><b>${TORNEO.discord}</b> · app gratis en Google Play · cierre: sáb 28, <b>${esc(t.horaCierre)}</b> (Chile)</p>` };
+      <p><b>${TORNEO.discord}</b> · app gratis en Google Play · inscripciones hasta el <b>${t.cierreTxt}, ${esc(t.horaCierre)}</b> (hora de Chile)</p>` };
+  },
+  regla() {
+    return { izq: 'logo', txt: `<span class="etiqueta">${TORNEO.corto} · Regla especial</span>
+      <h2>Misma nación por dupla</h2>
+      <p>Si ganas una partida, <b>no puedes repetir esa nación</b> en la siguiente.</p>` };
   },
   campeon(e, t, forzar) {
     if (!e.config.defensor && !forzar) return null;
     return { izq: 'logo', txt: `<span class="etiqueta">Campeón vigente</span>
       <h2>${TORNEO.defensor} defiende el título: ¿quién se lo quita?</h2>
-      <p>${e.config.br ? `BR del torneo: <b>${esc(e.config.br)}</b>` : 'Copa Dupla de Acero · Temporada 3'}</p>` };
+      <p>Copa Dupla de Acero · Temporada 3 · BR máximo 1.0</p>` };
   },
   alas(e, t, forzar) {
     if (!e.config.alas && !forzar) return null;
@@ -105,7 +110,7 @@ const MENSAJES = {
     return { izq: 'play', txt: `<span class="etiqueta">${et}</span><h2>${h}</h2><p>${p}</p>` };
   }
 };
-const ORDEN = ['que', 'premio', 'inscripcion', 'campeon', 'alas'];
+const ORDEN = ['que', 'premio', 'inscripcion', 'regla', 'campeon', 'alas'];
 
 let estado = null;
 const cargaPagina = Date.now();
@@ -147,7 +152,7 @@ function pintar() {
   ins.className = `insignia hud ${c.insigniaEsquina}${ver ? ' ver' : ''}`;
   poner('#i-cuenta', t.enVivo ? `<span class="vivo"><span class="pulso"></span>EN VIVO AHORA</span>`
     : t.fase === 'entre' ? `<small>Día 2 en</small>${fmtDHM(t.restante)}`
-    : t.fase === 'antes' ? `<small>Empieza en</small>${fmtDHM(t.restante)}` : '');
+    : t.fase === 'antes' ? `<small>${t.cuentaA === 'cierre' ? 'Cierre en' : 'Empieza en'}</small>${fmtDHM(t.restante)}` : '');
   poner('#i-insc', !c.mostrarInscritos ? ''
     : t.insc === 'abiertas' ? `<span>Inscritos: <b class="num">${t.inscritos}/${t.cupo}</b></span>${t.ultimos ? `<em>Últimos ${t.libres}</em>` : ''}`
     : t.enVivo || t.fase === 'entre' ? `<span>Inscritos: <b class="num">${t.inscritos}</b></span>`
