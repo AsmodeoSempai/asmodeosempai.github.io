@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Copa · Final</title>
+<link rel="stylesheet" href="../comun/copa.css?v=1">
+<style>
+.centro{position:absolute;left:0;right:0;top:190px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.centro .k{font-size:22px}
+h1{font-weight:700;font-size:130px;text-transform:uppercase;color:var(--blanco);line-height:.95;margin-top:12px}
+.centro .linea-roja{width:620px;margin-top:24px}
+.cita{font-weight:700;font-size:54px;text-transform:uppercase;color:var(--blanco);margin-top:28px;line-height:1}
+.cita span{color:var(--amarillo)}
+.abajo{position:absolute;left:50%;bottom:150px;transform:translateX(-50%);display:flex;gap:28px;align-items:stretch}
+.caja{padding:22px 28px}
+.caja .qr{width:170px;height:170px}
+.caja .qrs figcaption{font-size:16px}
+.prox{display:flex;flex-direction:column;justify-content:center;min-width:520px}
+.prox .v{font-weight:700;font-size:44px;color:var(--blanco);line-height:1.05;margin-top:8px}
+.prox .h{font-weight:700;font-size:64px;color:var(--rojo);line-height:1;margin-top:4px}
+.prox .logo{height:64px;width:auto;margin-top:16px}
+.prox.vacio{display:none}
+</style></head>
+<body>
+<div class="fondo-hud"></div><div class="fondo-img"></div>
+<div class="centro">
+  <div class="k anim">Gracias por acompañarme</div>
+  <h1 class="anim anim-1" id="titulo">Nos vemos en <span class="rojo">la Copa</span></h1>
+  <div class="linea-roja anim anim-2"></div>
+  <div class="cita anim anim-3" id="cita"></div>
+</div>
+<div class="abajo">
+  <div class="caja hud anim anim-4" id="caja-qr"><div class="qrs" id="qrs"></div></div>
+  <div class="caja hud prox anim anim-5" id="prox">
+    <div class="k">Próximo stream</div>
+    <div class="v" id="prox-dia"></div>
+    <div class="h num" id="prox-hora"></div>
+  </div>
+</div>
+<div class="legal">Evento comunitario no oficial, no afiliado a Gaijin Entertainment.</div>
+<script src="../comun/copa.js?v=1"></script>
+<script>
+$('#qrs').innerHTML = QR_DISCORD + QR_APP;
+fondoOpcional('fondo.jpg');
+let estado = null;
+function pintar() {
+  if (!estado) return;
+  const c = estado.config, t = calcularTorneo(estado);
+  if (t.fase === 'terminado') {
+    poner('#titulo', '¡Gracias por ver <span class="rojo">la Copa</span>!');
+    poner('#cita', 'Copa Dupla de Acero · <span>Temporada 3</span>');
+  } else if (t.fase === 'vivo1' || t.fase === 'entre') {
+    poner('#titulo', 'Mañana sigue <span class="rojo">la Copa</span>');
+    poner('#cita', `Domingo 29, <span>${esc(c.horaDom)}</span> (Chile)`);
+  } else if (t.fase === 'vivo2') {
+    poner('#titulo', 'Nos vemos en <span class="rojo">la Copa</span>');
+    poner('#cita', 'Copa Dupla de Acero · <span>Temporada 3</span>');
+  } else {
+    poner('#titulo', 'Nos vemos en <span class="rojo">la Copa</span>');
+    poner('#cita', `Sábado 28, <span>${esc(c.horaSab)}</span> (Chile)`);
+  }
+  $('#caja-qr').style.display = t.fase === 'terminado' ? 'none' : '';
+  const p = fmtProximoStream(c.proximoStream);
+  $('#prox').classList.toggle('vacio', !p);
+  if (p) { poner('#prox-dia', p.texto, 'textContent'); poner('#prox-hora', p.hora + ' hrs', 'textContent'); }
+}
+conectar((n) => { estado = n; pintar(); });
+cadaSegundo(pintar);
+</script>
+</body></html>

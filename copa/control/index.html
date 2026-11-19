@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Control · Copa Dupla</title>
+<link rel="stylesheet" href="../comun/copa.css?v=1">
+<style>
+html,body{width:auto;height:auto;min-height:100%;overflow:auto}
+body{font-size:16px;padding:0 0 20px;background:#151515}
+.sec{border-bottom:1px solid var(--linea);padding:12px 12px 14px}
+h2{font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--tenue);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+h2 span{color:var(--amarillo);letter-spacing:.04em}
+.resumen{padding:12px;background:#1c1c1c;border-bottom:2px solid var(--rojo)}
+.resumen .t{font-weight:700;font-size:22px;color:var(--blanco);text-transform:uppercase}
+.resumen .s{font-weight:600;font-size:15px;color:var(--tenue);margin-top:2px}
+.grande{font-weight:700;font-size:40px;color:var(--blanco);line-height:1}
+.grande small{font-size:18px;color:var(--tenue)}
+.fila{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.fila>*{flex:1 1 0;min-width:0}
+button{font:700 16px var(--fuente);color:var(--texto);background:#262626;border:1px solid #3a3a3a;padding:9px 6px;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;transition:background .15s ease-out}
+button:hover{background:#333}
+button:active{background:#444}
+button.rojo{background:var(--rojo);border-color:var(--rojo);color:#fff}
+button.rojo:hover{background:#e33a3a}
+button.confirmar{background:#5a1414;border-color:var(--rojo);color:#fff}
+input,select{font:600 17px var(--fuente);color:var(--blanco);background:#0d0d0d;border:1px solid #3a3a3a;padding:8px;width:100%;color-scheme:dark}
+input:focus,select:focus{outline:1px solid var(--amarillo)}
+input::placeholder{color:#666}
+label{display:block;font-weight:600;font-size:14px;color:var(--tenue);margin-top:8px}
+label input,label select{margin-top:3px}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tres{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.check{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;color:var(--texto);margin-top:10px;cursor:pointer}
+.check input{width:20px;height:20px;margin:0;accent-color:var(--rojo);flex:none}
+.nota{font-size:13px;color:var(--tenue);margin-top:6px}
+.aviso-urg{color:var(--amarillo);font-weight:700}
+#toast{position:fixed;left:8px;right:8px;bottom:8px;background:var(--amarillo);color:#111;font-weight:700;padding:8px 10px;text-align:center;
+  opacity:0;transform:translateY(10px);transition:opacity .25s ease-in,transform .25s ease-in;pointer-events:none}
+#toast.ver{opacity:1;transform:none;transition:opacity .3s var(--entra),transform .3s var(--entra)}
+#toast.error{background:var(--rojo);color:#fff}
+</style></head>
+<body class="control">
+<div class="resumen">
+  <div class="t">Copa Dupla de Acero · T3</div>
+  <div class="s num" id="r-s">Conectando…</div>
+</div>
+
+<div class="sec">
+  <h2>Inscritos <span id="insc-estado"></span></h2>
+  <div class="grande num" id="insc">0 <small>/ 16</small></div>
+  <div class="fila"><button id="menos">−1</button><button class="rojo" id="mas">+1</button></div>
+  <div class="fila">
+    <input id="exacto" type="number" min="0" step="1" inputmode="numeric" placeholder="Número exacto" style="flex:2">
+    <button id="fijar">Fijar</button>
+  </div>
+</div>
+
+<div class="sec">
+  <h2>Aviso en gameplay</h2>
+  <select id="msg">
+    <option value="auto">Siguiente de la rotación</option>
+    <option value="que">1 · Qué es la Copa</option>
+    <option value="premio">2 · Premio</option>
+    <option value="inscripcion">3 · Cómo inscribirse (QR)</option>
+    <option value="campeon">4 · GRCHL defiende el título</option>
+    <option value="alas">5 · Alas de Acero</option>
+  </select>
+  <div class="fila"><button class="rojo" id="lanzar">Lanzar aviso ahora</button></div>
+  <label class="check"><input type="checkbox" data-cfg="defensor"> Incluir «GRCHL defiende el título»</label>
+  <label class="check"><input type="checkbox" data-cfg="alas"> Incluir aviso de Alas de Acero</label>
+  <div class="dos">
+    <label>Aviso cada (min)<input type="number" min="1" max="240" data-cfg="avisoCadaMin"></label>
+    <label>Primer aviso (min)<input type="number" min="0" max="120" data-cfg="avisoPrimeroMin"></label>
+  </div>
+  <label>El aviso sale<select data-cfg="avisoPosicion"><option value="abajo">Abajo</option><option value="arriba">Arriba</option></select></label>
+</div>
+
+<div class="sec">
+  <h2>Insignia en gameplay</h2>
+  <label class="check"><input type="checkbox" data-cfg="insignia"> Mostrar la insignia</label>
+  <label class="check"><input type="checkbox" data-cfg="mostrarInscritos"> Mostrar «Inscritos: X/16»</label>
+  <label>Esquina
+    <select data-cfg="insigniaEsquina">
+      <option value="arriba-derecha">Arriba derecha</option><option value="arriba-izquierda">Arriba izquierda</option>
+      <option value="abajo-derecha">Abajo derecha</option><option value="abajo-izquierda">Abajo izquierda</option>
+    </select></label>
+</div>
+
+<div class="sec">
+  <h2>Datos del torneo</h2>
+  <div class="dos">
+    <label>BR<input type="text" maxlength="40" placeholder="Por anunciar" data-cfg="br"></label>
+    <label>Formato<input type="text" maxlength="40" placeholder="Ej.: Bo3 · final Bo5" data-cfg="formato"></label>
+  </div>
+  <div class="tres">
+    <label>Cupo<input type="number" min="2" max="64" data-cfg="cupo"></label>
+    <label>Inicio sáb<input type="time" data-cfg="horaSab"></label>
+    <label>Inicio dom<input type="time" data-cfg="horaDom"></label>
+  </div>
+  <label>Cierre de inscripciones (sábado 28)<input type="time" data-cfg="horaCierre"></label>
+  <div class="nota">Horas de Chile. Si dejas BR o formato vacíos, en pantalla dice «Por anunciar».</div>
+</div>
+
+<div class="sec">
+  <h2>Empezando y final</h2>
+  <label>Cuenta regresiva de «Empezando» (min)<input type="number" min="1" max="180" data-cfg="empezandoMin"></label>
+  <div class="fila"><button id="cuenta">Reiniciar cuenta de «Empezando»</button></div>
+  <label>Próximo stream (fecha y hora)<input type="datetime-local" data-cfg="proximoStream"></label>
+  <div class="fila"><button id="borrar-prox">Quitar fecha del próximo stream</button></div>
+</div>
+<div id="toast"></div>
+
+<script src="../comun/copa.js?v=1"></script>
+<script>
+let estado = null;
+function toast(txt, error) {
+  const t = $('#toast'); t.textContent = txt; t.classList.toggle('error', !!error); t.classList.add('ver');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('ver'), 1600);
+}
+let ultimaAccion = 0;
+async function accion(datos, msg) {
+  try {
+    ultimaAccion = Date.now();
+    estado = await enviarAccion(datos);
+    ultimaAccion = Date.now();
+    pintar();
+    if (msg) toast(msg);
+  } catch (e) { toast(e.claveMala ? 'La clave del link no es válida' : 'No se pudo: ' + e.message, true); }
+}
+
+function pintar() {
+  if (!estado) return;
+  const t = calcularTorneo(estado);
+  poner('#r-s', t.enVivo ? '● En vivo ahora' : t.fase === 'entre' ? `El día 2 empieza en ${fmtReloj(t.restante)}`
+    : t.fase === 'antes' ? `Empieza en ${fmtReloj(t.restante)}` : 'Torneo terminado (la insignia ya no se ve)', 'textContent');
+  poner('#insc', `${t.inscritos} <small>/ ${t.cupo}</small>`);
+  poner('#insc-estado', t.insc === 'cerradas' ? 'Inscripciones cerradas' : t.insc === 'llenas' ? 'Cupos llenos'
+    : t.ultimos ? `Últimos ${t.libres}` : `Quedan ${t.libres}`, 'textContent');
+  // No se pisa el campo que estás editando
+  document.querySelectorAll('[data-cfg]').forEach((el) => {
+    if (document.activeElement === el) return;
+    const v = estado.config[el.dataset.cfg];
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v ?? '';
+  });
+}
+
+$('#mas').addEventListener('click', () => accion({ tipo: 'inscritos', paso: 1 }));
+$('#menos').addEventListener('click', () => accion({ tipo: 'inscritos', paso: -1 }));
+const fijar = () => {
+  const v = $('#exacto').value.trim();
+  if (v === '' || isNaN(Number(v))) return toast('Escribe un número', true);
+  accion({ tipo: 'inscritos', valor: Number(v) }, 'Inscritos actualizados');
+  $('#exacto').value = '';
+};
+$('#fijar').addEventListener('click', fijar);
+$('#exacto').addEventListener('keydown', (e) => { if (e.key === 'Enter') fijar(); });
+$('#lanzar').addEventListener('click', () => accion({ tipo: 'aviso', msg: $('#msg').value }, 'Aviso lanzado'));
+$('#cuenta').addEventListener('click', () => accion({ tipo: 'cuenta' }, 'Cuenta reiniciada'));
+$('#borrar-prox').addEventListener('click', () => accion({ tipo: 'config', valores: { proximoStream: '' } }, 'Fecha quitada'));
+document.querySelectorAll('[data-cfg]').forEach((el) => el.addEventListener('change', () => {
+  const v = el.type === 'checkbox' ? el.checked : el.type === 'number' ? Number(el.value) : el.value;
+  accion({ tipo: 'config', valores: { [el.dataset.cfg]: v } }, 'Guardado');
+  if (el.type !== 'checkbox') el.blur();
+}));
+
+// Una consulta que salió antes de tu último clic puede traer datos viejos: se ignora.
+conectar((n) => { if (Date.now() - ultimaAccion < 1500) return; estado = n; pintar(); });
+setInterval(pintar, 1000);
+</script>
+</body></html>

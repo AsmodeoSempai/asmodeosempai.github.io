@@ -1,0 +1,67 @@
+@font-face{font-family:Rajdhani;font-weight:500;src:url(fonts/rajdhani-500.woff2) format('woff2')}
+@font-face{font-family:Rajdhani;font-weight:600;src:url(fonts/rajdhani-600.woff2) format('woff2')}
+@font-face{font-family:Rajdhani;font-weight:700;src:url(fonts/rajdhani-700.woff2) format('woff2')}
+
+:root{
+  --fondo:#111111; --rojo:#D62828; --amarillo:#FFB703; --blanco:#FFFFFF; --texto:#ECECEC;
+  --tenue:#8E8E8E; --panel:rgba(17,17,17,.88); --linea:rgba(255,255,255,.14);
+  --entra:cubic-bezier(.16,1,.3,1);   /* ease-out */
+  --sale:cubic-bezier(.7,0,.84,0);    /* ease-in */
+  --fuente:Rajdhani,"Bahnschrift","Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden}
+body{font-family:var(--fuente);font-weight:500;color:var(--texto);background:var(--fondo)}
+body.transparente{background:transparent}
+
+/* Fondo: img/fondo.jpg si existe (lo pone copa.js), si no #111111 con cuadrícula.
+   El color va en esta capa porque el CSS por defecto de OBS deja el body transparente. */
+.fondo-hud{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(255,255,255,.05),transparent 62%),var(--fondo)}
+.fondo-hud:before{content:"";position:absolute;inset:0;opacity:.22;
+  background-image:linear-gradient(var(--linea) 1px,transparent 1px),linear-gradient(90deg,var(--linea) 1px,transparent 1px);background-size:120px 120px}
+.fondo-img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity .8s var(--entra)}
+.fondo-img.ok{opacity:1}
+.fondo-img:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(17,17,17,.94) 0%,rgba(17,17,17,.72) 50%,rgba(17,17,17,.5) 100%)}
+
+/* Panel HUD con esquinas marcadas */
+.hud{position:relative;background:var(--panel);border:1px solid var(--linea)}
+.hud:before,.hud:after{content:"";position:absolute;width:14px;height:14px;border:2px solid var(--rojo);pointer-events:none}
+.hud:before{left:-1px;top:-1px;border-right:0;border-bottom:0}
+.hud:after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+
+.k{font-weight:600;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--tenue)}
+.rojo{color:var(--rojo)} .amarillo{color:var(--amarillo)} .blanco{color:var(--blanco)}
+.num{font-variant-numeric:tabular-nums}
+.etiqueta{display:inline-block;background:var(--rojo);color:#fff;font-weight:700;font-size:16px;letter-spacing:.16em;padding:3px 10px;text-transform:uppercase}
+.etiqueta.amarilla{background:var(--amarillo);color:#111}
+.linea-roja{height:2px;background:linear-gradient(90deg,transparent,var(--rojo),transparent)}
+.pulso{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--rojo);margin-right:10px;vertical-align:middle;animation:pulso 1.6s ease-in-out infinite}
+@keyframes pulso{50%{opacity:.25}}
+
+/* QR con su texto debajo */
+.qr{background:#fff;padding:7px;flex:none}
+.qr img{display:block;width:100%;height:100%}
+.qrs{display:flex;gap:22px}
+.qrs figure{display:flex;flex-direction:column;align-items:center;gap:8px}
+.qrs figcaption{font-weight:700;font-size:18px;text-transform:uppercase;color:var(--blanco);text-align:center;line-height:1.1}
+.qrs figcaption span{display:block;font-weight:600;font-size:14px;letter-spacing:.06em;color:var(--tenue);text-transform:none}
+
+/* Logos opcionales: si no cargan, se quitan solos */
+.logo{display:block;object-fit:contain}
+
+/* Línea legal */
+.legal{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-weight:500;font-size:15px;color:var(--tenue);letter-spacing:.04em}
+
+/* Animaciones: ease-out al entrar */
+@keyframes entra-abajo{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes entra-der{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes entra-izq{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+.anim{animation:entra-abajo .8s var(--entra) backwards}
+.anim-1{animation-delay:.1s}.anim-2{animation-delay:.2s}.anim-3{animation-delay:.3s}.anim-4{animation-delay:.45s}.anim-5{animation-delay:.6s}
+
+/* Aviso de clave o conexión (solo en el panel; en el stream nunca se ve) */
+#sin-conexion{display:none}
+body.control.desconectado #sin-conexion{display:block;position:sticky;top:0;z-index:9;font:700 14px var(--fuente);color:#fff;background:var(--rojo);padding:6px 10px;text-align:center}
+
+/* Modo ?captura: sin animaciones (solo para fotos de prueba) */
+html.captura *,html.captura *:before,html.captura *:after{animation-duration:0s!important;animation-delay:0s!important;transition:none!important}

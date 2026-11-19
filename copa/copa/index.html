@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Copa Dupla de Acero T3</title>
+<link rel="stylesheet" href="../comun/copa.css?v=1">
+<style>
+.izq{position:absolute;left:110px;top:96px;width:1080px}
+.izq .k{font-size:22px}
+h1{font-weight:700;font-size:132px;line-height:.88;text-transform:uppercase;color:var(--blanco);margin-top:14px}
+h1 .t{display:block;color:var(--rojo);font-size:64px;letter-spacing:.06em;margin-top:12px}
+.izq .linea-roja{width:620px;margin-top:26px;background:linear-gradient(90deg,var(--rojo),transparent)}
+.datos{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:30px}
+.dato{padding:14px 20px 12px}
+.dato .v{font-weight:700;font-size:34px;color:var(--blanco);line-height:1.1;margin-top:3px}
+.dato .v small{font-size:22px;color:var(--tenue);font-weight:600}
+.dato.premio{grid-column:1/3;border-color:rgba(255,183,3,.45)}
+.dato.premio .v{color:var(--amarillo);font-size:40px}
+.por-anunciar{color:var(--tenue)}
+.der{position:absolute;right:110px;top:96px;width:560px;display:flex;flex-direction:column;gap:22px}
+.cuenta{padding:22px 26px 20px;text-align:center}
+.cuenta .k{font-size:18px}
+.cuenta .reloj{font-weight:700;font-size:86px;line-height:1;color:var(--blanco);margin-top:8px}
+.cuenta .reloj.vivo{color:var(--rojo);font-size:70px}
+.cuenta .sub{font-weight:600;font-size:20px;color:var(--amarillo);margin-top:6px}
+.insc{padding:22px 26px 24px}
+.insc .titulo{font-weight:700;font-size:30px;text-transform:uppercase;color:var(--blanco);line-height:1.05;margin:8px 0 18px}
+.insc .qrs{justify-content:space-between}
+.insc .qr{width:230px;height:230px;padding:10px}
+.insc .cierre{font-weight:600;font-size:19px;margin-top:16px;text-align:center}
+.insc .cierre b{color:var(--amarillo)}
+.insc.cerrada .qrs{display:none}
+.logos{position:absolute;right:110px;bottom:70px;display:flex;gap:18px;align-items:center}
+.logos .logo{height:76px;width:auto}
+</style></head>
+<body>
+<div class="fondo-hud"></div><div class="fondo-img"></div>
+
+<div class="izq">
+  <div class="k anim"><span class="pulso"></span>Torneo comunitario de War Thunder</div>
+  <h1 class="anim anim-1">Copa Dupla<br>de Acero<span class="t">Temporada 3</span></h1>
+  <div class="linea-roja anim anim-2"></div>
+  <div class="datos">
+    <div class="dato hud anim anim-2"><div class="k">Fechas</div><div class="v">Sáb 28 y dom 29 <small>nov</small></div></div>
+    <div class="dato hud anim anim-2"><div class="k">Hora de inicio (Chile)</div><div class="v" id="d-hora">–</div></div>
+    <div class="dato hud anim anim-3"><div class="k">Modalidad</div><div class="v">2 vs 2 <small>· tanques + aviones</small></div></div>
+    <div class="dato hud anim anim-3"><div class="k">Formato</div><div class="v" id="d-formato">–</div></div>
+    <div class="dato hud anim anim-4"><div class="k">BR</div><div class="v" id="d-br">–</div></div>
+    <div class="dato hud anim anim-4"><div class="k">Cupo</div><div class="v num" id="d-cupo">–</div></div>
+    <div class="dato premio hud anim anim-5"><div class="k">Premio</div><div class="v">1.000 Águilas Doradas <small>para cada campeón</small></div></div>
+  </div>
+</div>
+
+<div class="der">
+  <div class="cuenta hud anim anim-3" style="animation-name:entra-der">
+    <div class="k" id="c-k">El torneo empieza en</div>
+    <div class="reloj num" id="c-reloj">–</div>
+    <div class="sub" id="c-sub"></div>
+  </div>
+  <div class="insc hud anim anim-4" id="insc" style="animation-name:entra-der">
+    <span class="etiqueta" id="i-et">Inscripciones abiertas</span>
+    <div class="titulo" id="i-titulo">Inscríbete con tu dupla</div>
+    <div class="qrs">QRS</div>
+    <div class="cierre" id="i-cierre"></div>
+  </div>
+</div>
+
+<div class="logos" id="logos"></div>
+<div class="legal">Evento comunitario no oficial, no afiliado a Gaijin Entertainment.</div>
+
+<script src="../comun/copa.js?v=1"></script>
+<script>
+$('.qrs').innerHTML = QR_DISCORD + QR_APP;
+$('#logos').innerHTML = imgOpcional('logo-wlp.png', 'logo') + imgOpcional('logo-asmodeo.png', 'logo');
+fondoOpcional('banner.jpg');
+let estado = null;
+function pintar() {
+  if (!estado) return;
+  const c = estado.config, t = calcularTorneo(estado);
+  poner('#d-hora', c.horaSab === c.horaDom ? `${esc(c.horaSab)} <small>ambos días</small>` : `${esc(c.horaSab)} <small>sáb ·</small> ${esc(c.horaDom)} <small>dom</small>`);
+  poner('#d-formato', dato(c.formato));
+  poner('#d-br', dato(c.br));
+  poner('#d-cupo', `${t.inscritos} / ${t.cupo} <small>inscritos</small>`);
+
+  const r = $('#c-reloj');
+  r.classList.toggle('vivo', t.enVivo);
+  if (t.enVivo) { poner('#c-k', t.fase === 'vivo1' ? 'Día 1' : 'Día 2 · gran final', 'textContent'); r.innerHTML = '<span class="pulso"></span>EN VIVO AHORA'; }
+  else if (t.fase === 'terminado') { poner('#c-k', 'Copa Dupla de Acero T3', 'textContent'); r.textContent = 'Finalizada'; }
+  else { poner('#c-k', t.fase === 'entre' ? 'El día 2 empieza en' : 'El torneo empieza en', 'textContent'); r.textContent = fmtReloj(t.restante); }
+  poner('#c-sub', t.fase === 'antes' ? `Sábado 28 · ${esc(c.horaSab)} hora de Chile` : t.fase === 'entre' ? `Domingo 29 · ${esc(c.horaDom)} hora de Chile` : '');
+
+  const abierta = t.insc === 'abiertas';
+  $('#insc').classList.toggle('cerrada', !abierta);
+  const et = $('#i-et');
+  et.className = 'etiqueta' + (abierta && !t.ultimos ? '' : ' amarilla');
+  poner(et, abierta ? (t.ultimos ? `Últimos ${t.libres} cupo${t.libres === 1 ? "" : "s"}` : 'Inscripciones abiertas') : t.insc === 'llenas' ? 'Cupos llenos' : 'Inscripciones cerradas', 'textContent');
+  poner('#i-titulo', abierta ? 'Inscríbete con tu dupla' : 'Sigue la Copa en vivo en este canal', 'textContent');
+  poner('#i-cierre', abierta ? `Cierre de inscripciones: <b>sábado 28, ${esc(c.horaCierre)}</b> (Chile)` : `Sábado 28 y domingo 29 · <b>${esc(c.horaSab)}</b> (Chile)`);
+}
+conectar((n) => { estado = n; pintar(); });
+cadaSegundo(pintar);
+</script>
+</body></html>

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Copa · Gameplay</title>
+<link rel="stylesheet" href="../comun/copa.css?v=1">
+<style>
+/* Insignia compacta en una esquina */
+.insignia{position:absolute;width:330px;padding:12px 16px 12px;display:none;animation:entra-abajo .6s var(--entra) backwards}
+.insignia.ver{display:block}
+.insignia.arriba-derecha{right:28px;top:28px}
+.insignia.arriba-izquierda{left:28px;top:28px}
+.insignia.abajo-derecha{right:28px;bottom:28px}
+.insignia.abajo-izquierda{left:28px;bottom:28px}
+.insignia .ttl{font-weight:700;font-size:24px;letter-spacing:.03em;text-transform:uppercase;color:var(--blanco);line-height:1.05}
+.insignia .ttl .t3{color:var(--rojo)}
+.insignia .fila{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px}
+.insignia .fecha{font-weight:700;font-size:18px;letter-spacing:.12em;color:var(--amarillo)}
+.insignia .cuenta{font-weight:700;font-size:22px;color:var(--blanco)}
+.insignia .cuenta small{font-weight:600;font-size:13px;letter-spacing:.14em;color:var(--tenue);text-transform:uppercase;margin-right:6px}
+.insignia .vivo{font-weight:700;font-size:20px;color:var(--rojo);letter-spacing:.06em}
+.insignia .insc{margin-top:6px;font-weight:600;font-size:16px;display:flex;justify-content:space-between}
+.insignia .insc b{color:var(--blanco)}
+.insignia .insc em{font-style:normal;color:var(--amarillo);font-weight:700}
+
+/* Franja de aviso: nunca en el centro (la mira) ni en las esquinas (minimapa) */
+.franja{position:absolute;left:50%;width:1120px;min-height:128px;display:flex;align-items:center;gap:22px;padding:16px 22px 20px;
+  transform:translateX(-50%) translateY(30px);opacity:0;pointer-events:none;
+  transition:opacity .45s var(--sale),transform .45s var(--sale)}
+.franja.abajo{bottom:150px}
+.franja.arriba{top:120px;transform:translateX(-50%) translateY(-30px)}
+.franja.visible{opacity:1;transform:translateX(-50%);transition:opacity .7s var(--entra),transform .7s var(--entra)}
+.franja .cuerpo{flex:1;min-width:0}
+.franja h2{font-weight:700;font-size:34px;text-transform:uppercase;color:var(--blanco);margin-top:6px;line-height:1}
+.franja p{font-size:21px;margin-top:6px;line-height:1.25}
+.franja p b{color:var(--amarillo);font-weight:700}
+.franja .qrs{gap:14px}
+.franja .qr{width:96px;height:96px;padding:5px}
+.franja .qrs figcaption{font-size:13px}
+.franja .qrs figcaption span{display:none}
+.franja .icono{width:84px;height:84px;flex:none;display:grid;place-items:center}
+.franja .icono img{width:84px;height:84px}
+.franja .tiempo{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.08)}
+.franja .tiempo i{display:block;height:100%;background:var(--rojo);width:100%}
+.franja.visible .tiempo i{animation:vaciar var(--dur,25s) linear forwards}
+@keyframes vaciar{to{width:0}}
+.por-anunciar{color:var(--tenue)}
+</style></head>
+<body class="transparente">
+<div id="insignia" class="insignia hud arriba-derecha">
+  <div class="ttl">Copa Dupla de Acero <span class="t3">· T3</span></div>
+  <div class="fila"><span class="fecha">28–29 NOV</span><span id="i-cuenta" class="cuenta num"></span></div>
+  <div class="insc" id="i-insc"></div>
+</div>
+
+<div id="franja" class="franja hud abajo">
+  <div id="franja-izq"></div>
+  <div class="cuerpo" id="franja-txt"></div>
+  <div class="tiempo"><i></i></div>
+</div>
+
+<script src="../comun/copa.js?v=1"></script>
+<script>
+const DURACION_AVISO = 25000;
+const ALAS = [
+  ['Alas de Acero · Temporada 1', 'Liga 1v1 de aviones en War League Planner', 'Alas de Bronce <b>1.0–6.3</b> · Alas de Plata <b>6.7–10.3</b> · Alas de Oro <b>10.7+</b> · una partida por semana'],
+  ['Alas de Acero · Premios', 'Campeón de cada división: 5.000 Águilas de Oro', '2.º <b>2.500</b> · 3.º y 4.º <b>1.000</b> · 5.º a 8.º <b>Skilled Pilot Pack</b>'],
+  ['Alas de Acero · Inscríbete', 'Descarga War League Planner', 'Gratis en Google Play. ¿Tienes iPhone? Úsala en el PC con <b>BlueStacks</b>.']
+];
+let indiceAlas = 0;
+
+// Cada mensaje devuelve { izq, txt } o null si no corresponde mostrarlo.
+const MENSAJES = {
+  que(e, t) {
+    const extra = [e.config.formato && `Partidas <b>${esc(e.config.formato)}</b>`, e.config.br && `BR <b>${esc(e.config.br)}</b>`].filter(Boolean).join(' · ');
+    return { izq: 'logo', txt: `<span class="etiqueta">${TORNEO.corto}</span>
+      <h2>Torneo 2 vs 2 de tanques + aviones</h2>
+      <p>Sábado <b>28</b> y domingo <b>29 de noviembre</b> · ${esc(t.horaSab)} (Chile)${extra ? ' · ' + extra : ''}</p>` };
+  },
+  premio() {
+    return { izq: 'logo', txt: `<span class="etiqueta">${TORNEO.corto} · Premio</span>
+      <h2>1.000 Águilas Doradas para cada campeón</h2>
+      <p>Arma tu dupla: <b>los dos integrantes</b> de la pareja campeona se llevan el premio.</p>` };
+  },
+  inscripcion(e, t) {
+    if (t.insc === 'cerradas' || t.insc === 'llenas') {
+      return { izq: 'logo', txt: `<span class="etiqueta amarilla">${t.insc === 'llenas' ? 'Cupos llenos' : 'Inscripciones cerradas'}</span>
+        <h2>Sigue la Copa en vivo en este canal</h2>
+        <p>Sábado <b>28</b> y domingo <b>29</b> · desde las <b>${esc(t.horaSab)}</b> (Chile)</p>` };
+    }
+    return { izq: 'qrs', txt: `<span class="etiqueta ${t.ultimos ? 'amarilla' : ''}">${t.ultimos ? `Últimos ${t.libres} cupo${t.libres === 1 ? "" : "s"}` : 'Inscripciones abiertas'}</span>
+      <h2>Inscríbete en Discord o en War League Planner</h2>
+      <p><b>${TORNEO.discord}</b> · app gratis en Google Play · cierre: sáb 28, <b>${esc(t.horaCierre)}</b> (Chile)</p>` };
+  },
+  campeon(e, t, forzar) {
+    if (!e.config.defensor && !forzar) return null;
+    return { izq: 'logo', txt: `<span class="etiqueta">Campeón vigente</span>
+      <h2>${TORNEO.defensor} defiende el título: ¿quién se lo quita?</h2>
+      <p>${e.config.br ? `BR del torneo: <b>${esc(e.config.br)}</b>` : 'Copa Dupla de Acero · Temporada 3'}</p>` };
+  },
+  alas(e, t, forzar) {
+    if (!e.config.alas && !forzar) return null;
+    const [et, h, p] = ALAS[indiceAlas++ % ALAS.length];
+    return { izq: 'play', txt: `<span class="etiqueta">${et}</span><h2>${h}</h2><p>${p}</p>` };
+  }
+};
+const ORDEN = ['que', 'premio', 'inscripcion', 'campeon', 'alas'];
+
+let estado = null;
+const cargaPagina = Date.now();
+let posOrden = 0, ultimoAviso = 0, avisoN = null, mostrando = false, ocultarT = null;
+
+function siguienteDeLaRotacion(t) {
+  for (let i = 0; i < ORDEN.length; i++) {
+    const nombre = ORDEN[posOrden++ % ORDEN.length];
+    const m = MENSAJES[nombre](estado, t);
+    if (m) return m;
+  }
+  return null;
+}
+
+function mostrarAviso(elegido) {
+  const t = calcularTorneo(estado);
+  const m = (elegido && elegido !== 'auto' && MENSAJES[elegido](estado, t, true)) || siguienteDeLaRotacion(t);
+  ultimoAviso = Date.now();
+  if (!m) return;
+  const f = $('#franja');
+  clearTimeout(ocultarT);
+  const izq = m.izq === 'qrs' ? `<div class="qrs">${QR_DISCORD}${QR_APP}</div>`
+    : m.izq === 'play' ? `<div class="qr" style="width:96px;height:96px"><img src="../comun/qr-play.svg" alt=""></div>`
+    : `<div class="icono">${imgOpcional('logo-wlp.png', 'logo')}</div>`;
+  poner('#franja-izq', izq);
+  poner('#franja-txt', m.txt);
+  mostrando = true;
+  f.classList.remove('visible'); void f.offsetWidth; // reinicia la animación
+  f.style.setProperty('--dur', DURACION_AVISO + 'ms');
+  f.classList.add('visible');
+  ocultarT = setTimeout(() => { f.classList.remove('visible'); mostrando = false; }, DURACION_AVISO);
+}
+
+function pintar() {
+  if (!estado) return;
+  const c = estado.config, t = calcularTorneo(estado);
+  const ins = $('#insignia');
+  const ver = c.insignia && t.fase !== 'terminado';
+  ins.className = `insignia hud ${c.insigniaEsquina}${ver ? ' ver' : ''}`;
+  poner('#i-cuenta', t.enVivo ? `<span class="vivo"><span class="pulso"></span>EN VIVO AHORA</span>`
+    : t.fase === 'entre' ? `<small>Día 2 en</small>${fmtDHM(t.restante)}`
+    : t.fase === 'antes' ? `<small>Empieza en</small>${fmtDHM(t.restante)}` : '');
+  poner('#i-insc', !c.mostrarInscritos ? ''
+    : t.insc === 'abiertas' ? `<span>Inscritos: <b class="num">${t.inscritos}/${t.cupo}</b></span>${t.ultimos ? `<em>Últimos ${t.libres}</em>` : ''}`
+    : t.enVivo || t.fase === 'entre' ? `<span>Inscritos: <b class="num">${t.inscritos}</b></span>`
+    : `<span>Inscritos: <b class="num">${t.inscritos}/${t.cupo}</b></span><em>${t.insc === 'llenas' ? 'Cupos llenos' : 'Cerradas'}</em>`);
+  $('#i-insc').style.display = c.mostrarInscritos ? '' : 'none';
+
+  const f = $('#franja'), pos = c.avisoPosicion === 'arriba' ? 'arriba' : 'abajo';
+  if (!f.classList.contains(pos)) { f.classList.remove('arriba', 'abajo'); f.classList.add(pos); }
+
+  const proximo = ultimoAviso ? ultimoAviso + c.avisoCadaMin * 60000 : cargaPagina + c.avisoPrimeroMin * 60000;
+  if (!mostrando && Date.now() >= proximo) mostrarAviso('auto');
+}
+
+conectar((nuevo) => {
+  // "Lanzar aviso ahora" desde el panel (se ignora el número que ya había al cargar)
+  const lanzar = avisoN !== null && nuevo.aviso.n > avisoN;
+  avisoN = nuevo.aviso.n;
+  estado = nuevo;
+  if (lanzar) mostrarAviso(nuevo.aviso.msg);
+  pintar();
+});
+cadaSegundo(pintar);
+</script>
+</body></html>
