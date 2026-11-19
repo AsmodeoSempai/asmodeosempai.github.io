@@ -3,41 +3,45 @@
 <link rel="stylesheet" href="../comun/copa.css?v=1">
 <style>
 /* Insignia compacta en una esquina */
-.insignia{position:absolute;width:330px;padding:12px 16px 12px;display:none;animation:entra-abajo .6s var(--entra) backwards}
+.insignia{position:absolute;width:450px;padding:16px 22px 16px;display:none;animation:entra-abajo .6s var(--entra) backwards}
 .insignia.ver{display:block}
-.insignia.arriba-derecha{right:28px;top:28px}
-.insignia.arriba-izquierda{left:28px;top:28px}
-.insignia.abajo-derecha{right:28px;bottom:28px}
-.insignia.abajo-izquierda{left:28px;bottom:28px}
-.insignia .ttl{font-weight:700;font-size:24px;letter-spacing:.03em;text-transform:uppercase;color:var(--blanco);line-height:1.05}
+.insignia.arriba-derecha{right:30px;top:30px}
+.insignia.arriba-izquierda{left:30px;top:30px}
+.insignia.abajo-derecha{right:30px;bottom:30px}
+.insignia.abajo-izquierda{left:30px;bottom:30px}
+.insignia:before,.insignia:after{width:18px;height:18px;border-width:3px}
+.insignia .ttl{font-weight:700;font-size:33px;letter-spacing:.03em;text-transform:uppercase;color:var(--blanco);line-height:1.05}
 .insignia .ttl .t3{color:var(--rojo)}
-.insignia .fila{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px}
-.insignia .fecha{font-weight:700;font-size:18px;letter-spacing:.12em;color:var(--amarillo)}
-.insignia .cuenta{font-weight:700;font-size:22px;color:var(--blanco)}
-.insignia .cuenta small{font-weight:600;font-size:13px;letter-spacing:.14em;color:var(--tenue);text-transform:uppercase;margin-right:6px}
-.insignia .vivo{font-weight:700;font-size:20px;color:var(--rojo);letter-spacing:.06em}
-.insignia .insc{margin-top:6px;font-weight:600;font-size:16px;display:flex;justify-content:space-between}
+.insignia .fila{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px}
+.insignia .fecha{font-weight:700;font-size:25px;letter-spacing:.1em;color:var(--amarillo)}
+.insignia .cuenta{font-weight:700;font-size:30px;color:var(--blanco)}
+.insignia .cuenta small{font-weight:600;font-size:17px;letter-spacing:.12em;color:var(--tenue);text-transform:uppercase;margin-right:8px}
+.insignia .vivo{font-weight:700;font-size:28px;color:var(--rojo);letter-spacing:.06em}
+.insignia .pulso{width:14px;height:14px}
+.insignia .insc{margin-top:8px;font-weight:600;font-size:22px;display:flex;justify-content:space-between}
 .insignia .insc b{color:var(--blanco)}
 .insignia .insc em{font-style:normal;color:var(--amarillo);font-weight:700}
 
 /* Franja de aviso: nunca en el centro (la mira) ni en las esquinas (minimapa) */
-.franja{position:absolute;left:50%;width:1120px;min-height:128px;display:flex;align-items:center;gap:22px;padding:16px 22px 20px;
+.franja{position:absolute;left:50%;width:1480px;min-height:172px;display:flex;align-items:center;gap:28px;padding:20px 30px 26px;
   transform:translateX(-50%) translateY(30px);opacity:0;pointer-events:none;
   transition:opacity .45s var(--sale),transform .45s var(--sale)}
-.franja.abajo{bottom:150px}
-.franja.arriba{top:120px;transform:translateX(-50%) translateY(-30px)}
+.franja:before,.franja:after{width:18px;height:18px;border-width:3px}
+.franja.abajo{bottom:120px}
+.franja.arriba{top:110px;transform:translateX(-50%) translateY(-30px)}
 .franja.visible{opacity:1;transform:translateX(-50%);transition:opacity .7s var(--entra),transform .7s var(--entra)}
 .franja .cuerpo{flex:1;min-width:0}
-.franja h2{font-weight:700;font-size:34px;text-transform:uppercase;color:var(--blanco);margin-top:6px;line-height:1}
-.franja p{font-size:21px;margin-top:6px;line-height:1.25}
+.franja .etiqueta{font-size:21px;padding:4px 13px}
+.franja h2{font-weight:700;font-size:46px;text-transform:uppercase;color:var(--blanco);margin-top:8px;line-height:1}
+.franja p{font-size:28px;margin-top:8px;line-height:1.25}
 .franja p b{color:var(--amarillo);font-weight:700}
-.franja .qrs{gap:14px}
-.franja .qr{width:96px;height:96px;padding:5px}
-.franja .qrs figcaption{font-size:13px}
+.franja .qrs{gap:18px}
+.franja .qr{width:130px;height:130px;padding:7px}
+.franja .qrs figcaption{font-size:17px}
 .franja .qrs figcaption span{display:none}
-.franja .icono{width:84px;height:84px;flex:none;display:grid;place-items:center}
-.franja .icono img{width:84px;height:84px}
-.franja .tiempo{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.08)}
+.franja .icono{width:112px;height:112px;flex:none;display:grid;place-items:center}
+.franja .icono img{width:112px;height:112px}
+.franja .tiempo{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.08)}
 .franja .tiempo i{display:block;height:100%;background:var(--rojo);width:100%}
 .franja.visible .tiempo i{animation:vaciar var(--dur,25s) linear forwards}
 @keyframes vaciar{to{width:0}}
@@ -124,7 +128,7 @@ function mostrarAviso(elegido) {
   const f = $('#franja');
   clearTimeout(ocultarT);
   const izq = m.izq === 'qrs' ? `<div class="qrs">${QR_DISCORD}${QR_APP}</div>`
-    : m.izq === 'play' ? `<div class="qr" style="width:96px;height:96px"><img src="../comun/qr-play.svg" alt=""></div>`
+    : m.izq === 'play' ? `<div class="qr" style="width:130px;height:130px"><img src="../comun/qr-play.svg" alt=""></div>`
     : `<div class="icono">${imgOpcional('logo-wlp.png', 'logo')}</div>`;
   poner('#franja-izq', izq);
   poner('#franja-txt', m.txt);
