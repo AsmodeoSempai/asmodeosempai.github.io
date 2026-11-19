@@ -45,7 +45,7 @@ label input,label select{margin-top:3px}
 
 <div class="sec">
   <h2>Inscritos <span id="insc-estado"></span></h2>
-  <div class="grande num" id="insc">0 <small>/ 16</small></div>
+  <div class="grande num" id="insc">0 <small>/ 32</small></div>
   <div class="fila"><button id="menos">−1</button><button class="rojo" id="mas">+1</button></div>
   <div class="fila">
     <input id="exacto" type="number" min="0" step="1" inputmode="numeric" placeholder="Número exacto" style="flex:2">
@@ -76,7 +76,7 @@ label input,label select{margin-top:3px}
 <div class="sec">
   <h2>Insignia en gameplay</h2>
   <label class="check"><input type="checkbox" data-cfg="insignia"> Mostrar la insignia</label>
-  <label class="check"><input type="checkbox" data-cfg="mostrarInscritos"> Mostrar «Inscritos: X/16»</label>
+  <label class="check"><input type="checkbox" data-cfg="mostrarInscritos"> Mostrar «Inscritos: X/32»</label>
   <label>Esquina
     <select data-cfg="insigniaEsquina">
       <option value="arriba-derecha">Arriba derecha</option><option value="arriba-izquierda">Arriba izquierda</option>
@@ -91,7 +91,7 @@ label input,label select{margin-top:3px}
     <label>Formato<input type="text" maxlength="40" placeholder="Ej.: Bo3 · final Bo5" data-cfg="formato"></label>
   </div>
   <div class="tres">
-    <label>Cupo<input type="number" min="2" max="64" data-cfg="cupo"></label>
+    <label>Cupo (máx. 32)<input type="number" min="2" max="32" data-cfg="cupo"></label>
     <label>Inicio sáb<input type="time" data-cfg="horaSab"></label>
     <label>Inicio dom<input type="time" data-cfg="horaDom"></label>
   </div>
@@ -108,7 +108,7 @@ label input,label select{margin-top:3px}
 </div>
 <div id="toast"></div>
 
-<script src="../comun/copa.js?v=1"></script>
+<script src="../comun/copa.js?v=2"></script>
 <script>
 let estado = null;
 function toast(txt, error) {

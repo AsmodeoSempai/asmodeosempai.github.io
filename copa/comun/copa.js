@@ -33,7 +33,7 @@ function calcularTorneo(estado, ahora = Date.now() + DESFASE) {
   const inicio1 = horaChile(28, c.horaSab), inicio2 = horaChile(29, c.horaDom);
   const finDia1 = horaChile(29, '00:00'), fin = horaChile(30, '00:00');
   const cierre = horaChile(28, c.horaCierre);
-  const cupo = c.cupo || 16, inscritos = Math.min(estado.inscritos || 0, cupo);
+  const cupo = c.cupo || 32, inscritos = Math.min(estado.inscritos || 0, cupo);
   const libres = Math.max(0, cupo - inscritos);
   let fase, objetivo = null;
   if (ahora < inicio1) { fase = 'antes'; objetivo = inicio1; }
